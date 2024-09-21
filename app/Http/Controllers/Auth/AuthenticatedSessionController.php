@@ -34,20 +34,17 @@ class AuthenticatedSessionController extends Controller
 
         // Check if user is authenticated
         if (Auth::check()) {
-            // Redirect based on user role
-            // $user = Auth::user();
 
-            // if ($user->hasRole('admin')) {
-            //     return redirect()->intended(route('admin.dashboard'))->with('success', 'Successfully logged in as Admin');
-            // } 
             if (Auth::user()->hasRole('admin')) 
             {
                 return redirect()->intended(route('admin.dashboard'))->with('success', 'Successful Login');
             }
         }
 
+          return redirect()->intended('/'); // redirect to a default route
+        // return view('auth.login');
         // If no role matches, redirect back to login (fallback)
-        return redirect()->intended('login')->withErrors(['error' => 'Invalid credentials or role not assigned']);
+        // return redirect()->intended('login')->withErrors(['error' => 'Invalid credentials or role not assigned']);
 
         
     }

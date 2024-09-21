@@ -1,54 +1,12 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Picture Upload -->
-        <div class="mt-4">
-            <x-input-label for="Picture" :value="__('Upload Picture')" />
-            <input id="Picture" class="block mt-1 w-full" type="file" name="Picture" required />
-            <x-input-error :messages="$errors->get('Picture')" class="mt-2" />
-        </div>
-
-        
-        <!-- First Name -->
+        <!-- Name -->
         <div>
-            <x-input-label for="FirstName" :value="__('First Name')" />
-            <x-text-input id="FirstName" class="block mt-1 w-full" type="text" name="FirstName" :value="old('FirstName')" required autofocus />
-            <x-input-error :messages="$errors->get('FirstName')" class="mt-2" />
-        </div>
-
-        <!-- Middle Initials -->
-        <div class="mt-4">
-            <x-input-label for="MiddleInitials" :value="__('Middle Initials')" />
-            <x-text-input id="MiddleInitials" class="block mt-1 w-full" type="text" name="MiddleInitials" :value="old('MiddleInitials')" required />
-            <x-input-error :messages="$errors->get('MiddleInitials')" class="mt-2" />
-        </div>
-
-        <!-- Last Name -->
-        <div class="mt-4">
-            <x-input-label for="LastName" :value="__('Last Name')" />
-            <x-text-input id="LastName" class="block mt-1 w-full" type="text" name="LastName" :value="old('LastName')" required />
-            <x-input-error :messages="$errors->get('LastName')" class="mt-2" />
-        </div>
-{{-- 
-        <!-- Picture Upload -->
-        <div class="mt-4">
-            <x-input-label for="Picture" :value="__('Upload Picture')" />
-            <input id="Picture" class="block mt-1 w-full" type="file" name="Picture" required />
-            <x-input-error :messages="$errors->get('Picture')" class="mt-2" />
-        </div> --}}
-
-        <!-- Role -->
-        <div class="mt-4">
-            <x-input-label for="role" :value="__('Role')"  />
-            <select id="role" name="role" class="block mt-1 w-full" placeholder>
-                <option selected>Select Role</option>
-                <option value="judge">Judge</option>
-                <option value="admin">Admin</option>
-                <option value="event_manager">Event Manager</option>
-                <option value="staff">Staff</option>
-            </select>
-            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+            <x-input-label for="name" :value="__('Name')" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
@@ -58,17 +16,48 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <div class="form-group row">
+            <label for="role" class="col-md-4 col-form-label text-md-right">{{ __('Role') }}</label>
+
+            <div class="col-md-6">
+                <select id="role" class="form-control @error('role') is-invalid @enderror" name="role" required>
+                    @if (!App\Models\User::where('role', 'admin')->exists())
+                        <option value="admin">Admin</option>
+                    @endif
+                    <option value="employee">Employee</option>
+                    <option value="student">Student</option>
+                    <option value="admin_staff">Admin Staff</option>
+                    <option value="hr">HR</option>
+                </select>
+
+                @error('role')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
+
+            <x-text-input id="password" class="block mt-1 w-full"
+                            type="password"
+                            name="password"
+                            required autocomplete="new-password" />
+
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Confirm Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
+
+            <x-text-input id="password_confirmation" class="block mt-1 w-full"
+                            type="password"
+                            name="password_confirmation" required autocomplete="new-password" />
+
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
