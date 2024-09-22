@@ -62,7 +62,7 @@
                 });
                 " class="rounded-md p-2 sm:p-2 md:p-2 lg:p-2 text-black font-medium">
                 <div class="relative">
-                    <div class="container shadow-lg p-5 sm:p-6 md:p-7 lg:p-8 bg-white rounded-md text-black font-medium"
+                    <div class="container shadow-lg p-5 sm:p-6 md:p-7 lg:p-8 bg-green-500 rounded-md text-black font-medium"
                         :style="{ 'width': isFullScreen ? 'calc(100vw - 16px)' : 'auto', 'margin-left': isFullScreen ? '-192px' : '0' }">
                         <h1 class="">GANA NA TAWN</h1>
                     </div>

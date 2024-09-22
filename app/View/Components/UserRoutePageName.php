@@ -21,7 +21,7 @@ class UserRoutePageName extends Component
      protected function setTitle(string $routeName)
     {
         if (!Auth::check()) {
-            $this->title = __('University of Bohol Attendance System');
+            $this->title = __('Event Tabulation Management System');
             return;
         }
 
@@ -31,7 +31,7 @@ class UserRoutePageName extends Component
                 //admin route pages name
                 'admin.dashboard' => __('Admin Dashboard'),
                 //route page name for managing school
-                'admin.school.index' => __('Admin - Manage School'),
+                'admin.event-dashboard' => __('Admin - Manage Event'),
                 'admin.department.index' => __('Admin - Manage Department'),
                 'admin.workinghour.index' => __('Admin - Manage Department Working Hour'),
                 'admin.staff.index' => __('Admin - Manage Admin Staff'),

@@ -26,7 +26,7 @@
                         <span class="ml-2 text-sm tracking-wide truncate text-gray-200">Dashboard</span>
                     </a>
                 </li>
-                <li x-data="{ open: {{ request()->routeIs('admin.attendance.employee_attendance') || request()->routeIs('admin.attendance.student_attendance') || request()->routeIs('admin.attendance.employee_attendance.search') || request()->routeIs('admin.attendance.employee_attendance.payroll') || request()->routeIs('admin.attendance.employee_attendance.payroll.all') ? 'true'  : 'false' }} }">
+                <li x-data="{ open: {{ request()->routeIs('admin.event.dashboard') || request()->routeIs('admin.attendance.student_attendance') || request()->routeIs('admin.attendance.employee_attendance.search') || request()->routeIs('admin.attendance.employee_attendance.payroll') || request()->routeIs('admin.attendance.employee_attendance.payroll.all') ? 'true'  : 'false' }} }">
                     <a @click="open = !open" class="w-full cursor-pointer relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white pr-6">
                         <span class="inline-flex justify-center items-center ml-3">
                             <i class="fa-solid fa-users fa-sm text-gray-200"></i>
@@ -41,24 +41,17 @@
                     </a>
                     <ul x-show="open"  x-cloak class="ml-3 mt-1 space-y-1 w-full">
                         <li>
-                            <a href="" class="w-[500px] flex items-center h-11 pl-4 pr-6 text-sm hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 over:bg-blue-800 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white {{ request()->routeIs('admin.attendance.employee_attendance.search') ? 'border-l-green-500 bg-[#172029] text-white' : 'hover:bg-blue-800 dark:hover:bg-slate-700 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white' }}">
-                                <i class="fa-solid fa-user-circle fa-sm text-gray-200 mr-2"></i>Event List
+                            <a href="{{ route('admin.event.dashboard')}}" class="w-[500px] flex items-center h-11 pl-4 pr-6 text-sm hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 over:bg-blue-800 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white 
+                            {{ request()->routeIs('admin.event.dashboard') ? 'border-l-green-500 bg-[#172029] text-white' : 'hover:bg-blue-800 dark:hover:bg-slate-700 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white' }}">
+                                &nbsp;<i class="fa-solid fa-user-circle fa-sm text-gray-200 mr-2"></i> Event List
                             </a>
                         </li>
-                       
-                        <li class="w-full">
-                            <a href="{{ route('Admin.event.addEvent.blade.php') }}" class="flex items-center  h-11 pl-4 pr-6 text-sm hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 over:bg-blue-800 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white 
-                            {{ request()->routeIs('admin.attendance.employee_attendance') ? 'border-l-green-500 bg-[#172029] text-white' : 'hover:bg-blue-800 dark:hover:bg-slate-700 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white' }}">
-                                <i class="fa-solid fa-user-circle fa-sm text-gray-200 mr-2"></i>Add Event
-                            </a>
-                        </li>
-                        
                     </ul>
                 </li>
                 
                 <li>
                     <a href="" class="relative flex flex-row items-center h-11 focus:outline-none  hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white pr-6 
-                    {{ request()->routeIs('admin.dashboard') ? ' border-l-green-500 bg-[#172029] text-white' : 'hover:bg-blue-800 dark:hover:bg-slate-700 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white' }}">
+                    ">
                         <span class="inline-flex justify-center items-center ml-4">
                             {{-- <i class="fa-solid fa-gauge-high fa-sm text-gray-200 "></i> --}}
                         </span>
@@ -109,29 +102,3 @@
     </script>
 
 
-{{-- 
-    <!-- Sidebar -->
-    <div id="sidebar" class="bg-red-dark text-yellow-dark w-80 space-y-6 px-6 py-7 absolute inset-y-0 left-0 transform -translate-x-full transition-transform duration-200 ease-in-out md:relative md:translate-x-0 z-50 h-screen">
-        <!-- Back Button (Visible on mobile) -->
-        <button @click="open = false" id="back-btn" class="md:hidden text-white focus:outline-none p-4">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-        </button>
-        <!-- Logo -->
-        <div class="flex items-center justify-center h-8">
-            <img src="{{ asset('/img/tres (2).png') }}" alt="LOGO OF THE TEAM" class="w-32">
-            
-        </div>
-        <div class="flex justify-center w-32 text-center">
-            <p>Welcome {{ Auth::user()->email }}</p>
-        </div>
-        <!-- Navigation -->
-        <nav class="font-bold text-yellow-dark">
-            <a href="#" class="block py-2.5 px-4 rounded hover:bg-red-800 hover:text-yellow-200">Event</a>
-            <a href="#" class="block py-2.5 px-4 rounded hover:bg-red-800 hover:text-yellow-200">Category & Criteria</a>
-            <a href="#" class="block py-2.5 px-4 rounded hover:bg-red-800 hover:text-yellow-200">Participant</a>
-            <a href="#" class="block py-2.5 px-4 rounded hover:bg-red-800 hover:text-yellow-200">Judge</a>
-            <a href="#" class="block py-2.5 px-4 rounded hover:bg-red-800 hover:text-yellow-200">Result</a>
-        </nav>
-    </div> --}}

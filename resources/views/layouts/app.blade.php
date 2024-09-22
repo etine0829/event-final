@@ -24,9 +24,8 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/themes/dark.css">
         
         <!-- Scripts -->
-         
+        @livewireStyles
          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-         
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
@@ -43,6 +42,7 @@
                 {{ $slot }}
             </main>
         </div>
+        @livewireScripts
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <!--  Flatpickr  -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/flatpickr.js"></script>
