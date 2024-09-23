@@ -5,12 +5,12 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Traits\HasRoles;
-use \App\Models\Admin\Event; 
+
 
 class Event extends Model
 {
     use HasFactory, HasRoles;
-
+    
     protected $table = "events";
 
     protected $fillable =[
