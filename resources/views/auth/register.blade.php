@@ -24,6 +24,7 @@
                     @if (!App\Models\User::where('role', 'admin')->exists())
                         <option value="admin">Admin</option>
                     @endif
+                    <option selected>Select Role</option>
                     <option value="employee">Employee</option>
                     <option value="student">Student</option>
                     <option value="admin_staff">Admin Staff</option>
