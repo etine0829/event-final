@@ -17,7 +17,16 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/manage-event', [EventController::class, 'index'])->name('event.dashboard');
+        // Route::get('/manage-event', [EventController::class, 'index'])->name('event.dashboard');
+
+        Route::resource('event', EventController::class)->names([
+            'index' => 'event.index',
+            'create' => 'event.create',
+            'store' => 'event.store',
+            'edit' => 'event.edit',
+            'update' => 'event.update'
+        ]);
+        Route::delete('event', [EventController::class, 'deleteAll'])->name('EventController.deleteAll');
     }); 
 });
 

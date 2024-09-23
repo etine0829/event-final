@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin;
 
-use \App\Models\Event; 
+use \App\Models\Admin\Event; 
 use Livewire\Component;
 use Livewire\WithPagination;
 

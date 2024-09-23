@@ -24,10 +24,16 @@
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4">
-                            <form action="" method="POST" class="">
+                            <form action="{{ route('admin.event.store') }}" method="POST" class="">
                                 @csrf
                                 <div class="mb-4">
-                                    <label for="school_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Event Name</label>
+                                    <label for="event_name" class="block text-gray-700 text-md font-bold mb-2">Event Name</label>
+                                    <!-- <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_name') is-invalid @enderror" required autofocus> -->
+                                    <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('event_name') is-invalid @enderror" required autofocus>
+                                    <x-input-error :messages="$errors->get('event_name')" class="mt-2" />
+                                </div>
+                                <!-- <div class="mb-4">
+                                    <label for="event_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Event Name</label>
                                     <input type="text" name="event_name" id="event_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('event_name') is-invalid @enderror" required autofocus>
                                     <x-input-error :messages="$errors->get('event_name')" class="mt-2" />
                                 </div>
@@ -44,7 +50,25 @@
                                                 <option value="ranking">By Ranking</option>
                                         </select>
                                         <x-input-error :messages="$errors->get('scoring_type')" class="mt-2" />
+                                </div> -->
+                                <div class="mb-4">
+                                    <label for="venue" class="block text-gray-700 text-md font-bold mb-2">Venue</label>
+                                    <!-- <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_name') is-invalid @enderror" required autofocus> -->
+                                    <input type="text" name="venue" id="venue" value="{{ old('venue') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('venue') is-invalid @enderror" required autofocus>
+                                    <x-input-error :messages="$errors->get('venue')" class="mt-2" />
                                 </div>
+
+                                <div class="mb-2">
+                                        <label for="scoring_type" class="block text-gray-700 text-md font-bold mb-2">Scoring Type: </label>
+                                        <select id="scoring_type" name="scoring_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('scoring_type') is-invalid @enderror" required>
+                                                <option value="">Select Option</option>
+                                                <option value="points">By Points</option>
+                                                <option value="ranking">By Ranking </option>
+                                                <!-- <option value="rankingLH">By Ranking L-H</option> -->
+                                        </select>
+                                        <x-input-error :messages="$errors->get('type_of_scoring')" class="mt-2" />
+                                </div> 
+
                                 <div class="flex mb-4 mt-5 justify-center">
                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                         Save
@@ -152,21 +176,21 @@
                                                     <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                 </div>
                                                 <div class="mb-4">
-                                                    <form id="updateSchoolForm" action="" method="POST" class="">
+                                                    <form id="updateEventForm" action="{{ route('admin.event.update', $event->id )}}" method="POST" class="">
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="mb-4">
-                                                            <label for="abbreviation" class="block text-gray-700 text-md font-bold mb-2 text-left">Event ID:</label>
+                                                            <label for="Id" class="block text-gray-700 text-md font-bold mb-2 text-left">Event ID:</label>
                                                             <input type="text" id="Id" x-model="Id" readonly class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('Id') is-invalid @enderror">
                                                             <x-input-error :messages="$errors->get('Id')" class="mt-2" />
                                                         </div>
                                                         <div class="mb-4">
-                                                            <label for="school_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Event Name</label>
+                                                            <label for="event_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Event Name</label>
                                                             <input type="text" name="event_name" id="event_name" x-model="event_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('event_name') is-invalid @enderror" required autofocus>
                                                             <x-input-error :messages="$errors->get('event_name')" class="mt-2" />
                                                         </div>
                                                         <div class="mb-4">
-                                                            <label for="school_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Event Venue</label>
+                                                            <label for="venue" class="block text-gray-700 text-md font-bold mb-2 text-left">Event Venue</label>
                                                             <input type="text" name="venue" id="venue" x-model="venue" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('venue') is-invalid @enderror" required >
                                                             <x-input-error :messages="$errors->get('venue')" class="mt-2" />
                                                         </div>
