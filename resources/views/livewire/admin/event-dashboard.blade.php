@@ -59,12 +59,11 @@
                                 </div>
 
                                 <div class="mb-2">
-                                        <label for="scoring_type" class="block text-gray-700 text-md font-bold mb-2">Scoring Type: </label>
-                                        <select id="scoring_type" name="scoring_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('scoring_type') is-invalid @enderror" required>
+                                        <label for="type_of_scoring" class="block text-gray-700 text-md font-bold mb-2">Scoring Type: </label>
+                                        <select id="type_of_scoring" name="type_of_scoring" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('type_of_scoring') is-invalid @enderror" required>
                                                 <option value="">Select Option</option>
                                                 <option value="points">By Points</option>
                                                 <option value="ranking">By Ranking </option>
-                                                <!-- <option value="rankingLH">By Ranking L-H</option> -->
                                         </select>
                                         <x-input-error :messages="$errors->get('type_of_scoring')" class="mt-2" />
                                 </div> 
