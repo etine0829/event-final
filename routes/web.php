@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\CategoryController;
 
 
 Route::get('/', function () {
@@ -27,6 +28,16 @@ Route::middleware(['auth'])->group(function () {
             'update' => 'event.update'
         ]);
         Route::delete('event', [EventController::class, 'deleteAll'])->name('EventController.deleteAll');
+
+        //category routes
+        Route::resource('category', CategoryController::class)->names([
+            'index' => 'category.index',
+            'create' => 'category.create',
+            'store' => 'category.store',
+            'edit' => 'category.edit',
+            'update' => 'category.update'
+        ]);
+        Route::delete('category', [CategoryController::class, 'deleteAll'])->name('category.deleteAll');
     }); 
 });
 

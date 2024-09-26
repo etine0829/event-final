@@ -16,7 +16,7 @@
         @endif
 
         <div class="flex justify-between mb-4 sm:-mt-4">
-            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Department</div>
+            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Category</div>
         </div>
         <div class="flex flex-col md:flex-row items-start md:items-center md:justify-start">
             <!-- Dropdown and Delete Button -->
@@ -25,7 +25,7 @@
                 <select wire:model="selectedEvent" id="event_id" name="event_id" wire:change="updateCategory"
                         class="cursor-pointer text-sm shadow appearance-none border pr-16 rounded py-2 px-2 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror md:w-auto"
                         required>
-                    <option value="">Event Name</option>
+                    <option value="">Event</option>
                     @foreach($events as $event)
                         <option value="{{ $event->id }}">{{ $event->event_name }}</option>
                     @endforeach
@@ -55,6 +55,8 @@
         </div>
         <hr class="border-gray-200 my-4">
         
+        @if($eventToShow)
+       
         <div class="flex justify-between">
             <p class="text-black mt-2 text-sm mb-4">Selected Event: <text class="uppercase text-red-500">{{ $eventToShow->event_name }}</text></p>
             <div x-data="{ open: false }">
@@ -71,7 +73,6 @@
                             <form action="{{ route('admin.category.store') }}" method="POST" class="">
                             <x-caps-lock-detector />
                                 @csrf
-
                                     <div class="mb-2">
                                         <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event: </label>
                                         <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
@@ -86,16 +87,17 @@
                                     </div>
 
                                     <div class="mb-2">
-                                        <label for="category_name" class="block text-gray-700 text-md font-bold mb-2">Category Name:</label>
-                                            <input type="text" name="category_name" id="category_name" value="{{ old('category_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_name') is-invalid @enderror" required>
-                                            <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
+                                        <label for="category_name" class="block text-gray-700 text-md font-bold mb-2">Category Name</label>
+                                        <input type="text" name="category_name" id="category_name" value="{{ old('category_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_name') is-invalid @enderror" required>
+                                        <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
                                     </div>
 
                                     <div class="mb-2">
                                         <label for="score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                        <input type="text" name="score" id="score" value="{{ old('score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
+                                        <input type="number" name="score" id="score" value="{{ old('score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
                                         <x-input-error :messages="$errors->get('score')" class="mt-2" />
                                     </div>
+
                                 <div class="flex mb-4 mt-10 justify-center">
                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                         Save
@@ -107,7 +109,9 @@
                 </div>
             </div>
         </div>
- 
+        @else
+            
+        @endif
         @if($search && $categories->isEmpty())
         <p class="text-black mt-8 text-center">No category found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
         <div class="flex justify-center mt-2">
@@ -117,7 +121,7 @@
         </div>
         @elseif(!$search && $categories->isEmpty())
             
-            <p class="text-black mt-8 text-center uppercase">No data available in event <text class="text-red-500">
+            <p class="text-black mt-8 text-center uppercase">No data available in event<text class="text-red-500">
                 @if($eventToShow)
                 {{ $eventToShow->event_name}}
             @endif</text></p>
@@ -156,9 +160,9 @@
                                 </th>
 
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('event_id')" class="w-full h-full flex items-center justify-center">
+                                    <button wire:click="sortBy('event_name')" class="w-full h-full flex items-center justify-center">
                                         Event Name
-                                        @if ($sortField == 'event_id')
+                                        @if ($sortField == 'category_name')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                             @else
@@ -167,7 +171,19 @@
                                         @endif
                                     </button>
                                 </th>
-
+                                
+                                <th class="border border-gray-400 px-3 py-2">
+                                    <button wire:click="sortBy('category_name')" class="w-full h-full flex items-center justify-center">
+                                        Score
+                                        @if ($sortField == 'score')
+                                            @if ($sortDirection == 'asc')
+                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                            @else
+                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                            @endif
+                                        @endif
+                                    </button>
+                                </th>
                                 <th class="border border-gray-400 px-3 py-2">Action</th>
                             </tr>
                         </thead>
@@ -175,10 +191,12 @@
                             @foreach ($categories as $category)
                                 <tr class="hover:bg-gray-100" wire:model="selectedCategory">
                                     <td class="text-black border border-gray-400  ">{{ $category->id }}</td>
-                                    
+                                    <!-- <td class="text-black border border-gray-400  ">{{ $category->category_id }}</td> -->
                                     <td class="text-black border border-gray-400">{{ $category->category_name}}</td>
+                                    <td class="text-black border border-gray-400">{{ $category->event->event_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $category->score}}</td>
-                                    
+                                    <!-- <td class="text-black border border-gray-400">{{ $category->event->name}}</td>
+                                    <td class="text-black border border-gray-400">{{ ucfirst($category->dept_identifier) }}</td> -->
                                     <td class="text-black border border-gray-400 px-1 py-1">
                                         <div class="flex justify-center items-center space-x-2">
                                             @if($eventToShow && $category)
@@ -186,7 +204,8 @@
                                                 id: {{ json_encode($category->id) }},
                                                     category_id: {{ json_encode($category->category_id) }},
                                                     category_name: {{ json_encode($category->category_name) }},
-                                                    event: {{ json_encode($category->event_id) }},                                                 
+                                                    event: {{ json_encode($category->event_id) }},
+                                                    score: {{ json_encode($category->score) }},
                                                     }">
                                                 <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                                                     <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
@@ -194,7 +213,7 @@
                                                 <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                                                     <div @click.away="open = true" class="w-[35%] bg-white p-6 rounded-lg shadow-lg  mx-auto">
                                                         <div class="flex justify-between items-start pb-3"> <!-- Changed items-center to items-start -->
-                                                            <p class="text-xl font-bold">Edit Category</p>
+                                                            <p class="text-xl font-bold">Edit category</p>
                                                             <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                         </div>
                                                         <div class="mb-4">
@@ -202,30 +221,31 @@
                                                                 <x-caps-lock-detector />
                                                                 @csrf
                                                                 @method('PUT')
-                                                                    <div class="mb-2">
-                                                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event: </label>
-                                                                        <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
-                                                                                <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
-                                                                        </select>
-                                                                        <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
-                                                                    </div>
-                                                                    <div class="mb-2">
-                                                                        <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">Category ID</label>
-                                                                        <input type="text" name="category_id" id="category_id" value="{{ old('category_id') }}" class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror" required autofocus>
-                                                                        <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
-                                                                    </div>
+                                                                
+                                                                <div class="mb-2">
+                                                                    <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
+                                                                    <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
+                                                                            <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
+                                                                    </select>
+                                                                    <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
+                                                                </div>
+                                                                <div class="mb-2">
+                                                                    <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">Category ID</label>
+                                                                    <input type="text" name="category_id" id="category_id" value="{{ old('category_id') }}" class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror" required autofocus>
+                                                                    <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
+                                                                </div>
 
-                                                                    <div class="mb-2">
-                                                                        <label for="category_name" class="block text-gray-700 text-md font-bold mb-2">Category Name:</label>
-                                                                            <input type="text" name="category_name" id="category_name" value="{{ old('category_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_name') is-invalid @enderror" required>
-                                                                            <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
-                                                                    </div>
+                                                                <div class="mb-2">
+                                                                    <label for="category_name" class="block text-gray-700 text-md font-bold mb-2">Category Name</label>
+                                                                    <input type="text" name="category_name" id="category_name" value="{{ old('category_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_name') is-invalid @enderror" required>
+                                                                    <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
+                                                                </div>
 
-                                                                    <div class="mb-2">
-                                                                        <label for="score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                                                        <input type="text" name="score" id="score" value="{{ old('score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('score')" class="mt-2" />
-                                                                    </div>
+                                                                <div class="mb-2">
+                                                                    <label for="score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
+                                                                    <input type="number" name="score" id="score" value="{{ old('score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
+                                                                    <x-input-error :messages="$errors->get('score')" class="mt-2" />
+                                                                </div>
                                                                 <div class="flex mb-4 mt-10 justify-center">
                                                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                                                         Save Changes
@@ -281,16 +301,55 @@
             @endif
         @endif
     </div>
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restrict morning times to 12:00 AM to 11:59 AM
+            var morningStartTime = document.getElementById('morning_start_time');
+            var morningEndTime = document.getElementById('morning_end_time');
+
+            morningStartTime.addEventListener('input', function() {
+                if (this.value.split(':')[0] >= 12) {
+                    this.value = '';
+                    alert('Please select a time between 12:00 AM and 11:59 AM');
+                }
+            });
+
+            morningEndTime.addEventListener('input', function() {
+                if (this.value.split(':')[0] >= 12) {
+                    this.value = '';
+                    alert('Please select a time between 12:00 AM and 11:59 AM');
+                }
+            });
+
+            // Restrict afternoon times to 12:00 PM to 11:59 PM
+            var afternoonStartTime = document.getElementById('afternoon_start_time');
+            var afternoonEndTime = document.getElementById('afternoon_end_time');
+
+            afternoonStartTime.addEventListener('input', function() {
+                if (this.value.split(':')[0] < 12) {
+                    this.value = '';
+                    alert('Please select a time between 12:00 PM and 11:59 PM');
+                }
+            });
+
+            afternoonEndTime.addEventListener('input', function() {
+                if (this.value.split(':')[0] < 12) {
+                    this.value = '';
+                    alert('Please select a time between 12:00 PM and 11:59 PM');
+                }
+            });
+        });
+    </script> -->
 
     <script>
 
-    function searchCategory(event) {
+    function searchcategorys(event) {
             let searchTerm = event.target.value.toLowerCase();
             if (searchTerm === '') {
-                this.categoryToShow = @json($categoryToShow->toArray());
+                this.categorysToShow = @json($categoryToShow->toArray());
             } else {
-                this.categoryToShow = this.categoryToShow.filter(category =>
-                    category.department_name.toLowerCase().includes(searchTerm) ||
+                this.categorysToShow = this.categorysToShow.filter(category =>
+                    category.category_name.toLowerCase().includes(searchTerm) ||
                     category.category_name.toLowerCase().includes(searchTerm) ||
                     category.event.event_name.toLowerCase().includes(searchTerm)
                 );
@@ -306,7 +365,7 @@
                     <select id="event_id_select" class="cursor-pointer hover:border-red-500 swal2-select">
                         <option value="">Select event</option>
                         @foreach($events as $event)
-                            <option value="{{ $event->id }}">{{ $event->event_name }} - {{ $event->venue }} - {{ $event->type_of_scoring }}</option>
+                            <option value="{{ $event->id }}">{{ $event->name }} - {{ $event->venue }} - {{ $event->type_of_scoring }}</option>
                         @endforeach
                     </select>
                 `,
@@ -330,11 +389,11 @@
             });
         }
 
-        function ConfirmDeleteSelected(event, rowId, categoryId, categoryName, score) {
+        function ConfirmDeleteSelected(event, rowId, categoryId, categoryname, score) {
             event.preventDefault(); // Prevent form submission initially
 
             Swal.fire({
-                title: `Are you sure you want to delete the department ${categoryId} - ${categoryName} ${score} ?`,
+                title: `Are you sure you want to delete the category ${categoryId} - ${categoryname} ${score} ?`,
                 text: "You won't be able to revert this!",
                 icon: 'warning',
                 showCancelButton: true,
@@ -344,7 +403,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     const form = document.getElementById('deleteSelected');
-                    // Replace the placeholders with the actual rowId and departmentId
+                    // Replace the placeholders with the actual rowId and categoryId
                     const actionUrl = form.action.replace(':id', rowId).replace(':category_id', categoryId);
                     form.action = actionUrl;
                     form.submit();
@@ -355,5 +414,7 @@
         }
 
     </script>
+
+
 
 @endif

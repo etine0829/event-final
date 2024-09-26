@@ -32,8 +32,8 @@ class UserRoutePageName extends Component
                 'admin.dashboard' => __('Admin Dashboard'),
                 //route page name for managing school
                 'admin.event.index' => __('Admin - Manage Event'),
-                'admin.department.index' => __('Admin - Manage Department'),
-                'admin.workinghour.index' => __('Admin - Manage Department Working Hour'),
+                'admin.category.index' => __('Admin - Manage Category'),
+                'admin.criteria.index' => __('Admin - Manage Criteria'),
                 'admin.staff.index' => __('Admin - Manage Admin Staff'),
                 'admin.employee.index' => __('Admin - Manage Employee'),
                 'admin.student.index' => __('Admin - Manage Student'),

@@ -4,6 +4,7 @@ namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use \App\Models\Admin\Event; 
 
 class Category extends Model
 {

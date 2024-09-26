@@ -52,6 +52,8 @@ class CategoryController extends Controller
                 'category_id.unique' => 'The Category ID is not valid.',
             ]);
 
+            \Log::info('Category Store Request Data:', $request->all());
+
             // Attempt to create the Department record
             try {
                 Category::create($validatedData);
@@ -63,8 +65,10 @@ class CategoryController extends Controller
                 // If an exception occurs (unlikely in normal validation flow)
                 // Handle any specific errors or logging as needed
                 // You can redirect back with an error message or do other error handling
-                return  redirect()->route('admin.category.index')->with('error','The Category ID is already taken in this Event.');
+                return  redirect()->route('admin.category.index')->with('error','The category ID is already taken in this Event.');
             }
+
+          
 
            
         //     $validatedData = $request->validate([
