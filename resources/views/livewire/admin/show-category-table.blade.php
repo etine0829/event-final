@@ -92,6 +92,8 @@
                                         <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
                                     </div>
 
+                                    
+
                                     <div class="mb-2">
                                         <label for="score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
                                         <input type="number" name="score" id="score" value="{{ old('score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
@@ -171,6 +173,8 @@
                                         @endif
                                     </button>
                                 </th>
+
+
                                 
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('category_name')" class="w-full h-full flex items-center justify-center">
@@ -223,34 +227,35 @@
                                                                 @method('PUT')
                                                                 
                                                                 <div class="mb-2">
-                                                                    <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
-                                                                    <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
-                                                                            <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
-                                                                    </select>
-                                                                    <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
-                                                                </div>
-                                                                <div class="mb-2">
-                                                                    <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">Category ID</label>
-                                                                    <input type="text" name="category_id" id="category_id" value="{{ old('category_id') }}" class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror" required autofocus>
-                                                                    <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
-                                                                </div>
+                                                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2 text-left">Event: </label>
+                                                                        <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
+                                                                                <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
+                                                                        </select>
+                                                                        <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
+                                                                    </div>
+                                                                    <div class="mb-4">
+                                                                        <label for="category_id" class="block text-gray-700 text-md font-bold mb-2 text-left">Category ID</label>
+                                                                        <input type="text" name="category_id" id="category_id" x-model="category_id" value="{{ $category->category_id }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror" required autofocus>
+                                                                        <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
+                                                                    </div>
+                                                                    <div class="mb-4">
+                                                                        <label for="category_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Category Name</label>
+                                                                        <input type="text" name="category_name" id="category_name" x-model="category_name" value="{{ $category->category_name }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_name') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
+                                                                    </div>
 
-                                                                <div class="mb-2">
-                                                                    <label for="category_name" class="block text-gray-700 text-md font-bold mb-2">Category Name</label>
-                                                                    <input type="text" name="category_name" id="category_name" value="{{ old('category_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_name') is-invalid @enderror" required>
-                                                                    <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
-                                                                </div>
+                                                                    <div class="mb-4">
+                                                                        <label for="score" class="block text-gray-700 text-md font-bold mb-2 text-left">Score</label>
+                                                                        <input type="text" name="score" id="score" x-model="score" value="{{ $category->score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('score')" class="mt-2" />
+                                                                    </div>
 
-                                                                <div class="mb-2">
-                                                                    <label for="score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                                                    <input type="number" name="score" id="score" value="{{ old('score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
-                                                                    <x-input-error :messages="$errors->get('score')" class="mt-2" />
-                                                                </div>
-                                                                <div class="flex mb-4 mt-10 justify-center">
+                                                                    <div class="flex mb-4 mt-10 justify-center">
                                                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                                                         Save Changes
                                                                     </button>
-                                                                </div>
+                                                                    </div>
+
                                                             </form>
                                                         </div>
                                                     </div>

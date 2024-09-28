@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CriteriaController;
 
 
 Route::get('/', function () {
@@ -38,6 +39,15 @@ Route::middleware(['auth'])->group(function () {
             'update' => 'category.update'
         ]);
         Route::delete('category', [CategoryController::class, 'deleteAll'])->name('category.deleteAll');
+
+        Route::resource('criteria', CriteriaController::class)->names([
+            'index' => 'criteria.index',
+            'create' => 'criteria.create',
+            'store' => 'criteria.store',
+            'edit' => 'criteria.edit',
+            'update' => 'criteria.update'
+        ]);
+        Route::delete('criteria', [CriteriaController::class, 'deleteAll'])->name('criteria.deleteAll');
     }); 
 });
 

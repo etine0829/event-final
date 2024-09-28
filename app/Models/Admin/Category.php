@@ -12,9 +12,11 @@ class Category extends Model
     protected $table = "category";
 
     protected $fillable = [
-        'category_name',
-        'percentage',
         'event_id',
+        'category_id',
+        'category_name',
+        'score',
+            
     ];
 
     public function event()
@@ -25,5 +27,6 @@ class Category extends Model
     {
         return $this->hasMany(Criteria::class);
     }
+    
 }
 

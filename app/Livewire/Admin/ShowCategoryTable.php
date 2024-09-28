@@ -19,7 +19,7 @@ class ShowCategoryTable extends Component
     public $selectedCategory = null;
     public $sortField = 'id';
     public $categoryToShow;
-    public $eventToShow = null;
+    public $eventToShow;
 
     protected $listeners = ['updateCategory'];
 

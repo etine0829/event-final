@@ -194,8 +194,8 @@
                                                             <x-input-error :messages="$errors->get('venue')" class="mt-2" />
                                                         </div>
                                                         <div class="mb-2">
-                                                            <label for="scoring_type" class="block text-gray-700 text-md font-bold mb-2 text-left">Scoring Type: </label>
-                                                            <select id="scoring_type" name="scoring_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('scoring_type') is-invalid @enderror" required>
+                                                            <label for="type_of_scoring" class="block text-gray-700 text-md font-bold mb-2 text-left">Scoring Type: </label>
+                                                            <select id="type_of_scoring" name="type_of_scoring" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('scoring_type') is-invalid @enderror" required>
                                                             @if($event->type_of_scoring === 'points')  
                                                                     <option value="{{ $event->type_of_scoring }}">
                                                                         @if($event->type_of_scoring == 'points')

@@ -31,44 +31,38 @@ class CategoryController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {   
+{   
+    if (Auth::user()->hasRole('admin')) {
 
-        if (Auth::user()->hasRole('admin')) {
+        // Log the incoming request data for debugging
+        \Log::info('Category Store Request Data:', $request->all());
 
-            $validatedData = $request->validate([
-                'event_id' => 'required|exists:events,id',
-                'category_id' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    Rule::unique('category')->where(function ($query) use ($request) {
-                        return $query->where('event_id', $request->event_id);
-                    })->ignore($request->category_id, 'category_id'), // Ensure to ignore by 'department_id'
-                ],
-                'category_name' => 'required|string|max:255',
-                'score' => 'required|string|max:255',
-                
-            ], [
-                'category_id.unique' => 'The Category ID is not valid.',
-            ]);
+        $validatedData = $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'category_id' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('category')->where(function ($query) use ($request) {
+                    return $query->where('event_id', $request->event_id);
+                }),
+            ],
+            'category_name' => 'required|string|max:255',
+            'score' => 'required|string|max:255',
+        ], [
+            'category_id.unique' => 'The Category ID is already taken in this Event.',
+        ]);
 
-            \Log::info('Category Store Request Data:', $request->all());
-
-            // Attempt to create the Department record
-            try {
-                Category::create($validatedData);
-                
-                // If creation succeeds, redirect with success message
-                return redirect()->route('admin.category.index')
-                    ->with('success', 'Category created successfully.');
-            } catch (\Exception $e) {
-                // If an exception occurs (unlikely in normal validation flow)
-                // Handle any specific errors or logging as needed
-                // You can redirect back with an error message or do other error handling
-                return  redirect()->route('admin.category.index')->with('error','The category ID is already taken in this Event.');
-            }
-
-          
+        // Attempt to create the Category record
+        try {
+            Category::create($validatedData);
+            return redirect()->route('admin.category.index')
+                ->with('success', 'Category created successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.category.index')->with('error', 'Failed to create category: ' . $e->getMessage());
+        }
+    }
+}
 
            
         //     $validatedData = $request->validate([
@@ -101,12 +95,7 @@ class CategoryController extends Controller
         //         // You can redirect back with an error message or do other error handling
         //         return  redirect()->route('staff.department.index')->with('error','The department ID is already taken in this school.');
         //     }
-        }
-
-
-            
-      
-    }
+    
 //     /**
 //      * Display the specified resource.
 //      */
@@ -126,59 +115,59 @@ class CategoryController extends Controller
 //     /**
 //      * Update the specified resource in storage.
 //      */
-//     public function update(Request $request, Department $department)
-//     {
+    public function update(Request $request, Category $category)
+    {
         
-//         if (Auth::user()->hasRole('admin')) {
+        if (Auth::user()->hasRole('admin')) {
 
-//             try {
-//                 $validatedData = $request->validate([
-//                     'school_id' => 'required|exists:schools,id',
-//                     'department_id' => [
-//                         'required',
-//                         'string',
-//                         'max:255',
-//                         Rule::unique('departments')->where(function ($query) use ($request, $department) {
-//                             return $query->where('school_id', $request->school_id)
-//                                         ->where('id', '<>', $department->id);
-//                         }),
-//                     ],
-//                     'department_abbreviation' => [
-//                         'required',
-//                         'string',
-//                         'max:255',
-//                         Rule::unique('departments')->where(function ($query) use ($request, $department) {
-//                             return $query->where('school_id', $request->school_id)
-//                                         ->where('id', '<>', $department->id);
-//                         }),
-//                     ],
-//                     'department_name' => 'required|string|max:255',
-//                     'dept_identifier' => 'required|string|max:255',
-//                 ]);
+            try {
+                $validatedData = $request->validate([
+                    'event_id' => 'required|exists:events,id',
+                    'category_id' => [
+                        'required',
+                        'string',
+                        'max:255',
+                        Rule::unique('category')->where(function ($query) use ($request, $category) {
+                            return $query->where('event_id', $request->event_id)
+                                        ->where('id', '<>', $category->id);
+                        }),
+                    ],
+                    'category_name' => [
+                        'required',
+                        'string',
+                        'max:255',
+                        Rule::unique('category')->where(function ($query) use ($request, $category) {
+                            return $query->where('event_id', $request->event_id)
+                                        ->where('id', '<>', $category->id);
+                        }),
+                    ],
+                    'score' => 'required|string|max:255',
+                    
+                ]);
                 
-//                 $hasChanges = false;
-//                 if ($request->school_id !== $department->school_id ||
-//                     $request->department_id !== $department->department_id ||
-//                     $request->department_abbreviation !== $department->department_abbreviation ||
-//                     $request->department_name !== $department->department_name ||
-//                     $request->dept_identifier !== $department->dept_identifier) 
-//                 {
-//                     $hasChanges = true;
-//                 }
+                $hasChanges = false;
+                if ($request->event_id !== $category->event_id ||
+                    $request->category_id !== $category->category_id ||
+                    $request->category_name !== $category->category_name ||
+                    $request->score !== $category->score ) 
+                {
+                    $hasChanges = true;
+                }
 
-//                 if (!$hasChanges) {
-//                     return redirect()->route('admin.department.index')->with('info', 'No changes were made.');
-//                 }
+                if (!$hasChanges) {
+                    return redirect()->route('admin.category.index')->with('info', 'No changes were made.');
+                }
 
-//                 // Update the department record
-//                 $department->update($validatedData);
+                // Update the category record
+                $category->update($validatedData);
 
-//                 return redirect()->route('admin.department.index')->with('success', 'Department updated successfully.');
-//             } catch (ValidationException $e) {
-//                 $errors = $e->errors();
-//                 return redirect()->back()->withErrors($errors)->with('error', $errors['department_id'][0] ?? 'Validation error');
-//             }
-
+                return redirect()->route('admin.category.index')->with('success', 'category updated successfully.');
+            } catch (ValidationException $e) {
+                $errors = $e->errors();
+                return redirect()->back()->withErrors($errors)->with('error', $errors['category_id'][0] ?? 'Validation error');
+            }
+        }
+    }
 //         } else if (Auth::user()->hasRole('admin_staff')) {
         
 //             try {
