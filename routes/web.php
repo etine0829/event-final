@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
             'create' => 'criteria.create',
             'store' => 'criteria.store',
             'edit' => 'criteria.edit',
-            'update' => 'criteria.update'
+            'update' => 'criteria.update'   
         ]);
         Route::delete('criteria', [CriteriaController::class, 'deleteAll'])->name('criteria.deleteAll');
     }); 

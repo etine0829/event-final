@@ -46,47 +46,35 @@
                         wire:change="updateEmployeesByDepartment"
                         class="cursor-pointer text-sm shadow appearance-none border pr-16 rounded py-2 px-2 text-black leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror md:w-auto"
                         required>
-                    @if($categories->isEmpty())
-                        <option value="0">No Category</option>
-                    @else
-                        <option value="">Select Category</option>
-                        @foreach($categories as $category)
-                            @php
-                                $cleanedName= str_replace('- student', '', $category->category_name);
-                            @endphp
-                            <option value="{{ $category->id }}">{{ $cleanedName}}</option>
-                        @endforeach
+                        @if($categories->isEmpty())
+                            <option value="0">No Category</option>
+                        @else
+                            <option value="">Select Category</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->category_name }}</option>    
+                            @endforeach
+                        @endif
+                    </select>
+                    @if($categoryToShow)
+                        <p class="text-black mt-2 text-sm mb-1 ">Selected Category: <span class="text-red-500 ml-2">{{ $categoryToShow->category_name }}</span></p>
                     @endif
-                </select>
-                @if($categoryToShow)
-                    <!-- <p class="text-black mt-2 text-sm mb-1">Selected category ID: <span class="text-red-500 ml-2">{{ $categoryToShow->category_id }}</span></p> -->
-                    <!-- <p class="text-black text-sm ml-4 mt-2">Selected category: <span class="text-red-500 ml-2 mt">{{ $categoryToShow->category_abbreviation }}</span></p> -->
-                     @php
-                        $cleanedName= str_replace('- student', '', $categoryToShow->category_name);
-                    @endphp
-
-                    <p class="text-black mt-2 text-sm mb-1">
-                        Selected Category: 
-                        <span class="text-red-500 ml-2">{{ $cleanedName}}</span>
-                    </p>
                 @endif
-            @endif
-        </div>
+            </div>
 
     </div>
     <hr class="border-gray-200 my-4">
-        @if(!$eventToShow)
-            <p class="text-black text-sm mt-11 mb-4 uppercase text-center">No selected event</p>
+    @if(!$eventToShow)
+            <p class="text-black text-sm mt-11 mb-4 uppercase text-center">No selected Event</p>
         @endif
         @if(!empty($selectedEvent))
             @if(!$categoryToShow)
-                <p class="text-black text-sm mt-11 mb-4 uppercase text-center">No selected category</p>
+                <p class="text-black text-sm mt-11 mb-4 uppercase text-center">No selected Category</p>
             @endif
         @endif
-    <!--  -->
+
     @if($categoryToShow)
         @if($search && $criterion->isEmpty())
-        <p class="text-black mt-8 text-center">No course/s found in <text class="text-red-500">{{ $categoryToShow->category_name }}</text> for matching "{{ $search }}"</p>
+        <p class="text-black mt-8 text-center">No criteria found in <text class="text-red-500">{{ $categoryToShow->category_name }}</text> for matching "{{ $search }}"</p>
         <p class="text-center mt-5"><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
         @elseif(!$search && $criterion->isEmpty())
             <p class="text-black mt-8 text-center uppercase">No data available in <text class="text-red-500">{{$categoryToShow->category_name}} - {{ $categoryToShow->score }} category.</text></p>
@@ -163,38 +151,27 @@
                     <div x-data="{ open: false }">
                         <button @click="open = true" class="-mt-1 mb-2 bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                             <!-- <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> {{$categoryToShow->category_id}} - {{$categoryToShow->score}} -->
-                            <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Course
+                            <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Criteria
                         </button>
                         <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                             <div  class="w-[35%] bg-white p-6 rounded-lg shadow-lg mx-auto max-h-[90vh] overflow-y-auto">
                                 <div class="flex justify-between items-center pb-3">
-                                    <p class="text-xl font-bold">Add Course</p>
+                                    <p class="text-xl font-bold">Add Criteria</p>
                                     <button @click="open = false" class="text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                                 </div>
                                 <div class="mb-4">
                                 @if (Auth::user()->hasRole('admin'))
-                                    <form action="" method="POST" class="" enctype="multipart/form-data">
+                                    <form action="{{ route('admin.criteria.store') }}" method="POST" class="" enctype="multipart/form-data">
                                 @else
-                                    <form action="" method="POST" class="" enctype="multipart/form-data">
+                                    <form action="{{ route('event_manager.criteria.store') }}" method="POST" class="" enctype="multipart/form-data">
                                 @endif
                                         
                                         <x-caps-lock-detector />
-                                        @csrf
+                                        @csrf 
 
                                         <div class="mb-2">
-                                            <input type="file" name="course_logo" id="course_logo" class="hidden" accept="image/*" onchange="previewImage(event)">
-                                            <label for="course_logo" class="cursor-pointer flex flex-col items-center">
-                                                <div id="imagePreviewContainer" class="mb-2 text-center">
-                                                    <img id="imagePreview" src="{{ asset('assets/img/user.png') }}" class="rounded-lg w-48 h-auto">
-                                                </div>
-                                                <span class="text-sm text-gray-500">Select Logo</span>
-                                            </label>
-                                            <x-input-error :messages="$errors->get('course_logo')" class="mt-2" />
-                                        </div>
-
-                                        <div class="mb-2">
-                                            <label for="criteria_id" class="block text-gray-700 text-md font-bold mb-2">Course ID</label>
-                                            <input type="text" name="criteria_id" id="coursee_id" value="{{ old('criteria_id') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_id') is-invalid @enderror" required autofocus>
+                                            <label for="criteria_id" class="block text-gray-700 text-md font-bold mb-2">Criteria ID</label>
+                                            <input type="text" name="criteria_id" id="criteria_id" value="{{ old('criteria_id') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_id') is-invalid @enderror" required autofocus>
                                             <x-input-error :messages="$errors->get('criteria_id')" class="mt-2" />
                                         </div>
                                         <div class="mb-2">
@@ -203,12 +180,12 @@
                                             <x-input-error :messages="$errors->get('criteria_name')" class="mt-2" />
                                         </div>
                                         <div class="mb-2">
-                                            <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Course Description</label>
+                                            <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
                                             <input type="text" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
                                             <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
                                         </div>
                                         <div class="mb-2">
-                                            <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">event Year:</label>
+                                            <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
                                             <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
                                                 <!-- <option value="{{ $categoryToShow->event->id }}">{{ $categoryToShow->event->id }} | {{ $categoryToShow->event->event_name }}</option> -->
                                                  <option value="{{ $categoryToShow->event->id }}">{{ $categoryToShow->event->event_name }}</option>
@@ -217,7 +194,7 @@
                                         </div>
 
                                         <div class="mb-2">
-                                            <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">category ID:</label>
+                                            <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">Category</label>
                                             <select id="category_id" name="category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror" required>
                                                 <!-- <option value="{{ $categoryToShow->id }}">{{ $categoryToShow->category_id }} | {{ $categoryToShow->score }}</option> -->
                                                 <option value="{{ $categoryToShow->id }}">{{ $categoryToShow->category_name }}</option>
@@ -238,7 +215,7 @@
             </div>
             <div class="flex justify-between mt-1 mb-2">
                 <div class="mt-2 text-sm font-bold uppercase">
-                    Course List in <text class="text-red-500">{{$categoryToShow->category_name}} - {{$categoryToShow->score}}</text> category
+                    Criteria List in <text class="text-red-500">{{$categoryToShow->category_name}}</text> 
                 </div>
                 <div>
                     <input wire:model.live="search" type="text" class="text-sm border text-black border-gray-300 rounded-md px-3 py-1.5 w-full md:w-64" placeholder="Search..." autofocus>
@@ -254,8 +231,8 @@
                             <th class="border border-gray-400 px-3 py-2">
 
                                 <button wire:click="sortBy('criteria_id')" class="w-full h-full flex items-center justify-center">
-                                    Course ID
-                                    @if ($sortField == 'employee_id')
+                                    Criteria ID
+                                    @if ($sortField == 'criteria_id')
                                         @if ($sortDirection == 'asc')
                                             &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                         @else
@@ -264,21 +241,10 @@
                                     @endif
                                 </button>
                             </th>
-                            <th class="border border-gray-400 px-3 py-2">
-                                <button wire:click="sortBy('course_logo')" class="w-full h-full flex items-center justify-center">
-                                    Course Logo
-                                    @if ($sortField == 'course_logo')
-                                        @if ($sortDirection == 'asc')
-                                            &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                        @else
-                                            &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                        @endif
-                                    @endif
-                                </button>
-                            </th>
+                            
                             <th class="border border-gray-400 px-3 py-2">
                                 <button wire:click="sortBy('criteria_name')" class="w-full h-full flex items-center justify-center">
-                                    Course Abbreviation
+                                    Criteria Name
                                     @if ($sortField == 'criteria_name')
                                         @if ($sortDirection == 'asc')
                                             &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
@@ -290,7 +256,7 @@
                             </th>
                             <th class="border border-gray-400 px-3 py-2">
                                 <button wire:click="sortBy('criteria_score')" class="w-full h-full flex items-center justify-center">
-                                    Course Description
+                                    Criteria Score
                                     @if ($sortField == 'criteria_score')
                                         @if ($sortDirection == 'asc')
                                             &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
@@ -302,7 +268,7 @@
                             </th>
                             <th class="border border-gray-400 px-3 py-2">
                                 <button wire:click="sortBy('category_id')" class="w-full h-full flex items-center justify-center">
-                                    Course category
+                                    Category
                                     @if ($sortField == 'category_id')
                                         @if ($sortDirection == 'asc')
                                             &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
@@ -316,23 +282,12 @@
                         </tr>
                     </thead>
                     <tbody >
-                        @foreach ($criterion as $course)
+                        @foreach ($criterion as $criteria)
                             <tr class="hover:bg-gray-100" wire:model="selectedCategory">
-                                <td class="text-black border border-gray-400">{{ $course->criteria_id}}</td>
-                                <td class="text-black border border-gray-400 border-t-0 border-r-0 border-l-0 px-2 py-1 flex items-center justify-center" >
-                                    @if ($course->course_logo && Storage::exists('public/course_logo/' . $course->course_logo))
-                                        <a  href="{{ asset('storage/course_logo/' . $course->course_logo) }}" 
-                                            class="hover:border border-red-500 rounded-full" title="Click to view Picture"
-                                            data-fancybox data-caption="LOGO: {{ $course->criteria_name }} - {{ $course->criteria_score }}">
-                                            <img src="{{ asset('storage/course_logo/' . $course->course_logo) }}" class="rounded-full w-9 h-9">
-                                        </a>
-                                    @else
-                                        <img data-fancybox src="{{ asset('assets/img/user.png') }}" class="cursor-pointer w-9 h-9 hover:border hover:border-red-500 rounded-full" title="Click to view Picture" >
-                                    @endif
-                                </td>
-                                <td class="text-black border border-gray-400">{{ $course->criteria_name}}</td>
-                                <td class="text-black border border-gray-400">{{ $course->criteria_score}}</td>
-                                <td class="text-black border border-gray-400">{{ $course->department->category_name}}</td>
+                                <td class="text-black border border-gray-400">{{ $criteria->criteria_id}}</td>    
+                                <td class="text-black border border-gray-400">{{ $criteria->criteria_name}}</td>
+                                <td class="text-black border border-gray-400">{{ $criteria->criteria_score}}</td>
+                                <td class="text-black border border-gray-400">{{ $criteria->category->category_name}}</td>
                                 <td class="text-black border border-gray-400">
                                     <div class="flex justify-center items-center space-x-2">
                                         <div x-data="{ open: false
@@ -343,41 +298,37 @@
                                             <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                                                 <div @click.away="open = true" class="w-[35%] bg-white p-6 rounded-lg shadow-lg max-h-[90vh] overflow-y-auto  mx-auto">
                                                     <div class="flex justify-between items-start pb-3"> <!-- Changed items-center to items-start -->
-                                                        <p class="text-xl font-bold">Edit Course</p>
+                                                        <p class="text-xl font-bold">Edit Criteria</p>
                                                         <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                     </div>
                                                     <div class="mb-4">
                                                     @if (Auth::user()->hasRole('admin'))
-                                                        <form action="{{ route('admin.course.update', $course->id) }}" method="POST" class="" enctype="multipart/form-data">
+                                                        <form action="{{ route('admin.criteria.update', $criteria->id) }}" method="POST" class="" enctype="multipart/form-data">
                                                     @else
-                                                        <form action="{{ route('staff.course.update', $course->id) }}" method="POST" class="" enctype="multipart/form-data">
+                                                        <form action="{{ route('event_manager.criteria.update', $criteria->id) }}" method="POST" class="" enctype="multipart/form-data">
                                                     @endif
                                                         
                                                             <x-caps-lock-detector />
                                                             @csrf
                                                             @method('PUT')
 
-                                                            <div class="mb-4 text-center flex flex-col items-center">
-                                                                <img id="blah" src="{{ $course->course_logo ? asset('storage/course_logo/' . $course->course_logo) : asset('assets/img/user.png') }}" alt="Default photo Icon" class="max-w-xs mb-2" />
-                                                                <input type="file" onchange="readURL(this);" name="course_logo" id="course_logo" class="p-2 bg-gray-800 text-white" accept="image/*" />
-                                                            </div>
                                                             <div class="mb-2">
-                                                                <label for="criteria_id" class="block text-gray-700 text-md font-bold mb-2">Course ID</label>
-                                                                <input type="text" name="criteria_id" id="coursee_id" value="{{ $course->criteria_id }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_id') is-invalid @enderror" required autofocus>
+                                                                <label for="criteria_id" class="block text-gray-700 text-md font-bold mb-2">Criteria ID</label>
+                                                                <input type="text" name="criteria_id" id="criteria_id" value="{{ $criteria->criteria_id }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_id') is-invalid @enderror" required autofocus>
                                                                 <x-input-error :messages="$errors->get('criteria_id')" class="mt-2" />
                                                             </div>
                                                             <div class="mb-2">
-                                                                <label for="criteria_name" class="block text-gray-700 text-md font-bold mb-2">criteria_name</label>
-                                                                <input type="text" name="criteria_name" id="criteria_name" value="{{ $course->criteria_name }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_name') is-invalid @enderror" required>
+                                                                <label for="criteria_name" class="block text-gray-700 text-md font-bold mb-2">Criteria Name</label>
+                                                                <input type="text" name="criteria_name" id="criteria_name" value="{{ $criteria->criteria_name }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_name') is-invalid @enderror" required>
                                                                 <x-input-error :messages="$errors->get('criteria_name')" class="mt-2" />
                                                             </div>
                                                             <div class="mb-2">
-                                                                <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Course Description</label>
-                                                                <input type="text" name="criteria_score" id="criteria_score" value="{{ $course->criteria_score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
+                                                                <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
+                                                                <input type="text" name="criteria_score" id="criteria_score" value="{{ $criteria->criteria_score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
                                                                 <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
                                                             </div>
                                                             <div class="mb-2">
-                                                                <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">event Year:</label>
+                                                                <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
                                                                 <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
                                                                     <!-- <option value="{{ $categoryToShow->event->id }}">{{ $categoryToShow->event->id }} | {{ $categoryToShow->event->event_name }}</option> -->
                                                                     <option value="{{ $categoryToShow->event->id }}">{{ $categoryToShow->event->event_name }}</option>
@@ -385,7 +336,7 @@
                                                                 <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                                             </div>
                                                             <div class="mb-2">
-                                                                <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">category:</label>
+                                                                <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">Category:</label>
                                                                 <select id="category_id" name="category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror" required>
                                                                     <!-- <option value="{{ $categoryToShow->id }}">{{ $categoryToShow->category_id }} | {{ $categoryToShow->score }}</option> -->
                                                                     <option value="{{ $categoryToShow->id }}">{{ $categoryToShow->category_name }}</option>
@@ -404,9 +355,9 @@
                                         </div>
                                         @if (Auth::user()->hasRole('admin'))
                                             @if (Auth::user()->hasRole('admin'))
-                                                <form id="deleteSelected" action="{{ route('admin.course.destroy', [':id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $course->id }}', '{{ $course->criteria_name}}', '{{ $course->criteria_score}}');">
+                                                <form id="deleteSelected" action="" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $criteria->id }}', '{{ $criteria->criteria_name}}', '{{ $criteria->criteria_score}}');">
                                             @else
-                                                <form id="deleteSelected" action="{{ route('staff.course.destroy', [':id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $course->id }}', '{{ $course->criteria_name}}', '{{ $course->criteria_score}}');">
+                                                <form id="deleteSelected" action="" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $criteria->id }}', '{{ $criteria->criteria_name}}', '{{ $criteria->criteria_score}}');">
                                             @endif
                                                 @csrf
                                                 @method('DELETE')
@@ -431,7 +382,7 @@
                                     @endif                                    
                                 </div>
                                 <div class="justify-end">
-                                    <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of criterion: <text class="ml-2">{{ $categoryCounts[$categoryToShow->id]->employee_count ?? 0 }}</text></p>
+                                    <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of criterion: <text class="ml-2">{{ $categoryCounts[$categoryToShow->id]->criteria_count ?? 0 }}</text></p>
                                     @if($search)
                                         <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
                                     @endif

@@ -23,7 +23,7 @@ class ShowCriteriaTable extends Component
     public $eventToShow;
     public $categoryToShow;
 
-    // protected $listeners = ['updateEmployees', 'updateEmployeesByDepartment'];
+    protected $listeners = ['updateEmployees', 'updateEmployeesByDepartment'];
 
     public function updatingSearch()
     {
@@ -42,13 +42,13 @@ class ShowCriteriaTable extends Component
     public function updatingSelectedEvent()
     {
         $this->resetPage();
-        // $this->updateEmployees();
+        $this->updateEmployees();
     }
 
     public function updatingSelectedCategory()
     {
         $this->resetPage();
-        // $this->updateEmployeesByDepartment();
+        $this->updateEmployeesByDepartment();
     }
 
     public function sortBy($field)
@@ -91,7 +91,7 @@ class ShowCriteriaTable extends Component
         $events = Event::all();
         // $departments = Department::where('school_id', $this->selectedEvent)->get();
         $categories = Category::where('event_id', $this->selectedEvent)
-        ->get(['category_name']);
+        ->get(['id','category_name']);
 
 
 
@@ -114,14 +114,14 @@ class ShowCriteriaTable extends Component
     {
         // Update categoryToShow based on selected school
         if ($this->selectedEvent) {
-            $this->categoryToShow = Category::where('event_id', $this->selectedEvent)->get();
+            $this->categoriesToShow = Category::where('event_id', $this->selectedEvent)->get();
         } else {
-            $this->categoryToShow = collect(); // Reset to empty collection if no school is selected
+            $this->categoriesToShow = collect(); // Reset to empty collection if no school is selected
         }
 
         // Ensure departmentToShow is reset if the selected school changes
         $this->selectedCategory1 = null;
-        $this->CategoryToShow = null;
+        $this->categoryToShow = null;
     }
 
 public function updateEmployeesByDepartment()
@@ -132,6 +132,7 @@ public function updateEmployeesByDepartment()
                                             ->first();
     } else {
         $this->categoryToShow = null;
+        
     }
 }
 
