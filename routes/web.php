@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CriteriaController;
-
+use App\Http\Controllers\Admin\JudgesController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -28,7 +28,7 @@ Route::middleware(['auth'])->group(function () {
             'edit' => 'event.edit',
             'update' => 'event.update'
         ]);
-        Route::delete('event', [EventController::class, 'deleteAll'])->name('EventController.deleteAll');
+        Route::delete('event', [EventController::class, 'deleteAll'])->name('event.deleteAll');
 
         //category routes
         Route::resource('category', CategoryController::class)->names([
@@ -48,7 +48,10 @@ Route::middleware(['auth'])->group(function () {
             'update' => 'criteria.update'   
         ]);
         Route::delete('criteria', [CriteriaController::class, 'deleteAll'])->name('criteria.deleteAll');
+
+        Route::get('/judge', [App\Http\Controllers\Admin\JudgesController::class, 'index'])->name('judge.index');
     }); 
+
 });
 
 Route::middleware('auth')->group(function () {

@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Admin\Event;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
@@ -14,8 +15,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'event_id',
         'name',
         'email',
+        'picture',
         'password',
         'role',
     ];
@@ -39,5 +42,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
     }
 }

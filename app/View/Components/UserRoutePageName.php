@@ -34,7 +34,7 @@ class UserRoutePageName extends Component
                 'admin.event.index' => __('Admin - Manage Event'),
                 'admin.category.index' => __('Admin - Manage Category'),
                 'admin.criteria.index' => __('Admin - Manage Criteria'),
-                'admin.staff.index' => __('Admin - Manage Admin Staff'),
+                'admin.judge.index' => __('Admin - Add Judges'),
                 'admin.employee.index' => __('Admin - Manage Employee'),
                 'admin.student.index' => __('Admin - Manage Student'),
                 'admin.course.index' => __('Admin - Manage Courses'),

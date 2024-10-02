@@ -15,8 +15,7 @@ class Category extends Model
         'event_id',
         'category_id',
         'category_name',
-        'score',
-            
+        'score',    
     ];
 
     public function event()

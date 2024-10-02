@@ -20,8 +20,11 @@ class Event extends Model
         'type_of_scoring',
     ];
 
-    // public function category(): HasMany{
-    //     return $this->hasMany(Category::class);
-    // }
+    public function user()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    
     
 }
