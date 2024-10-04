@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CriteriaController;
+use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\JudgesController;
 
 Route::get('/', function () {
@@ -49,8 +50,26 @@ Route::middleware(['auth'])->group(function () {
         ]);
         Route::delete('criteria', [CriteriaController::class, 'deleteAll'])->name('criteria.deleteAll');
 
-        Route::get('/judge', [App\Http\Controllers\Admin\JudgesController::class, 'index'])->name('judge.index');
-    }); 
+        Route::resource('participant', ParticipantController::class)->names([
+            'index' => 'participant.index',
+            'create' => 'participant.create',
+            'store' => 'participant.store',
+            'edit' => 'participant.edit',
+            'update' => 'participant.update'   
+        ]);
+        Route::delete('participant', [ParticipantController::class, 'deleteAll'])->name('participant.deleteAll');
+
+        Route::resource('judge', JudgesController::class)->names([
+            'index' => 'judge.index',
+            'create' => 'judge.create',
+            'store' => 'judge.store',
+            'edit' => 'judge.edit',
+            'update' => 'judge.update'   
+        ]);
+        Route::delete('judge', [JudgesController::class, 'deleteAll'])->name('judge.deleteAll');
+
+      
+    });
 
 });
 

@@ -15,12 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('event_id');
             $table->string('participant_photo')->nullable();
-            $table->string('participant_fname');
-            $table->string('participant_middleIniatial');
-            $table->string('participant_lname');
+            $table->string('participant_name');
             $table->string('participant_gender');
             $table->string('participant_comment');
             $table->string('participant_department');
+
             $table->timestamps();
 
             $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');

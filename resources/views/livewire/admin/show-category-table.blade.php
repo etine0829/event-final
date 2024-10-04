@@ -348,14 +348,14 @@
 
     <script>
 
-    function searchcategorys(event) {
+    function searchcategories(event) {
             let searchTerm = event.target.value.toLowerCase();
             if (searchTerm === '') {
-                this.categorysToShow = @json($categoryToShow->toArray());
+                this.categoriesToShow = @json($categoryToShow->toArray());
             } else {
-                this.categorysToShow = this.categorysToShow.filter(category =>
+                this.categoriesToShow = this.categoriesToShow.filter(category =>
                     category.category_name.toLowerCase().includes(searchTerm) ||
-                    category.category_name.toLowerCase().includes(searchTerm) ||
+                    category.name.toLowerCase().includes(searchTerm) ||
                     category.event.event_name.toLowerCase().includes(searchTerm)
                 );
             }

@@ -23,30 +23,69 @@ class JudgesController extends Controller
 
             // Validate the incoming request data
             $validatedData = $request->validate([
-                'event_id' => 'required|string',
-                'name' => ['required', 'string', 'max:255'],
-                'picture' => ['required', 'string'],
-                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+                'event_id' => 'required|exists:events,id',
+                'name' => 'required|string|max:255',
+                'picture' => 'string|max:255',
+                'email' => 'require|string|lowercase|email|max:255|unique:users,email',
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
-                'role' => ['required', 'string', 'in:judges'],
+                'role' => 'required|string|in:judges',
+                // 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+                // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                // 'role' => ['required', 'string', 'in:judges'],
             ]);
 
-            // Create the new user
-            $user = User::create([
-                'name' => $validatedData['name'],
-                'picture' => $validatedData['picture'], // Assuming 'picture' is a valid string (e.g., file path)
-                'email' => $validatedData['email'],
-                'password' => Hash::make($validatedData['password']), // Hash the password before storing
-            ]);
-
-            // Assign the "judges" role to the user
-            $user->assignRole($validatedData['role']);
-
-            // Redirect back with success message
-            return redirect()->route('admin.judge.index')->with('success', 'Judge created successfully.');
+            try {
+                User::create($validatedData);
+                return redirect()->route('admin.judge.index')
+                    ->with('success', 'Judge created successfully.');
+            } catch (\Exception $e) {
+                return redirect()->route('admin.judge.index')->with('error', 'Failed to create judge: ' . $e->getMessage());
+            }
         }
+    }
 
-        // If the user is not an admin, return a forbidden response or redirect
-        return redirect()->back()->with('error', 'Unauthorized action.');
+
+    public function update(Request $request, Category $category)
+    {
+        
+        if (Auth::user()->hasRole('admin')) {
+
+            try {
+                $validatedData = $request->validate([
+                    'event_id' => 'required|exists:events,id',
+                    'name' => 'required|string|max:255',
+                    'picture' => 'string|max:255',
+                    'email' => 'require|string|lowercase|email|max:255|unique:users,email',
+                    'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                    'role' => 'required|string|in:judges',
+                    // 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+                    // 'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                    // 'role' => ['required', 'string', 'in:judges'],
+                ]);
+                
+                $hasChanges = false;
+                if ($request->event_id !== $judge->event_id ||
+                    $request->judge_id !== $judge->judge_id ||
+                    $request->name !== $judge->name ||
+                    $request->picture !== $judge->picture ||
+                    $request->email !== $judge->email ||
+                    $request->password !== $judge->password ) 
+                {
+                    $hasChanges = true;
+                }
+
+                if (!$hasChanges) {
+                    return redirect()->route('admin.judge.index')->with('info', 'No changes were made.');
+                }
+
+                // Update the category record
+                $judge->update($validatedData);
+
+                return redirect()->route('admin.judge.index')->with('success', 'judge updated successfully.');
+            } catch (ValidationException $e) {
+                $errors = $e->errors(); 
+                return redirect()->back()->withErrors($errors)->with('error', $errors['judge_id'][0] ?? 'Validation error');
+            }
+        }
     }
 }

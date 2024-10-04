@@ -34,8 +34,8 @@ class CategoryController extends Controller
 {   
     if (Auth::user()->hasRole('admin')) {
 
-        // Log the incoming request data for debugging
-        \Log::info('Category Store Request Data:', $request->all());
+        // // Log the incoming request data for debugging
+        // \Log::info('Category Store Request Data:', $request->all());
 
         $validatedData = $request->validate([
             'event_id' => 'required|exists:events,id',
