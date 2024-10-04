@@ -13,22 +13,18 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('picture')->nullable()->after('name');
-            $table->unsignedBigInteger('event_id')->nullable()->after('id');
+            // $table->unsignedBigInteger('event_id')->nullable()->after('id');
 
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');
+            // $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');
         });
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            //
-            $table->dropColumn('picture');
-            $table->dropColumn('event_id');
-            
-        });
-    }
+    public function down()
+{
+    
+}
+
 };

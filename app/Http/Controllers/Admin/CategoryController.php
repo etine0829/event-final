@@ -39,18 +39,8 @@ class CategoryController extends Controller
 
         $validatedData = $request->validate([
             'event_id' => 'required|exists:events,id',
-            'category_id' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('category')->where(function ($query) use ($request) {
-                    return $query->where('event_id', $request->event_id);
-                }),
-            ],
             'category_name' => 'required|string|max:255',
             'score' => 'required|string|max:255',
-        ], [
-            'category_id.unique' => 'The Category ID is already taken in this Event.',
         ]);
 
         // Attempt to create the Category record
@@ -123,15 +113,6 @@ class CategoryController extends Controller
             try {
                 $validatedData = $request->validate([
                     'event_id' => 'required|exists:events,id',
-                    'category_id' => [
-                        'required',
-                        'string',
-                        'max:255',
-                        Rule::unique('category')->where(function ($query) use ($request, $category) {
-                            return $query->where('event_id', $request->event_id)
-                                        ->where('id', '<>', $category->id);
-                        }),
-                    ],
                     'category_name' => [
                         'required',
                         'string',
@@ -147,7 +128,6 @@ class CategoryController extends Controller
                 
                 $hasChanges = false;
                 if ($request->event_id !== $category->event_id ||
-                    $request->category_id !== $category->category_id ||
                     $request->category_name !== $category->category_name ||
                     $request->score !== $category->score ) 
                 {
@@ -164,7 +144,7 @@ class CategoryController extends Controller
                 return redirect()->route('admin.category.index')->with('success', 'category updated successfully.');
             } catch (ValidationException $e) {
                 $errors = $e->errors();
-                return redirect()->back()->withErrors($errors)->with('error', $errors['category_id'][0] ?? 'Validation error');
+                return redirect()->back()->withErrors($errors)->with('error', $errors['id'][0] ?? 'Validation error');
             }
         }
     }

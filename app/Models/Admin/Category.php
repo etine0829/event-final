@@ -13,7 +13,6 @@ class Category extends Model
 
     protected $fillable = [
         'event_id',
-        'category_id',
         'category_name',
         'score',    
     ];

@@ -16,7 +16,7 @@
         @endif
 
         <div class="flex justify-between mb-4 sm:-mt-4">
-            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Category</div>
+            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Participant</div>
         </div>
         <div class="flex flex-col md:flex-row items-start md:items-center md:justify-start">
             <!-- Dropdown and Delete Button -->
@@ -61,16 +61,16 @@
             <p class="text-black mt-2 text-sm mb-4">Selected Event: <text class="uppercase text-red-500">{{ $eventToShow->event_name }}</text></p>
             <div x-data="{ open: false }">
                 <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
-                    <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Category
+                    <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Participant
                 </button>
                 <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div @click.away="open = true" class="w-[30%] max-h-[90%]  bg-white p-6 rounded-lg shadow-lg  mx-auto overflow-y-auto">
                         <div class="flex justify-between items-center pb-3">
-                            <p class="text-xl font-bold">Add Category</p>
+                            <p class="text-xl font-bold">Add Participant</p>
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4">
-                            <form action="{{ route('admin.category.store') }}" method="POST" class="">
+                            <form action="{{ route('admin.participant.store') }}" method="POST" class="">
                             <x-caps-lock-detector />
                                 @csrf
                                     <div class="mb-2">
@@ -80,17 +80,38 @@
                                         </select>
                                         <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                     </div>
+                                    <div class="mb-2">
+                                        <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Participant Photo</label>
+                                        <input type="file" name="participant_photo" id="participant_photo" value="{{ old('participant_photo') }}" class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror" required autofocus>
+                                        <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
+                                    </div>
 
                                     <div class="mb-2">
-                                        <label for="category_name" class="block text-gray-700 text-md font-bold mb-2">Category Name</label>
-                                        <input type="text" name="category_name" id="category_name" value="{{ old('category_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_name') is-invalid @enderror" required>
-                                        <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
-                                    </div>                                  
+                                        <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">participant Name</label>
+                                        <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
+                                        <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
+                                    </div>
 
                                     <div class="mb-2">
-                                        <label for="score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                        <input type="number" name="score" id="score" value="{{ old('score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
-                                        <x-input-error :messages="$errors->get('score')" class="mt-2" />
+                                        <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Scoring Type: </label>
+                                        <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
+                                                <option value="">Select Option</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                        </select>
+                                        <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
+                                    </div> 
+
+                                    <div class="mb-2">
+                                        <label for="participant_comment" class="block text-gray-700 text-md font-bold mb-2">Participant Comment</label>
+                                        <input type="text" name="participant_comment" id="participant_comment" value="{{ old('participant_comment') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_comment') is-invalid @enderror" required>
+                                        <x-input-error :messages="$errors->get('participant_comment')" class="mt-2" />
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2">Participant Department</label>
+                                        <input type="text" name="participant_department" id="participant_department" value="{{ old('participant_department') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_department') is-invalid @enderror" required>
+                                        <x-input-error :messages="$errors->get('participant_department')" class="mt-2" />
                                     </div>
 
                                 <div class="flex mb-4 mt-10 justify-center">
@@ -107,14 +128,14 @@
         @else
             
         @endif
-        @if($search && $categories->isEmpty())
-        <p class="text-black mt-8 text-center">No category found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
+        @if($search && $participants->isEmpty())
+        <p class="text-black mt-8 text-center">No participant found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
         <div class="flex justify-center mt-2">
             @if($search)
                 <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
             @endif
         </div>
-        @elseif(!$search && $categories->isEmpty())
+        @elseif(!$search && $participants->isEmpty())
             
             <p class="text-black mt-8 text-center uppercase">No data available in event<text class="text-red-500">
                 @if($eventToShow)
@@ -143,9 +164,35 @@
                                 
                                 
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('event_name')" class="w-full h-full flex items-center justify-center">
+                                    <button wire:click="sortBy('participant_photo')" class="w-full h-full flex items-center justify-center">
+                                        Participant Photo
+                                        @if ($sortField == 'participant_photo')
+                                            @if ($sortDirection == 'asc')
+                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                            @else
+                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                            @endif
+                                        @endif
+                                    </button>
+                                </th>
+
+                                <th class="border border-gray-400 px-3 py-2">
+                                    <button wire:click="sortBy('participant_name')" class="w-full h-full flex items-center justify-center">
+                                        participant Name
+                                        @if ($sortField == 'participant_name')
+                                            @if ($sortDirection == 'asc')
+                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                            @else
+                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                            @endif
+                                        @endif
+                                    </button>
+                                </th>
+
+                                <th class="border border-gray-400 px-3 py-2">
+                                    <button wire:click="sortBy('participant_gender')" class="w-full h-full flex items-center justify-center">
                                         Event Name
-                                        @if ($sortField == 'event_name')
+                                        @if ($sortField == 'participant_gender')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                             @else
@@ -154,10 +201,13 @@
                                         @endif
                                     </button>
                                 </th>
+
+
+                                
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('category_name')" class="w-full h-full flex items-center justify-center">
-                                        Category Name
-                                        @if ($sortField == 'category_name')
+                                    <button wire:click="sortBy('participant_comment')" class="w-full h-full flex items-center justify-center">
+                                        Comment
+                                        @if ($sortField == 'participant_comment')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                             @else
@@ -166,11 +216,11 @@
                                         @endif
                                     </button>
                                 </th>
-                              
+
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('category_name')" class="w-full h-full flex items-center justify-center">
+                                    <button wire:click="sortBy('participant_department')" class="w-full h-full flex items-center justify-center">
                                         Score
-                                        @if ($sortField == 'score')
+                                        @if ($sortField == 'participant_department')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                             @else
@@ -183,22 +233,29 @@
                             </tr>
                         </thead>
                         <tbody >
-                            @foreach ($categories as $category)
+                            @foreach ($participants as $participant)
                                 <tr class="hover:bg-gray-100" wire:model="selectedCategory">
-                                    <td class="text-black border border-gray-400  ">{{ $category->id }}</td>      
-                                    <td class="text-black border border-gray-400">{{ $category->event->event_name}}</td>               
-                                    <td class="text-black border border-gray-400">{{ $category->category_name}}</td>
-                                    <td class="text-black border border-gray-400">{{ $category->score}}</td>
-                                    <!-- <td class="text-black border border-gray-400">{{ $category->event->name}}</td>
-                                    <td class="text-black border border-gray-400">{{ ucfirst($category->dept_identifier) }}</td> -->
+                                    <td class="text-black border border-gray-400">{{ $participant->event->event_name}}</td>
+                                    <td class="text-black border border-gray-400  ">{{ $participant->id }}</td>
+                                    <!-- <td class="text-black border border-gray-400  ">{{ $participant->participant_id }}</td> -->    
+                                    <td class="text-black border border-gray-400">{{ $participant->participant_name}}</td>
+                                    <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>
+                                    <td class="text-black border border-gray-400">{{ $participant->participant_comment}}</td>
+                                    <td class="text-black border border-gray-400">{{ $participant->participant_department}}</td>
+                                    
+                                    <!-- <td class="text-black border border-gray-400">{{ $participant->event->name}}</td>
+                                    <td class="text-black border border-gray-400">{{ ucfirst($participant->dept_identifier) }}</td> -->
                                     <td class="text-black border border-gray-400 px-1 py-1">
                                         <div class="flex justify-center items-center space-x-2">
-                                            @if($eventToShow && $category)
+                                            @if($eventToShow && $participant)
                                             <div x-data="{ open: false, 
-                                                id: {{ json_encode($category->id) }},
-                                                    event: {{ json_encode($category->event_id) }},
-                                                    category_name: {{ json_encode($category->category_name) }},
-                                                    score: {{ json_encode($category->score) }},
+                                                id: {{ json_encode($participant->id) }},
+                                                    event: {{ json_encode($participant->event_id) }},
+                                                    participant_photo: {{ json_encode($participant->participant_photo) }}
+                                                    participant_name: {{ json_encode($participant->participant_name) }},
+                                                    participant_gender: {{ json_encode($participant->participant_gender) }},
+                                                    participant_comment: {{ json_encode($participant->participant_comment) }},
+                                                    participant_department: {{ json_encode($participant->participant_department) }},
                                                     }">
                                                 <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                                                     <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
@@ -206,11 +263,11 @@
                                                 <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                                                     <div @click.away="open = true" class="w-[35%] bg-white p-6 rounded-lg shadow-lg  mx-auto">
                                                         <div class="flex justify-between items-start pb-3"> <!-- Changed items-center to items-start -->
-                                                            <p class="text-xl font-bold">Edit category</p>
+                                                            <p class="text-xl font-bold">Edit Participant</p>
                                                             <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                         </div>
                                                         <div class="mb-4">
-                                                            <form id="updateCategoryForm" action="{{ route('admin.category.update', $category->id )}}" method="POST" class="">
+                                                            <form id="updateCategoryForm" action="{{ route('admin.participant.update', $participant->id )}}" method="POST" class="">
                                                                 <x-caps-lock-detector />
                                                                 @csrf
                                                                 @method('PUT')
@@ -224,15 +281,45 @@
                                                                     </div>
 
                                                                     <div class="mb-4">
-                                                                        <label for="category_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Category Name</label>
-                                                                        <input type="text" name="category_name" id="category_name" x-model="category_name" value="{{ $category->category_name }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_name') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
+                                                                        <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2 text-left">participant photo</label>
+                                                                        <input type="file" name="participant_photo" id="participant_photo" x-model="participant_photo" value="{{ $participant->participant_photo }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
+                                                                    </div>
+                                                                    
+                                                                    <div class="mb-4">
+                                                                        <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2 text-left">participant Name</label>
+                                                                        <input type="text" name="participant_name" id="participant_name" x-model="participant_name" value="{{ $participant->participant_name }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
+                                                                    </div>
+
+                                                                    <div class="mb-2">
+                                                                        <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2 text-left">Gender </label>
+                                                                        <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('scoring_type') is-invalid @enderror" required>
+                                                                        @if($event->participant_gender === 'male')  
+                                                                                <option value="{{ $event->participant_gender }}">
+                                                                                    @if($event->participant_gender == 'male')
+                                                                                        Male
+                                                                                    @endif
+                                                                                </option>
+                                                                                <option value="female">Female</option>
+                                                                            @else
+                                                                                <option value="{{ $event->participant_gender }}">Female</option>
+                                                                                <option value="male">Male</option>
+                                                                            @endif
+                                                                        </select>
+                                                                        <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                                                     </div>
 
                                                                     <div class="mb-4">
-                                                                        <label for="score" class="block text-gray-700 text-md font-bold mb-2 text-left">Score</label>
-                                                                        <input type="text" name="score" id="score" x-model="score" value="{{ $category->score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('score')" class="mt-2" />
+                                                                        <label for="participant_comment" class="block text-gray-700 text-md font-bold mb-2 text-left">participant_comment</label>
+                                                                        <input type="text" name="participant_comment" id="participant_comment" x-model="participant_comment" value="{{ $participant->participant_comment }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_comment') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('participant_comment')" class="mt-2" />
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2 text-left">participant_department</label>
+                                                                        <input type="text" name="participant_department" id="participant_department" x-model="participant_department" value="{{ $participant->participant_department }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('pparticipant_department') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('participant_departmentt')" class="mt-2" />
                                                                     </div>
 
                                                                     <div class="flex mb-4 mt-10 justify-center">
@@ -246,7 +333,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <form id="deleteSelected" action="{{ route('admin.category.destroy', [':id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $category->id }}', '{{ $category->category_id }}', '{{ $category->category_name }}', '{{ $category->score }}');">
+                                            <form id="deleteSelected" action="{{ route('admin.participant.destroy', [':id', ':participant_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_name }}', '{{ $participant->participant_gender }}', '{{ $participant->participant_comment }}', '{{ $participant->participant_department }}',);">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
@@ -266,17 +353,17 @@
                                 <div class="flex justify-between">
                                     <div class="uppercase text-black mt-2 text-sm mb-4">
                                         @if($search)
-                                            {{ $categories->total() }} Search results 
+                                            {{ $participants->total() }} Search results 
                                         @endif                                    
                                     </div>
                                     <div class="justify-end">
-                                        <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of Category: <text class="ml-2">{{ $categoryCounts[$eventToShow->id]->category_count ?? 0 }}</text></p>
+                                        <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of participant: <text class="ml-2">{{ $participantCounts[$eventToShow->id]->participant_count ?? 0 }}</text></p>
                                         
                                     </div>
                                 </div> 
                             </td>
                             <td>
-                                {{ $categories->links() }}
+                                {{ $participants->links() }}
                             </td>
                             <div class="flex justify-center mt-2">
                                 @if($search)
@@ -333,15 +420,18 @@
 
     <script>
 
-    function searchcategories(event) {
+    function searchparticipants(event) {
             let searchTerm = event.target.value.toLowerCase();
             if (searchTerm === '') {
-                this.categoriesToShow = @json($categoryToShow->toArray());
+                this.participantsToShow = @json($participantToShow->toArray());
             } else {
-                this.categoriesToShow = this.categoriesToShow.filter(category =>
-                    category.category_name.toLowerCase().includes(searchTerm) ||
-                    category.name.toLowerCase().includes(searchTerm) ||
-                    category.event.event_name.toLowerCase().includes(searchTerm)
+                this.participantsToShow = this.participantsToShow.filter(participant =>
+                    participant.participant_photo.toLowerCase().includes(searchTerm) ||
+                    participant.participant_name.toLowerCase().includes(searchTerm) ||
+                    participant.participant_gender.toLowerCase().includes(searchTerm) ||
+                    participant.participant_comment.toLowerCase().includes(searchTerm) ||
+                    participant.participant_department.toLowerCase().includes(searchTerm) ||
+                    participant.event.event_name.toLowerCase().includes(searchTerm)
                 );
             }
         }
@@ -355,7 +445,7 @@
                     <select id="event_id_select" class="cursor-pointer hover:border-red-500 swal2-select">
                         <option value="">Select event</option>
                         @foreach($events as $event)
-                            <option value="{{ $event->id }}">{{ $event->name }} - {{ $event->venue }} - {{ $event->type_of_scoring }}</option>
+                            <option value="{{ $event->id }}">{{ $event->name }} - {{ $event->venue }} - {{ $event->participant_gender }}</option>
                         @endforeach
                     </select>
                 `,
@@ -379,11 +469,11 @@
             });
         }
 
-        function ConfirmDeleteSelected(event, rowId, categoryId, categoryname, score) {
+        function ConfirmDeleteSelected(event, rowId, participantId, participantname, participant_comment) {
             event.preventDefault(); // Prevent form submission initially
 
             Swal.fire({
-                title: `Are you sure you want to delete the category ${categoryId} - ${categoryname} ${score} ?`,
+                title: `Are you sure you want to delete the participant ${participantId} - ${participantname} ${participant_comment} ?`,
                 text: "You won't be able to revert this!",
                 icon: 'warning',
                 showCancelButton: true,
@@ -393,8 +483,8 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     const form = document.getElementById('deleteSelected');
-                    // Replace the placeholders with the actual rowId and categoryId
-                    const actionUrl = form.action.replace(':id', rowId).replace(':category_id', categoryId);
+                    // Replace the placeholders with the actual rowId and participantId
+                    const actionUrl = form.action.replace(':id', rowId).replace(':participant_id', participantId);
                     form.action = actionUrl;
                     form.submit();
                 }

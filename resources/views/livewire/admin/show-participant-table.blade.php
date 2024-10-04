@@ -21,7 +21,7 @@
         <div class="flex flex-col md:flex-row items-start md:items-center md:justify-start">
             <!-- Dropdown and Delete Button -->
             <div class="flex items-center w-full md:w-auto">
-                <label for="event_id" class="block text-sm text-gray-700 font-bold md:mr-4 truncate uppercase">Event:</label>
+                <label for="event_id" class="block text-sm text-gray-700 font-bold md:mr-4 truncate uppercase">Event</label>
                 <select wire:model="selectedEvent" id="event_id" name="event_id" wire:change="updateCategory"
                         class="cursor-pointer text-sm shadow appearance-none border pr-16 rounded py-2 px-2 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror md:w-auto"
                         required>
@@ -74,26 +74,26 @@
                             <x-caps-lock-detector />
                                 @csrf
                                     <div class="mb-2">
-                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event: </label>
+                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
                                         <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
                                                 <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
                                         </select>
                                         <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                     </div>
                                     <div class="mb-2">
-                                        <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Participant Photo</label>
+                                        <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
                                         <input type="file" name="participant_photo" id="participant_photo" value="{{ old('participant_photo') }}" class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror" required autofocus>
                                         <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                     </div>
 
                                     <div class="mb-2">
-                                        <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">participant Name</label>
+                                        <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
                                         <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
                                         <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
                                     </div>
 
                                     <div class="mb-2">
-                                        <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Scoring Type: </label>
+                                        <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Gender</label>
                                         <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
                                                 <option value="">Select Option</option>
                                                 <option value="male">Male</option>
@@ -102,14 +102,9 @@
                                         <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                     </div> 
 
-                                    <div class="mb-2">
-                                        <label for="participant_comment" class="block text-gray-700 text-md font-bold mb-2">Participant Comment</label>
-                                        <input type="text" name="participant_comment" id="participant_comment" value="{{ old('participant_comment') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_comment') is-invalid @enderror" required>
-                                        <x-input-error :messages="$errors->get('participant_comment')" class="mt-2" />
-                                    </div>
 
                                     <div class="mb-2">
-                                        <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2">Participant Department</label>
+                                        <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2">Department</label>
                                         <input type="text" name="participant_department" id="participant_department" value="{{ old('participant_department') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_department') is-invalid @enderror" required>
                                         <x-input-error :messages="$errors->get('participant_department')" class="mt-2" />
                                     </div>
@@ -161,11 +156,24 @@
                                         @endif
                                     </button>
                                 </th>
+
+                                <th class="border border-gray-400 px-3 py-2">
+                                    <button wire:click="sortBy('event_name')" class="w-full h-full flex items-center justify-center">
+                                        Event
+                                        @if ($sortField == 'event_name')
+                                            @if ($sortDirection == 'asc')
+                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                            @else
+                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                            @endif
+                                        @endif
+                                    </button>
+                                </th>
                                 
                                 
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('participant_photo')" class="w-full h-full flex items-center justify-center">
-                                        Participant Photo
+                                        Photo
                                         @if ($sortField == 'participant_photo')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
@@ -178,7 +186,7 @@
 
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('participant_name')" class="w-full h-full flex items-center justify-center">
-                                        participant Name
+                                        Name
                                         @if ($sortField == 'participant_name')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
@@ -191,23 +199,8 @@
 
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('participant_gender')" class="w-full h-full flex items-center justify-center">
-                                        Event Name
+                                        Gender
                                         @if ($sortField == 'participant_gender')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
-
-
-                                
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('participant_comment')" class="w-full h-full flex items-center justify-center">
-                                        Comment
-                                        @if ($sortField == 'participant_comment')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                             @else
@@ -219,7 +212,7 @@
 
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('participant_department')" class="w-full h-full flex items-center justify-center">
-                                        Score
+                                        Department
                                         @if ($sortField == 'participant_department')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
@@ -233,28 +226,23 @@
                             </tr>
                         </thead>
                         <tbody >
-                            @foreach ($participants as $participant)
+                        @foreach ($participants as $participant)
                                 <tr class="hover:bg-gray-100" wire:model="selectedCategory">
-                                    <td class="text-black border border-gray-400">{{ $participant->event->event_name}}</td>
-                                    <td class="text-black border border-gray-400  ">{{ $participant->id }}</td>
-                                    <!-- <td class="text-black border border-gray-400  ">{{ $participant->participant_id }}</td> -->    
+                                    <td class="text-black border border-gray-400  ">{{ $participant->id }}</td> 
+                                    <td class="text-black border border-gray-400">{{ $participant->event->event_name}}</td> 
+                                    <td class="text-black border border-gray-400">{{ $participant->participant_photo}}</td>                          
                                     <td class="text-black border border-gray-400">{{ $participant->participant_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>
-                                    <td class="text-black border border-gray-400">{{ $participant->participant_comment}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_department}}</td>
-                                    
-                                    <!-- <td class="text-black border border-gray-400">{{ $participant->event->name}}</td>
-                                    <td class="text-black border border-gray-400">{{ ucfirst($participant->dept_identifier) }}</td> -->
                                     <td class="text-black border border-gray-400 px-1 py-1">
                                         <div class="flex justify-center items-center space-x-2">
                                             @if($eventToShow && $participant)
                                             <div x-data="{ open: false, 
                                                 id: {{ json_encode($participant->id) }},
                                                     event: {{ json_encode($participant->event_id) }},
-                                                    participant_photo: {{ json_encode($participant->participant_photo) }}
+                                                    participant_photo: {{ json_encode($participant->participant_photo) }},
                                                     participant_name: {{ json_encode($participant->participant_name) }},
                                                     participant_gender: {{ json_encode($participant->participant_gender) }},
-                                                    participant_comment: {{ json_encode($participant->participant_comment) }},
                                                     participant_department: {{ json_encode($participant->participant_department) }},
                                                     }">
                                                 <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
@@ -273,7 +261,7 @@
                                                                 @method('PUT')
                                                                 
                                                                 <div class="mb-2">
-                                                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2 text-left">Event: </label>
+                                                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2 text-left">Event</label>
                                                                         <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
                                                                                 <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
                                                                         </select>
@@ -281,20 +269,20 @@
                                                                     </div>
 
                                                                     <div class="mb-4">
-                                                                        <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2 text-left">participant photo</label>
+                                                                        <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2 text-left">Photo</label>
                                                                         <input type="file" name="participant_photo" id="participant_photo" x-model="participant_photo" value="{{ $participant->participant_photo }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror" required>
                                                                         <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                                                     </div>
                                                                     
                                                                     <div class="mb-4">
-                                                                        <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2 text-left">participant Name</label>
+                                                                        <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Name</label>
                                                                         <input type="text" name="participant_name" id="participant_name" x-model="participant_name" value="{{ $participant->participant_name }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
                                                                         <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
                                                                     </div>
 
                                                                     <div class="mb-2">
                                                                         <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2 text-left">Gender </label>
-                                                                        <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('scoring_type') is-invalid @enderror" required>
+                                                                        <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
                                                                         @if($event->participant_gender === 'male')  
                                                                                 <option value="{{ $event->participant_gender }}">
                                                                                     @if($event->participant_gender == 'male')
@@ -310,17 +298,14 @@
                                                                         <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                                                     </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="participant_comment" class="block text-gray-700 text-md font-bold mb-2 text-left">participant_comment</label>
-                                                                        <input type="text" name="participant_comment" id="participant_comment" x-model="participant_comment" value="{{ $participant->participant_comment }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_comment') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('participant_comment')" class="mt-2" />
-                                                                    </div>
 
                                                                     <div class="mb-4">
-                                                                        <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2 text-left">participant_department</label>
+                                                                        <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2 text-left">Department</label>
                                                                         <input type="text" name="participant_department" id="participant_department" x-model="participant_department" value="{{ $participant->participant_department }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('pparticipant_department') is-invalid @enderror" required>
                                                                         <x-input-error :messages="$errors->get('participant_departmentt')" class="mt-2" />
                                                                     </div>
+
+
 
                                                                     <div class="flex mb-4 mt-10 justify-center">
                                                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
@@ -333,7 +318,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <form id="deleteSelected" action="{{ route('admin.participant.destroy', [':id', ':participant_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_name }}', '{{ $participant->participant_gender }}', '{{ $participant->participant_comment }}', '{{ $participant->participant_department }}',);">
+                                            <form id="deleteSelected" action="{{ route('admin.participant.destroy', [':id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_id }}', '{{ $participant->participant_name }}', '{{ $participant->score }}');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
@@ -378,6 +363,7 @@
             @endif
         @endif
     </div>
+
     <!-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Restrict morning times to 12:00 AM to 11:59 AM

@@ -15,7 +15,7 @@ class ShowCriteriaTable extends Component
 {
     use WithPagination; 
     public $search = '';
-    public $sortField = 'criteria_id';
+    public $sortField = 'id';
     public $sortDirection = 'asc';
     public $selectedEvent = null;
     public $selectedCategory1 = null;
@@ -105,7 +105,6 @@ class ShowCriteriaTable extends Component
             'criterion' => $criterion,
             'events' => $events,
             'categories' => $categories,
-        
             'categoryCounts' => $categoryCounts,
         ]);
     }
@@ -127,7 +126,7 @@ class ShowCriteriaTable extends Component
 public function updateEmployeesByDepartment()
 {
     if ($this->selectedCategory1 && $this->selectedEvent) {
-        $this->categoryToShow = Category::where('category_id', $this->selectedCategory1)
+        $this->categoryToShow = Category::where('id', $this->selectedCategory1)
                                             ->where('event_id', $this->selectedEvent)
                                             ->first();
     } else {
@@ -141,7 +140,7 @@ public function updateEmployeesByDepartment()
     protected function applySearchFilters($query)
     {
         return $query->where(function (Builder $query) {
-            $query->where('criteria_id', 'like', '%' . $this->search . '%')
+            $query->where('id', 'like', '%' . $this->search . '%')
                 ->orWhere('criteria_name', 'like', '%' . $this->search . '%')
                 ->orWhere('criteria_score', 'like', '%' . $this->search . '%')
                 ->orWhereHas('category', function (Builder $query) {

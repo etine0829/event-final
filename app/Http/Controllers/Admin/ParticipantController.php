@@ -109,55 +109,46 @@ class ParticipantController extends Controller
  //     /**
  //      * Update the specified resource in storage.
  //      */
-    //  public function update(Request $request, Participant $participant)
-    //  {
+     public function update(Request $request, Participant $participant)
+     {
          
-    //      if (Auth::user()->hasRole('admin')) {
+         if (Auth::user()->hasRole('admin')) {
  
-    //          try {
-    //              $validatedData = $request->validate([
-    //                 'event_id' => 'required|exists:events,id',
-    //                 'participant_id' => [
-    //                     'required',
-    //                     'string',
-    //                     'max:255',
-    //                     Rule::unique('participant')->where(function ($query) use ($request, $participant) {
-    //                         return $query->where('event_id', $request->event_id)
-    //                                     ->where('id', '<>', $participant->id);
-    //                     }),
-    //                 ],
-    //                 'participant_photo' => 'required|string|max:255',
-    //                 'participant_name' => 'required|string|max:255',
-    //                 'participant_gender' => 'required|string|max:255',
-    //                 'participant_comment' => 'required|string|max:255',
-    //                 'participant_department' => 'required|string|max:255',
-    //              ]);
+             try {
+                 $validatedData = $request->validate([
+                    'event_id' => 'required|exists:events,id',
+                    'participant_photo' => 'required|string|max:255',
+                    'participant_name' => 'required|string|max:255',
+                    'participant_gender' => 'required|string|max:255',
+                    'participant_comment' => 'required|string|max:255',
+                    'participant_department' => 'required|string|max:255',
+                 ]);
                  
-    //              $hasChanges = false;
-    //              if ($request->event_id !== $participant->event_id ||
-    //                  $request->participant_photo !== $participant->participant_photo ||
-    //                  $request->participant_name !== $participant->participant_name ||
-    //                  $request->participant_gender !== $participant->participant_gender ||
-    //                  $request->participant_comment !== $participant->participant_comment ||
-    //                  $request->participant_department !== $participant->participant_department)
-    //              {
-    //                  $hasChanges = true;
-    //              }
+                 $hasChanges = false;
+                 if ($request->event_id !== $participant->event_id ||
+                     $request->participant_photo !== $participant->participant_photo ||
+                     $request->participant_name !== $participant->participant_name ||
+                     $request->participant_gender !== $participant->participant_gender ||
+                     $request->participant_comment !== $participant->participant_comment ||
+                     $request->participant_department !== $participant->participant_department)
+                 {
+                     $hasChanges = true;
+                 }
  
-    //              if (!$hasChanges) {
-    //                  return redirect()->route('admin.participant.index')->with('info', 'No changes were made.');
-    //              }
+                 if (!$hasChanges) {
+                     return redirect()->route('admin.participant.index')->with('info', 'No changes were made.');
+                 }
  
-    //              // Update the participant record
-    //              $participant->update($validatedData);
+                 // Update the participant record
+                 $participant->update($validatedData);
  
-    //              return redirect()->route('admin.participant.index')->with('success', 'participant updated successfully.');
-    //          } catch (ValidationException $e) {
-    //              $errors = $e->errors();
-    //              return redirect()->back()->withErrors($errors)->with('error', $errors['participant_id'][0] ?? 'Validation error');
-    //          }
-    //      }
-    //  }
+                 return redirect()->route('admin.participant.index')->with('success', 'participant updated successfully.');
+             } catch (ValidationException $e) {
+                 $errors = $e->errors();
+                 return redirect()->back()->withErrors($errors)->with('error', $errors['participant_id'][0] ?? 'Validation error');
+             }
+         }
+     }
  //         } else if (Auth::user()->hasRole('admin_staff')) {
          
  //             try {

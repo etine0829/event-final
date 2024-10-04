@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('event_id');
             $table->unsignedBigInteger('category_id');
-            $table->string('criteria_id')->unique();
             $table->string('criteria_name');
             $table->string('criteria_score');
             $table->timestamps();

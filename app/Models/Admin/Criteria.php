@@ -16,7 +16,6 @@ class Criteria extends Model
     protected $fillable = [
         'event_id',
         'category_id',
-        'criteria_id',
         'criteria_name',
         'criteria_score',
     ];
