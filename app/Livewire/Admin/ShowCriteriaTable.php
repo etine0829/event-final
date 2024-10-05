@@ -72,9 +72,13 @@ class ShowCriteriaTable extends Component
         // Apply selected event filter
         if ($this->selectedEvent) {
             $query->where('event_id', $this->selectedEvent);
-            $this->eventToShow = Event::find($this->selectedEvent);
+            $this->eventToShow = Event::findOrFail($this->selectedEvent);
+    
+            // Set the type_of_scoring based on the selected event
+            $this->type_of_scoring = $this->eventToShow->type_of_scoring;
         } else {
-            $this->eventToShow = null; // Reset eventToShow if no school is selected
+            $this->eventToShow = null;
+            $this->type_of_scoring = null; // Reset if no event is selected
         }
 
         // Apply selected category filter
@@ -106,6 +110,7 @@ class ShowCriteriaTable extends Component
             'events' => $events,
             'categories' => $categories,
             'categoryCounts' => $categoryCounts,
+            'type_of_scoring' => $this->type_of_scoring,
         ]);
     }
 

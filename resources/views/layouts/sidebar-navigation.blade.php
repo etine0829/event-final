@@ -78,7 +78,7 @@
                 </li>
                 
                 <li>
-                    <a href="" class="relative flex flex-row items-center h-11 focus:outline-none  hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white pr-6 
+                    <a href="{{ route('register') }}" class="relative flex flex-row items-center h-11 focus:outline-none  hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-green-500 hover:text-white pr-6 
                     ">
                         <span class="inline-flex justify-center items-center ml-4">
                             {{-- <i class="fa-solid fa-gauge-high fa-sm text-gray-200 "></i> --}}

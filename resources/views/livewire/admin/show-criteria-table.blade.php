@@ -121,11 +121,14 @@
                                         <input type="text" name="criteria_name" id="criteria_name" value="{{ old('criteria_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_name') is-invalid @enderror" required>
                                         <x-input-error :messages="$errors->get('criteria_name')" class="mt-2" />
                                     </div>
-                                    <div class="mb-2">
-                                        <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                        <input type="text" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
-                                        <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
-                                    </div>
+
+                                    @if($type_of_scoring === 'points')
+                                        <div class="mb-2">
+                                            <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
+                                            <input type="text" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
+                                            <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
+                                        </div>
+                                    @endif
                                     
                                     </div>
                                     <div class="flex mb-4 mt-10 justify-center">
@@ -188,11 +191,14 @@
                                             <input type="text" name="criteria_name" id="criteria_name" value="{{ old('criteria_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_name') is-invalid @enderror" required>
                                             <x-input-error :messages="$errors->get('criteria_name')" class="mt-2" />
                                         </div>
-                                        <div class="mb-2">
-                                            <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                            <input type="text" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
-                                            <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
-                                        </div>
+
+                                        @if($type_of_scoring === 'points')
+                                            <div class="mb-2">
+                                                <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
+                                                <input type="text" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
+                                                <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
+                                            </div>
+                                        @endif
                                       
                                         </div>
                                         <div class="flex mb-4 mt-10 justify-center">
@@ -347,11 +353,13 @@
                                                                 <x-input-error :messages="$errors->get('criteria_name')" class="mt-2" />
                                                             </div>
 
-                                                            <div class="mb-2">
-                                                                <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                                                <input type="text" name="criteria_score" id="criteria_score" value="{{ $criteria->criteria_score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
-                                                                <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
-                                                            </div>
+                                                            @if($type_of_scoring === 'points')
+                                                                <div class="mb-2">
+                                                                    <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
+                                                                    <input type="text" name="criteria_score" id="criteria_score" value="{{ $criteria->criteria_score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
+                                                                    <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
+                                                                </div>
+                                                            @endif
                                                             
                                                             <div class="flex mb-4 mt-10 justify-center">
                                                                 <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
@@ -405,9 +413,9 @@
             
             <text  class="font-bold uppercase">{{ $criterion->links() }}</text>
         @endif
-    @else
+ 
         
-    @endif
+    @endif  
    
 </div>
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('event_id');
             $table->unsignedBigInteger('category_id');
             $table->string('criteria_name');
-            $table->string('criteria_score');
+            $table->string('criteria_score')->nullable();
             $table->timestamps();
 
             $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');

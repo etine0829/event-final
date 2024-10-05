@@ -31,10 +31,10 @@
                         <option value="admin">Admin</option>
                     @endif
                     <option selected>Select Role</option>
-                    <option value="employee">Employee</option>
-                    <option value="student">Student</option>
-                    <option value="admin_staff">Admin Staff</option>
-                    <option value="hr">HR</option>
+                    <option value="judge">Judge</option>
+                    <option value="event_manager">Event Manager</option>
+                    <option value="staff">Staff</option>
+                   
                 </select>
 
                 @error('role')

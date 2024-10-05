@@ -40,7 +40,7 @@ class CategoryController extends Controller
         $validatedData = $request->validate([
             'event_id' => 'required|exists:events,id',
             'category_name' => 'required|string|max:255',
-            'score' => 'required|string|max:255',
+            'score' => 'nullable|string|max:255',
         ]);
 
         // Attempt to create the Category record
@@ -122,32 +122,35 @@ class CategoryController extends Controller
                                         ->where('id', '<>', $category->id);
                         }),
                     ],
-                    'score' => 'required|string|max:255',
+                    'score' => 'nullable|string|max:255',
                     
                 ]);
                 
-                $hasChanges = false;
-                if ($request->event_id !== $category->event_id ||
-                    $request->category_name !== $category->category_name ||
-                    $request->score !== $category->score ) 
-                {
-                    $hasChanges = true;
-                }
+                 // Check if any changes were made
+            $hasChanges = $request->event_id !== $category->event_id ||
+            $request->category_name !== $category->category_name ||
+            $request->score !== $category->score;
 
                 if (!$hasChanges) {
-                    return redirect()->route('admin.category.index')->with('info', 'No changes were made.');
+                return redirect()->route('admin.category.index')->with('info', 'No changes were made.');
                 }
 
                 // Update the category record
                 $category->update($validatedData);
 
-                return redirect()->route('admin.category.index')->with('success', 'category updated successfully.');
-            } catch (ValidationException $e) {
-                $errors = $e->errors();
-                return redirect()->back()->withErrors($errors)->with('error', $errors['id'][0] ?? 'Validation error');
-            }
-        }
-    }
+                return redirect()->route('admin.category.index')->with('success', 'Category updated successfully.');
+                } catch (ValidationException $e) {
+                // Return all validation errors to the user
+                return redirect()->back()->withErrors($e->errors())->with('error', 'Validation error occurred.');
+                } catch (\Exception $e) {
+                // Catch any other errors
+                return redirect()->route('admin.category.index')->with('error', 'An error occurred: ' . $e->getMessage());
+                }
+                }
+
+                // Handle unauthorized access
+                return redirect()->route('admin.category.index')->with('error', 'Unauthorized action.');
+                }
 //         } else if (Auth::user()->hasRole('admin_staff')) {
         
 //             try {

@@ -39,7 +39,7 @@ class CriteriaController extends Controller
             'event_id' => 'required|exists:events,id',
             'category_id' => 'required|exists:category,id',
             'criteria_name' => 'required|string|max:255',
-            'criteria_score' => 'required|string|max:255',
+            'criteria_score' => 'nullable|string|max:255',
         ]);
 
         // Check if a criteria with the same criteria_name already exists
@@ -80,7 +80,7 @@ class CriteriaController extends Controller
             'event_id' => 'required|exists:events,id',
             'category_id' => 'required|exists:category,id',
             'criteria_name' => 'required|string|max:255',
-            'criteria_score' => 'required|string|max:255',
+            'criteria_score' => 'nullable|string|max:255',
         ]);
 
         // Find the existing criteria record

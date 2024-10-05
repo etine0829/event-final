@@ -69,8 +69,8 @@
                             <p class="text-xl font-bold">Add Participant</p>
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
-                        <div class="mb-4">
-                            <form action="{{ route('admin.participant.store') }}" method="POST" class="">
+                        <div class="mb-4" id="dynamicInput">
+                            <!-- <form action="{{ route('admin.participant.store') }}" method="POST" class="">
                             <x-caps-lock-detector />
                                 @csrf
                                     <div class="mb-2">
@@ -108,13 +108,71 @@
                                         <input type="text" name="participant_department" id="participant_department" value="{{ old('participant_department') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_department') is-invalid @enderror" required>
                                         <x-input-error :messages="$errors->get('participant_department')" class="mt-2" />
                                     </div>
-
-                                <div class="flex mb-4 mt-10 justify-center">
+                                    <div class="flex  mt-5 justify-center">
+                                        <button type="button" class="w-80 bg-green-500 text-white px-4 py-2 rounded-md" id="addContestant">
+                                            Add Contestant
+                                        </button>
+                                    </div>
+                                <div class="flex mb-4 mt-5 justify-center">
                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                         Save
                                     </button>
                                 </div>
-                            </form>
+                            </form> -->
+                            <form action="{{ route('admin.participant.store') }}" method="POST" class="">
+                            <x-caps-lock-detector />
+                            @csrf
+
+                            <div id="contestant-fields">
+                                <div class="contestant mb-2">
+                                    <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
+                                    <select id="event_id" name="event_id[]" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id.*') is-invalid @enderror" required>
+                                        <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
+                                    </select>
+                                    <x-input-error :messages="$errors->get('event_id.*')" class="mt-2" />
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
+                                    <input type="file" name="participant_photo[]" id="participant_photo" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo.*') is-invalid @enderror" required autofocus>
+                                    <x-input-error :messages="$errors->get('participant_photo.*')" class="mt-2" />
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
+                                    <input type="text" name="participant_name[]" id="participant_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name.*') is-invalid @enderror" required>
+                                    <x-input-error :messages="$errors->get('participant_name.*')" class="mt-2" />
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Gender</label>
+                                    <select id="participant_gender" name="participant_gender[]" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender.*') is-invalid @enderror" required>
+                                        <option value="">Select Option</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
+                                    <x-input-error :messages="$errors->get('participant_gender.*')" class="mt-2" />
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2">Department</label>
+                                    <input type="text" name="participant_department[]" id="participant_department" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_department.*') is-invalid @enderror" required>
+                                    <x-input-error :messages="$errors->get('participant_department.*')" class="mt-2" />
+                                </div>
+                            </div>
+
+                            <div class="flex mt-5 justify-center">
+                                <button type="button" class="w-80 bg-green-500 text-white px-4 py-2 rounded-md" id="addContestant">
+                                    Add Fields
+                                </button>
+                            </div>
+                            
+                            <div class="flex mb-4 mt-5 justify-center">
+                                <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
+                                    Save
+                                </button>
+                            </div>
+                        </form>
                         </div>
                     </div>
                 </div>
@@ -298,14 +356,11 @@
                                                                         <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                                                     </div>
 
-
                                                                     <div class="mb-4">
                                                                         <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2 text-left">Department</label>
                                                                         <input type="text" name="participant_department" id="participant_department" x-model="participant_department" value="{{ $participant->participant_department }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('pparticipant_department') is-invalid @enderror" required>
                                                                         <x-input-error :messages="$errors->get('participant_departmentt')" class="mt-2" />
                                                                     </div>
-
-
 
                                                                     <div class="flex mb-4 mt-10 justify-center">
                                                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
@@ -481,6 +536,20 @@
 
     </script>
 
-
+<script>
+document.getElementById('addContestant').addEventListener('click', function() {
+    const fieldsContainer = document.getElementById('contestant-fields');
+    const newContestant = fieldsContainer.children[0].cloneNode(true);
+    
+    // Clear the values of the cloned fields
+    const inputs = newContestant.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('is-invalid'); // Remove any error styling
+    });
+    
+    fieldsContainer.appendChild(newContestant);
+});
+</script>
 
 @endif

@@ -87,11 +87,13 @@
                                         <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
                                     </div>                                  
 
-                                    <div class="mb-2">
-                                        <label for="score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                        <input type="number" name="score" id="score" value="{{ old('score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
-                                        <x-input-error :messages="$errors->get('score')" class="mt-2" />
-                                    </div>
+                                    @if($type_of_scoring === 'points')
+                                        <div class="mb-2" id="scoreContainer">
+                                            <label for="score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
+                                            <input type="number" name="score" id="score" value="{{ old('score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
+                                            <x-input-error :messages="$errors->get('score')" class="mt-2" />
+                                        </div>
+                                    @endif
 
                                 <div class="flex mb-4 mt-10 justify-center">
                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
@@ -229,11 +231,13 @@
                                                                         <x-input-error :messages="$errors->get('category_name')" class="mt-2" />
                                                                     </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="score" class="block text-gray-700 text-md font-bold mb-2 text-left">Score</label>
-                                                                        <input type="text" name="score" id="score" x-model="score" value="{{ $category->score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('score')" class="mt-2" />
-                                                                    </div>
+                                                                    @if($type_of_scoring === 'points')
+                                                                        <div class="mb-4" id="scoreContainer">
+                                                                            <label for="score" class="block text-gray-700 text-md font-bold mb-2 text-left">Score</label>
+                                                                            <input type="text" name="score" id="score" x-model="score" value="{{ $category->score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
+                                                                            <x-input-error :messages="$errors->get('score')" class="mt-2" />
+                                                                        </div>
+                                                                    @endif
 
                                                                     <div class="flex mb-4 mt-10 justify-center">
                                                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
@@ -291,45 +295,31 @@
             @endif
         @endif
     </div>
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Restrict morning times to 12:00 AM to 11:59 AM
-            var morningStartTime = document.getElementById('morning_start_time');
-            var morningEndTime = document.getElementById('morning_end_time');
 
-            morningStartTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] >= 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 AM and 11:59 AM');
-                }
-            });
+   <!-- <script>
+            document.addEventListener('DOMContentLoaded', function () {
+        const eventSelect = document.getElementById('event_id');
+        const scoreContainer = document.getElementById('scoreContainer');
 
-            morningEndTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] >= 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 AM and 11:59 AM');
-                }
-            });
+        // Hide or show the score input based on scoring type
+        function toggleScoreVisibility() {
+            const selectedEvent = eventSelect.options[eventSelect.selectedIndex];
+            const scoringType = selectedEvent.getAttribute('data-scoring');
 
-            // Restrict afternoon times to 12:00 PM to 11:59 PM
-            var afternoonStartTime = document.getElementById('afternoon_start_time');
-            var afternoonEndTime = document.getElementById('afternoon_end_time');
+            if (scoringType === 'ranking') {
+                scoreContainer.style.display = 'none'; // Hide score input
+            } else {
+                scoreContainer.style.display = 'block'; // Show score input
+            }
+        }
 
-            afternoonStartTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] < 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 PM and 11:59 PM');
-                }
-            });
+        // Initial check
+        toggleScoreVisibility();
 
-            afternoonEndTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] < 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 PM and 11:59 PM');
-                }
-            });
-        });
-    </script> -->
+        // Add event listener if the event selection changes
+        eventSelect.addEventListener('change', toggleScoreVisibility);
+    });
+    </script>  -->
 
     <script>
 

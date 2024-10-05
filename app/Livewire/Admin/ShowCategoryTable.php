@@ -37,7 +37,7 @@ class ShowCategoryTable extends Component
 
     public function updatingSelectedEvent()
     {
-        $this->resetPage();
+        $this->resetPage();      
     }
     
 
@@ -64,8 +64,12 @@ public function render()
         if ($this->selectedEvent) {
             $query->where('event_id', $this->selectedEvent);
             $this->eventToShow = Event::findOrFail($this->selectedEvent);
+    
+            // Set the type_of_scoring based on the selected event
+            $this->type_of_scoring = $this->eventToShow->type_of_scoring;
         } else {
-            $this->eventToShow = null; // Reset schoolToShow if no school is selected
+            $this->eventToShow = null;
+            $this->type_of_scoring = null; // Reset if no event is selected
         }
 
         $categories = $query->orderBy($this->sortField, $this->sortDirection)
@@ -83,6 +87,7 @@ public function render()
             'categories' => $categories,
             'events' => $events,
             'categoryCounts' => $categoryCounts,
+            'type_of_scoring' => $this->type_of_scoring,
         ]);
     }
 

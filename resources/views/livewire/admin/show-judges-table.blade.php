@@ -70,54 +70,54 @@
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4">
-                            <form action="{{ route('admin.judge.index') }}" method="POST" class="">
-                            <x-caps-lock-detector />
-                                @csrf
-                                    <div class="mb-2">
-                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event: </label>
-                                        <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
-                                                <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
-                                        </select>
-                                        <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
-                                    </div>
-                                    
-                                    <div class="mb-4">
-                                        <label for="name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
-                                        <!-- <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_name') is-invalid @enderror" required autofocus> -->
-                                        <input type="text" name="name" id="name" value="{{ old('name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required autofocus>
-                                        <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                                    </div>
-                                    
-                                    <div class="mb-4">
-                                        <label for="picture" class="block text-gray-700 text-md font-bold mb-2">Picture</label>
-                                        <!-- <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_name') is-invalid @enderror" required autofocus> -->
-                                        <input type="text" name="picture" id="picture" value="{{ old('picture') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('picture') is-invalid @enderror" required autofocus>
-                                        <x-input-error :messages="$errors->get('picture')" class="mt-2" />
-                                    
+                        <form action="{{ route('admin.judge.store') }}" method="POST">
+                            @csrf
+                            <div class="mb-2">
+                                <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event: </label>
+                                <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
+                                    <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
+                                <input type="text" name="name" id="name" value="{{ old('name') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required>
+                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="picture" class="block text-gray-700 text-md font-bold mb-2">Picture</label>
+                                <input type="text" name="picture" id="picture" value="{{ old('picture') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('picture') is-invalid @enderror">
+                                <x-input-error :messages="$errors->get('picture')" class="mt-2" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="email" class="block text-gray-700 text-md font-bold mb-2">Email</label>
+                                <input type="email" name="email" id="email" value="{{ old('email') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') is-invalid @enderror" required>
+                                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="block text-gray-700 text-md font-bold mb-2">Password</label>
+                                <input type="password" name="password" id="password" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('password') is-invalid @enderror" required>
+                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password_confirmation" class="block text-gray-700 text-md font-bold mb-2">Confirm Password</label>
+                                <input type="password" name="password_confirmation" id="password_confirmation" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                            </div>
+
+                            <div class="flex mb-4 mt-5 justify-center">
+                                <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
+                                    Save
+                                </button>
+                            </div>
+                        </form>
 
 
-                                    </div>
-                                        <label for="email" class="block text-gray-700 text-md font-bold mb-2">Email</label>
-                                        <!-- <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_name') is-invalid @enderror" required autofocus> -->
-                                        <input type="email" name="email" id="email" value="{{ old('email') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') is-invalid @enderror" required autofocus>
-                                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                                    <div>
-
-                                    </div>
-                                        <label for="password" class="block text-gray-700 text-md font-bold mb-2">Password</label>
-                                        <!-- <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_name') is-invalid @enderror" required autofocus> -->
-                                        <input type="password" name="password" id="password" value="{{ old('password') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('password') is-invalid @enderror" required autofocus>
-                                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                                    <div>
-
-                                    </div>
-
-                                    <div class="flex mb-4 mt-5 justify-center">
-                                        <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
-                                            Save
-                                        </button>
-                                    </div>
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -175,6 +175,19 @@
                                 </th>
 
                                 <th class="border border-gray-400 px-3 py-2">
+                                    <button wire:click="sortBy('name')" class="w-full h-full flex items-center justify-center">
+                                        Name
+                                        @if ($sortField == 'name')
+                                            @if ($sortDirection == 'asc')
+                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                            @else
+                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                            @endif
+                                        @endif
+                                    </button>
+                                </th>
+
+                                <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('email')" class="w-full h-full flex items-center justify-center">
                                         Email
                                         @if ($sortField == 'email')
@@ -186,31 +199,19 @@
                                         @endif
                                     </button>
                                 </th>
-                                
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('password')" class="w-full h-full flex items-center justify-center">
-                                        Password
-                                        @if ($sortField == 'score')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
+
                                 <th class="border border-gray-400 px-3 py-2">Action</th>
                             </tr>
                         </thead>
                         <tbody >
-                            @foreach ($judges as $category)
+                            @foreach ($judges as $judge)
                                 <tr class="hover:bg-gray-100" wire:model="selectedCategory">
                                     <td class="text-black border border-gray-400  ">{{ $judge->id }}</td>
                                     <!-- <td class="text-black border border-gray-400  ">{{ $judge->judge_id }}</td> -->
                                     <td class="text-black border border-gray-400">{{ $judge->name}}</td>
                                     <td class="text-black border border-gray-400">{{ $judge->picture}}</td>
                                     <td class="text-black border border-gray-400">{{ $judge->email}}</td>
-                                    <td class="text-black border border-gray-400">{{ $judge->password}}</td>
+                                    <!-- <td class="text-black border border-gray-400">{{ $judge->password}}</td> -->
                                     
                                     <!-- <td class="text-black border border-gray-400">{{ $judge->event->name}}</td>
                                     <td class="text-black border border-gray-400">{{ ucfirst($judge->dept_identifier) }}</td> -->
@@ -234,8 +235,7 @@
                                                             <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                         </div>
                                                         <div class="mb-4">
-                                                            <form id="Form" action="" method="POST" class="">
-                                                            <!-- <form id="Form" action="{{ route('admin.judge.update', $judge->id )}}" method="POST" class=""> -->
+                                                            <form id="updateCategoryForm" action="{{ route('admin.judge.update', $judge->id )}}" method="POST" class="">
                                                                 <x-caps-lock-detector />
                                                                 @csrf
                                                                 @method('PUT')
@@ -248,20 +248,27 @@
                                                                         <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                                                     </div>
                                                                     <div class="mb-4">
-                                                                        <label for="judge_id" class="block text-gray-700 text-md font-bold mb-2 text-left">judge ID</label>
-                                                                        <input type="text" name="judge_id" id="judge_id" x-model="judge_id" value="{{ $judge->judge_id }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('judge_id') is-invalid @enderror" required autofocus>
-                                                                        <x-input-error :messages="$errors->get('judge_id')" class="mt-2" />
-                                                                    </div>
-                                                                    <div class="mb-4">
-                                                                        <label for="judge_name" class="block text-gray-700 text-md font-bold mb-2 text-left">judge Name</label>
-                                                                        <input type="text" name="judge_name" id="judge_name" x-model="judge_name" value="{{ $judge->judge_name }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('judge_name') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('judge_name')" class="mt-2" />
+                                                                        <label for="name" class="block text-gray-700 text-md font-bold mb-2 text-left">Name</label>
+                                                                        <input type="text" name="name" id="name" x-model="name" value="{{ $judge->name }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required autofocus>
+                                                                        <x-input-error :messages="$errors->get('name')" class="mt-2" />
                                                                     </div>
 
                                                                     <div class="mb-4">
-                                                                        <label for="score" class="block text-gray-700 text-md font-bold mb-2 text-left">Score</label>
-                                                                        <input type="text" name="score" id="score" x-model="score" value="{{ $judge->score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('score')" class="mt-2" />
+                                                                        <label for="picture" class="block text-gray-700 text-md font-bold mb-2 text-left">Picture</label>
+                                                                        <input type="text" name="picture" id="picture" x-model="picture" value="{{ $judge->picture }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('picture') is-invalid @enderror" required autofocus>
+                                                                        <x-input-error :messages="$errors->get('picture')" class="mt-2" />
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="email" class="block text-gray-700 text-md font-bold mb-2 text-left">Email</label>
+                                                                        <input type="text" name="email" id="email" x-model="email" value="{{ $judge->email }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="password" class="block text-gray-700 text-md font-bold mb-2 text-left">Password</label>
+                                                                        <input type="text" name="password" id="password" x-model="password" value="{{ $judge->password }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('password') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
                                                                     </div>
 
                                                                     <div class="flex mb-4 mt-10 justify-center">
