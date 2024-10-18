@@ -7,8 +7,10 @@ use \App\Models\Admin\Participant;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
+
 class ShowParticipantTable extends Component
 {
+    
     use WithPagination;
 
     public $search = '';
@@ -29,13 +31,13 @@ class ShowParticipantTable extends Component
     public function mount()
     {
         $this->selectedEvent = session('selectedEvent', null);
-        $this->participantToShow = collect([]); // Initialize as an empty collection
-        $this->eventToShow = collect([]); // Initialize as an empty collection
+        $this->participantToShow = collect([]);
+        $this->eventToShow = collect([]); 
     }
 
     public function updatingSelectedEvent()
     {
-        $this->resetPage();
+        $this->resetPage();      
     }
     
 
@@ -62,8 +64,12 @@ public function render()
         if ($this->selectedEvent) {
             $query->where('event_id', $this->selectedEvent);
             $this->eventToShow = Event::findOrFail($this->selectedEvent);
+    
+            // Set the type_of_scoring based on the selected event
+            $this->type_of_scoring = $this->eventToShow->type_of_scoring;
         } else {
-            $this->eventToShow = null; // Reset schoolToShow if no school is selected
+            $this->eventToShow = null;
+            $this->type_of_scoring = null; // Reset if no event is selected
         }
 
         $participants = $query->orderBy($this->sortField, $this->sortDirection)
@@ -72,7 +78,7 @@ public function render()
         $events = Event::all();
 
 
-         $participantCounts = Participant::select('event_id', \DB::raw('count(*) as participant_count'))
+        $participantCounts = Participant::select('event_id', \DB::raw('count(*) as participant_count'))
                                   ->groupBy('event_id')
                                   ->get()
                                   ->keyBy('event_id');
@@ -81,6 +87,7 @@ public function render()
             'participants' => $participants,
             'events' => $events,
             'participantCounts' => $participantCounts,
+            
         ]);
     }
 
@@ -98,21 +105,24 @@ public function render()
     }
 
     protected function applySearchFilters($query)
-{
-    return $query->where(function (Builder $query) {
-        $query->where('id', 'like', '%' . $this->search . '%')
-            ->orWhere('participant_photo', 'like', '%' . $this->search . '%')        
-            ->orWhere('participant_name', 'like', '%' . $this->search . '%')
-            ->orWhere('participant_gender', 'like', '%' . $this->search . '%')
-            ->orWhere('participant_comment', 'like', '%' . $this->search . '%')
-            ->orWhere('participant_department', 'like', '%' . $this->search . '%')
-            ->orWhereHas('event', function (Builder $query) {
-                $query->where('event_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('venue', 'like', '%' . $this->search . '%')
-                    ->orWhere('type_of_scoring', 'like', '%' . $this->search . '%');
-            });
-    });
-}
+    {
+        return $query->where(function (Builder $query) {
+            $query->where('id', 'like', '%' . $this->search . '%')
+                ->orWhere('participant_photo', 'like', '%' . $this->search . '%')        
+                ->orWhere('participant_name', 'like', '%' . $this->search . '%')
+                ->orWhere('participant_gender', 'like', '%' . $this->search . '%')
+                ->orWhere('participant_comment', 'like', '%' . $this->search . '%')
+                ->orWhere('custom_label_1', 'like', '%' . $this->search . '%')
+                ->orWhere('custom_value_1', 'like', '%' . $this->search . '%')
+                ->orWhere('custom_label_2', 'like', '%' . $this->search . '%')
+                ->orWhere('custom_value_2', 'like', '%' . $this->search . '%')
+                ->orWhereHas('event', function (Builder $query) {
+                    $query->where('event_name', 'like', '%' . $this->search . '%')
+                        ->orWhere('venue', 'like', '%' . $this->search . '%')
+                        ->orWhere('type_of_scoring', 'like', '%' . $this->search . '%');
+                });
+        });
+    }
 
-    
-}	
+        
+    }	

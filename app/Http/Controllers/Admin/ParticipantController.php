@@ -35,23 +35,25 @@ class ParticipantController extends Controller
  {   
      if (Auth::user()->hasRole('admin')) {
  
-         // // Log the incoming request data for debugging
-         // \Log::info('participant Store Request Data:', $request->all());
+        //  // // Log the incoming request data for debugging
+        //  \Log::info('Category Store Request Data:', $request->all());
  
          $validatedData = $request->validate([
-             'event_id' => 'required|exists:events,id',
-             'participant_photo' => 'required|string|max:255',
-             'participant_name' => 'required|string|max:255',
-             'participant_gender' => 'required|string|max:255',
-             'participant_comment' => 'required|string|max:255',
-             'participant_department' => 'required|string|max:255',
+            'event_id' => 'required|exists:events,id',
+            'participant_photo' => 'nullable|string|max:255',
+            'participant_name' => 'required|string|max:255',
+            'participant_gender' => 'required|string|max:255',
+            'participant_comment' => 'nullable|string|max:255',
+            'custom_label_1' => 'nullable|string|max:255',
+            'custom_label_2' => 'nullable|string|max:255',
+            'custom_value_1' => 'nullable|string|max:255',
+            'custom_value_2' => 'nullable|string|max:255', 
          ]);
- 
          // Attempt to create the participant record
          try {
              Participant::create($validatedData);
              return redirect()->route('admin.participant.index')
-                 ->with('success', 'participant created successfully.');
+                 ->with('success', 'Participant created successfully.');
          } catch (\Exception $e) {
              return redirect()->route('admin.participant.index')->with('error', 'Failed to create participant: ' . $e->getMessage());
          }
@@ -109,46 +111,55 @@ class ParticipantController extends Controller
  //     /**
  //      * Update the specified resource in storage.
  //      */
-     public function update(Request $request, Participant $participant)
-     {
-         
-         if (Auth::user()->hasRole('admin')) {
- 
-             try {
-                 $validatedData = $request->validate([
+    public function update(Request $request, Participant $participant)
+    {
+        if (Auth::user()->hasRole('admin')) {
+    
+            try {
+                // Check if changes exist before validation
+                $hasChanges = false;
+                if ($request->event_id !== $participant->event_id ||
+                    $request->participant_photo !== $participant->participant_photo ||
+                    $request->participant_name !== $participant->participant_name ||
+                    $request->participant_gender !== $participant->participant_gender ||
+                    $request->participant_comment !== $participant->participant_comment ||
+                    $request->custom_label_1 !== $participant->custom_label_1 ||
+                    $request->custom_value_1 !== $participant->custom_value_1 ||
+                    $request->custom_label_2 !== $participant->custom_label_2 ||
+                    $request->custom_value_2 !== $participant->custom_value_2)
+                {
+                    $hasChanges = true;
+                }
+    
+                // If no changes detected, return with info message
+                if (!$hasChanges) {
+                    return redirect()->route('admin.participant.index')->with('info', 'No changes were made.');
+                }
+    
+                // If changes exist, then validate the input
+                $validatedData = $request->validate([
                     'event_id' => 'required|exists:events,id',
-                    'participant_photo' => 'required|string|max:255',
+                    'participant_photo' => 'nullable|string|max:255',
                     'participant_name' => 'required|string|max:255',
-                    'participant_gender' => 'required|string|max:255',
-                    'participant_comment' => 'required|string|max:255',
-                    'participant_department' => 'required|string|max:255',
-                 ]);
-                 
-                 $hasChanges = false;
-                 if ($request->event_id !== $participant->event_id ||
-                     $request->participant_photo !== $participant->participant_photo ||
-                     $request->participant_name !== $participant->participant_name ||
-                     $request->participant_gender !== $participant->participant_gender ||
-                     $request->participant_comment !== $participant->participant_comment ||
-                     $request->participant_department !== $participant->participant_department)
-                 {
-                     $hasChanges = true;
-                 }
- 
-                 if (!$hasChanges) {
-                     return redirect()->route('admin.participant.index')->with('info', 'No changes were made.');
-                 }
- 
-                 // Update the participant record
-                 $participant->update($validatedData);
- 
-                 return redirect()->route('admin.participant.index')->with('success', 'participant updated successfully.');
-             } catch (ValidationException $e) {
-                 $errors = $e->errors();
-                 return redirect()->back()->withErrors($errors)->with('error', $errors['participant_id'][0] ?? 'Validation error');
-             }
-         }
-     }
+                    'participant_gender' => 'required|in:Male,Female',
+                    'participant_comment' => 'nullable|string|max:255',
+                    'custom_label_1' => 'nullable|string|max:255',
+                    'custom_label_2' => 'nullable|string|max:255',
+                    'custom_value_1' => 'nullable|string|max:255',
+                    'custom_value_2' => 'nullable|string|max:255',
+                ]);
+    
+                // Update the participant record
+                $participant->update($validatedData);
+    
+                return redirect()->route('admin.participant.index')->with('success', 'Participant updated successfully.');
+            } catch (ValidationException $e) {
+                $errors = $e->errors();
+                return redirect()->back()->withErrors($errors)->with('error', $errors['participant_id'][0] ?? 'Validation error');
+            }
+        }
+    }
+    
  //         } else if (Auth::user()->hasRole('admin_staff')) {
          
  //             try {

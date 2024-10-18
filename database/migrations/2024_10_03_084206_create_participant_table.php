@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('participant_name');
             $table->string('participant_gender');
             $table->string('participant_comment')->nullable();
-            $table->string('participant_department');
 
             $table->timestamps();
 

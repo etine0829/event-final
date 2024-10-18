@@ -70,7 +70,7 @@
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4" id="dynamicInput">
-                            <!-- <form action="{{ route('admin.participant.store') }}" method="POST" class="">
+                            <form action="{{ route('admin.participant.store') }}" method="POST" class="">
                             <x-caps-lock-detector />
                                 @csrf
                                     <div class="mb-2">
@@ -82,7 +82,7 @@
                                     </div>
                                     <div class="mb-2">
                                         <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
-                                        <input type="file" name="participant_photo" id="participant_photo" value="{{ old('participant_photo') }}" class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror" required autofocus>
+                                        <input type="file" name="participant_photo" id="participant_photo" value="{{ old('participant_photo') }}" class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror" >
                                         <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                     </div>
 
@@ -102,77 +102,70 @@
                                         <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                     </div> 
 
+                                    <!-- <div class="mb-2">
+                                        <label for="custom_label_1" class="block text-gray-700 text-md font-bold mb-2">Label 1</label>
+                                        <input type="text" name="custom_label_1" id="custom_label_1" value="{{ old('custom_label_1') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_1') is-invalid @enderror" required>
+                                        <x-input-error :messages="$errors->get('custom_label_1')" class="mt-2" />
+                                    </div>
 
                                     <div class="mb-2">
-                                        <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2">Department</label>
-                                        <input type="text" name="participant_department" id="participant_department" value="{{ old('participant_department') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_department') is-invalid @enderror" required>
-                                        <x-input-error :messages="$errors->get('participant_department')" class="mt-2" />
+                                        <label for="custom_value_1" class="block text-gray-700 text-md font-bold mb-2">Value 1</label>
+                                        <input type="text" name="custom_value_1" id="custom_value_1" value="{{ old('custom_value_1') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_1') is-invalid @enderror" required>
+                                        <x-input-error :messages="$errors->get('custom_value_1')" class="mt-2" />
                                     </div>
-                                    <div class="flex  mt-5 justify-center">
-                                        <button type="button" class="w-80 bg-green-500 text-white px-4 py-2 rounded-md" id="addContestant">
-                                            Add Contestant
+
+                                    <div class="mb-2">
+                                        <label for="custom_label_2" class="block text-gray-700 text-md font-bold mb-2">Label 2</label>
+                                        <input type="text" name="custom_label_2" id="custom_label_2" value="{{ old('custom_label_2') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_2') is-invalid @enderror">
+                                        <x-input-error :messages="$errors->get('custom_label_2')" class="mt-2" />
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="custom_value_2" class="block text-gray-700 text-md font-bold mb-2">Label 2</label>
+                                        <input type="text" name="custom_value_2" id="custom_value_2" value="{{ old('custom_value_2') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_2') is-invalid @enderror">
+                                        <x-input-error :messages="$errors->get('custom_value_2')" class="mt-2" />
+                                    </div> -->
+
+                                     <!-- Hidden Custom Fields -->
+
+                                    <div class="mb-2 hidden" id="customField1">
+                                        <label for="custom_label_1" class="block text-gray-700 text-md font-bold mb-2">Label 1</label>
+                                        <input type="text" name="custom_label_1" id="custom_label_1" value="{{ old('custom_label_1') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_1') is-invalid @enderror">
+                                        <x-input-error :messages="$errors->get('custom_label_1')" class="mt-2" />
+                                    </div>
+
+                                    <div class="mb-2 hidden" id="customValue1">
+                                        <label for="custom_value_1" class="block text-gray-700 text-md font-bold mb-2">Value 1</label>
+                                        <input type="text" name="custom_value_1" id="custom_value_1" value="{{ old('custom_value_1') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_1') is-invalid @enderror">
+                                        <x-input-error :messages="$errors->get('custom_value_1')" class="mt-2" />
+                                    </div>
+
+                                    <div class="mb-2 hidden" id="customField2">
+                                        <label for="custom_label_2" class="block text-gray-700 text-md font-bold mb-2">Label 2</label>
+                                        <input type="text" name="custom_label_2" id="custom_label_2" value="{{ old('custom_label_2') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_2') is-invalid @enderror">
+                                        <x-input-error :messages="$errors->get('custom_label_2')" class="mt-2" />
+                                    </div>
+
+                                    <div class="mb-2 hidden" id="customValue2">
+                                        <label for="custom_value_2" class="block text-gray-700 text-md font-bold mb-2">Value 2</label>
+                                        <input type="text" name="custom_value_2" id="custom_value_2" value="{{ old('custom_value_2') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_2') is-invalid @enderror">
+                                        <x-input-error :messages="$errors->get('custom_value_2')" class="mt-2" />
+                                    </div>
+
+                                    <!-- Add Fields Button -->
+                                    <div class="flex mb-4 mt-5 justify-center">
+                                        <button type="button" class="w-80 bg-green-500 text-white px-4 py-2 rounded-md" id="addFieldsButton">
+                                            Add Fields
                                         </button>
                                     </div>
-                                <div class="flex mb-4 mt-5 justify-center">
-                                    <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
-                                        Save
-                                    </button>
-                                </div>
-                            </form> -->
-                            <form action="{{ route('admin.participant.store') }}" method="POST" class="">
-                            <x-caps-lock-detector />
-                            @csrf
 
-                            <div id="contestant-fields">
-                                <div class="contestant mb-2">
-                                    <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
-                                    <select id="event_id" name="event_id[]" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id.*') is-invalid @enderror" required>
-                                        <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
-                                    </select>
-                                    <x-input-error :messages="$errors->get('event_id.*')" class="mt-2" />
-                                </div>
-
-                                <div class="mb-2">
-                                    <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
-                                    <input type="file" name="participant_photo[]" id="participant_photo" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo.*') is-invalid @enderror" required autofocus>
-                                    <x-input-error :messages="$errors->get('participant_photo.*')" class="mt-2" />
-                                </div>
-
-                                <div class="mb-2">
-                                    <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
-                                    <input type="text" name="participant_name[]" id="participant_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name.*') is-invalid @enderror" required>
-                                    <x-input-error :messages="$errors->get('participant_name.*')" class="mt-2" />
-                                </div>
-
-                                <div class="mb-2">
-                                    <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Gender</label>
-                                    <select id="participant_gender" name="participant_gender[]" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender.*') is-invalid @enderror" required>
-                                        <option value="">Select Option</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                    </select>
-                                    <x-input-error :messages="$errors->get('participant_gender.*')" class="mt-2" />
-                                </div>
-
-                                <div class="mb-2">
-                                    <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2">Department</label>
-                                    <input type="text" name="participant_department[]" id="participant_department" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_department.*') is-invalid @enderror" required>
-                                    <x-input-error :messages="$errors->get('participant_department.*')" class="mt-2" />
-                                </div>
-                            </div>
-
-                            <div class="flex mt-5 justify-center">
-                                <button type="button" class="w-80 bg-green-500 text-white px-4 py-2 rounded-md" id="addContestant">
-                                    Add Fields
-                                </button>
-                            </div>
-                            
-                            <div class="flex mb-4 mt-5 justify-center">
-                                <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
-                                    Save
-                                </button>
-                            </div>
-                        </form>
+                                    
+                                    <div class="flex mb-4 mt-5 justify-center">
+                                        <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
+                                            Save
+                                        </button>
+                                    </div>
+                            </form> 
                         </div>
                     </div>
                 </div>
@@ -269,9 +262,9 @@
                                 </th>
 
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('participant_department')" class="w-full h-full flex items-center justify-center">
-                                        Department
-                                        @if ($sortField == 'participant_department')
+                                    <button wire:click="sortBy('custom_label_1')" class="w-full h-full flex items-center justify-center">
+                                        Label 1
+                                        @if ($sortField == 'custom_label_1')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                             @else
@@ -280,6 +273,47 @@
                                         @endif
                                     </button>
                                 </th>
+
+                                <th class="border border-gray-400 px-3 py-2">
+                                    <button wire:click="sortBy('custom_value_1')" class="w-full h-full flex items-center justify-center">
+                                        Value 1
+                                        @if ($sortField == 'custom_value_1')
+                                            @if ($sortDirection == 'asc')
+                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                            @else
+                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                            @endif
+                                        @endif
+                                    </button>
+                                </th>
+
+                                <th class="border border-gray-400 px-3 py-2">
+                                    <button wire:click="sortBy('custom_label_2')" class="w-full h-full flex items-center justify-center">
+                                        Label 2
+                                        @if ($sortField == 'custom_label_2')
+                                            @if ($sortDirection == 'asc')
+                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                            @else
+                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                            @endif
+                                        @endif
+                                    </button>
+                                </th>
+
+                                <th class="border border-gray-400 px-3 py-2">
+                                    <button wire:click="sortBy('custom_value_2')" class="w-full h-full flex items-center justify-center">
+                                        Value 2
+                                        @if ($sortField == 'custom_value_2')
+                                            @if ($sortDirection == 'asc')
+                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                            @else
+                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                            @endif
+                                        @endif
+                                    </button>
+                                </th>
+
+                               
                                 <th class="border border-gray-400 px-3 py-2">Action</th>
                             </tr>
                         </thead>
@@ -291,7 +325,10 @@
                                     <td class="text-black border border-gray-400">{{ $participant->participant_photo}}</td>                          
                                     <td class="text-black border border-gray-400">{{ $participant->participant_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>
-                                    <td class="text-black border border-gray-400">{{ $participant->participant_department}}</td>
+                                    <td class="text-black border border-gray-400">{{ $participant->custom_label_1}}</td>
+                                    <td class="text-black border border-gray-400">{{ $participant->custom_value_1}}</td>
+                                    <td class="text-black border border-gray-400">{{ $participant->custom_label_2}}</td>
+                                    <td class="text-black border border-gray-400">{{ $participant->custom_value_2}}</td>
                                     <td class="text-black border border-gray-400 px-1 py-1">
                                         <div class="flex justify-center items-center space-x-2">
                                             @if($eventToShow && $participant)
@@ -301,7 +338,11 @@
                                                     participant_photo: {{ json_encode($participant->participant_photo) }},
                                                     participant_name: {{ json_encode($participant->participant_name) }},
                                                     participant_gender: {{ json_encode($participant->participant_gender) }},
-                                                    participant_department: {{ json_encode($participant->participant_department) }},
+                                                    custom_label_1: {{ json_encode($participant->custom_label_1) }},
+                                                    custom_value_1: {{ json_encode($participant->custom_value_1) }},
+                                                    custom_label_2: {{ json_encode($participant->custom_label_2) }},
+                                                    custom_value_2: {{ json_encode($participant->custom_value_2) }},
+                                                   
                                                     }">
                                                 <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                                                     <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
@@ -313,7 +354,7 @@
                                                             <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                         </div>
                                                         <div class="mb-4">
-                                                            <form id="updateCategoryForm" action="{{ route('admin.participant.update', $participant->id )}}" method="POST" class="">
+                                                            <form id="updateCategoryForm" action="{{ route('admin.participant.update', $participant->id )}}" method="POST" class="h-[500px] overflow-y-auto pr-4">
                                                                 <x-caps-lock-detector />
                                                                 @csrf
                                                                 @method('PUT')
@@ -328,7 +369,7 @@
 
                                                                     <div class="mb-4">
                                                                         <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2 text-left">Photo</label>
-                                                                        <input type="file" name="participant_photo" id="participant_photo" x-model="participant_photo" value="{{ $participant->participant_photo }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror" required>
+                                                                        <input type="file" name="participant_photo" id="participant_photo" x-model="participant_photo" value="{{ $participant->participant_photo }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror">
                                                                         <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                                                     </div>
                                                                     
@@ -341,15 +382,15 @@
                                                                     <div class="mb-2">
                                                                         <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2 text-left">Gender </label>
                                                                         <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
-                                                                        @if($event->participant_gender === 'male')  
-                                                                                <option value="{{ $event->participant_gender }}">
-                                                                                    @if($event->participant_gender == 'male')
+                                                                        @if($participant->participant_gender === 'male')  
+                                                                                <option value="{{ $participant->participant_gender }}">
+                                                                                    @if($participant->participant_gender == 'male')
                                                                                         Male
                                                                                     @endif
                                                                                 </option>
                                                                                 <option value="female">Female</option>
                                                                             @else
-                                                                                <option value="{{ $event->participant_gender }}">Female</option>
+                                                                                <option value="{{ $participant->participant_gender }}">Female</option>
                                                                                 <option value="male">Male</option>
                                                                             @endif
                                                                         </select>
@@ -357,11 +398,30 @@
                                                                     </div>
 
                                                                     <div class="mb-4">
-                                                                        <label for="participant_department" class="block text-gray-700 text-md font-bold mb-2 text-left">Department</label>
-                                                                        <input type="text" name="participant_department" id="participant_department" x-model="participant_department" value="{{ $participant->participant_department }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('pparticipant_department') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('participant_departmentt')" class="mt-2" />
+                                                                        <label for="custom_label_1" class="block text-gray-700 text-md font-bold mb-2 text-left">Label 1</label>
+                                                                        <input type="text" name="custom_label_1" id="custom_label_1" x-model="custom_label_1" value="{{ $participant->custom_label_1 }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_1') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('custom_label_1')" class="mt-2" />
                                                                     </div>
 
+                                                                    <div class="mb-4">
+                                                                        <label for="custom_value_1" class="block text-gray-700 text-md font-bold mb-2 text-left">Value 1</label>
+                                                                        <input type="text" name="custom_value_1" id="custom_value_1" x-model="custom_value_1" value="{{ $participant->custom_value_1 }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_1') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('custom_value_1')" class="mt-2" />
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="custom_label_2" class="block text-gray-700 text-md font-bold mb-2 text-left">Label 2</label>
+                                                                        <input type="text" name="custom_label_2" id="custom_label_2" x-model="custom_label_2" value="{{ $participant->custom_label_2 }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_2') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('custom_label_2')" class="mt-2" />
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="custom_value_2" class="block text-gray-700 text-md font-bold mb-2 text-left">Value 2</label>
+                                                                        <input type="text" name="custom_value_2" id="custom_value_2" x-model="custom_value_2" value="{{ $participant->custom_value_2 }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_2') is-invalid @enderror" required>
+                                                                        <x-input-error :messages="$errors->get('custom_value_2')" class="mt-2" />
+                                                                    </div>
+
+                                                                   
                                                                     <div class="flex mb-4 mt-10 justify-center">
                                                                     <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                                                         Save Changes
@@ -537,19 +597,27 @@
     </script>
 
 <script>
-document.getElementById('addContestant').addEventListener('click', function() {
-    const fieldsContainer = document.getElementById('contestant-fields');
-    const newContestant = fieldsContainer.children[0].cloneNode(true);
-    
-    // Clear the values of the cloned fields
-    const inputs = newContestant.querySelectorAll('input, select');
-    inputs.forEach(input => {
-        input.value = '';
-        input.classList.remove('is-invalid'); // Remove any error styling
+    document.addEventListener('DOMContentLoaded', function () {
+        let fieldCount = 0;
+        const addFieldsButton = document.getElementById('addFieldsButton');
+        const customField1 = document.getElementById('customField1');
+        const customValue1 = document.getElementById('customValue1');
+        const customField2 = document.getElementById('customField2');
+        const customValue2 = document.getElementById('customValue2');
+
+        addFieldsButton.addEventListener('click', function () {
+            fieldCount++;
+            if (fieldCount === 1) {
+                customField1.classList.remove('hidden');
+                customValue1.classList.remove('hidden');
+            } else if (fieldCount === 2) {
+                customField2.classList.remove('hidden');
+                customValue2.classList.remove('hidden');
+                addFieldsButton.classList.add('hidden'); // Hide the button after showing all fields
+            }
+        });
     });
-    
-    fieldsContainer.appendChild(newContestant);
-});
 </script>
+
 
 @endif
