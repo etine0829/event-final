@@ -495,11 +495,11 @@
         });
     }
 
-    function ConfirmDeleteSelected(event, rowId, courseAbbrv, courseDes) {
+    function ConfirmDeleteSelected(event, rowId, criteriaName) {
         event.preventDefault(); // Prevent form submission initially
 
         Swal.fire({
-            title: `Are you sure you want to delete the course ${courseDes} (${courseAbbrv}) ?`,
+            title: `Are you sure you want to delete the criteria ${criteriaName} ?`,
             text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,

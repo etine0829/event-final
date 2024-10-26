@@ -70,7 +70,7 @@
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4" id="dynamicInput">
-                            <form action="{{ route('admin.participant.store') }}" method="POST" class="">
+                            <form action="{{ route('admin.participant.store') }}" method="POST" enctype="multipart/form-data">
                             <x-caps-lock-detector />
                                 @csrf
                                     <div class="mb-2">
@@ -80,9 +80,15 @@
                                         </select>
                                         <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                     </div>
+
                                     <div class="mb-2">
-                                        <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
-                                        <input type="file" name="participant_photo" id="participant_photo" value="{{ old('participant_photo') }}" class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror" >
+                                        <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
+                                        <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
+                                            <div id="imagePreviewContainer" class="mb-2 text-center">
+                                                <img id="imagePreview" src="{{ asset('assets/img/user.png') }}" class="rounded-lg w-32 h-auto">
+                                            </div>
+                                            <span class="text-sm text-gray-500">Select Photo</span>
+                                        </label>
                                         <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                     </div>
 
@@ -93,6 +99,12 @@
                                     </div>
 
                                     <div class="mb-2">
+                                        <label for="participant_group" class="block text-gray-700 text-md font-bold mb-2">Group/Department</label>
+                                        <input type="text" name="participant_group" id="participant_group" value="{{ old('participant_group') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_group') is-invalid @enderror">
+                                        <x-input-error :messages="$errors->get('participant_group')" class="mt-2" />
+                                    </div>
+
+                                    <div class="mb-2">
                                         <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Gender</label>
                                         <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
                                                 <option value="">Select Option</option>
@@ -100,66 +112,8 @@
                                                 <option value="female">Female</option>
                                         </select>
                                         <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
-                                    </div> 
-
-                                    <!-- <div class="mb-2">
-                                        <label for="custom_label_1" class="block text-gray-700 text-md font-bold mb-2">Label 1</label>
-                                        <input type="text" name="custom_label_1" id="custom_label_1" value="{{ old('custom_label_1') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_1') is-invalid @enderror" required>
-                                        <x-input-error :messages="$errors->get('custom_label_1')" class="mt-2" />
                                     </div>
 
-                                    <div class="mb-2">
-                                        <label for="custom_value_1" class="block text-gray-700 text-md font-bold mb-2">Value 1</label>
-                                        <input type="text" name="custom_value_1" id="custom_value_1" value="{{ old('custom_value_1') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_1') is-invalid @enderror" required>
-                                        <x-input-error :messages="$errors->get('custom_value_1')" class="mt-2" />
-                                    </div>
-
-                                    <div class="mb-2">
-                                        <label for="custom_label_2" class="block text-gray-700 text-md font-bold mb-2">Label 2</label>
-                                        <input type="text" name="custom_label_2" id="custom_label_2" value="{{ old('custom_label_2') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_2') is-invalid @enderror">
-                                        <x-input-error :messages="$errors->get('custom_label_2')" class="mt-2" />
-                                    </div>
-
-                                    <div class="mb-2">
-                                        <label for="custom_value_2" class="block text-gray-700 text-md font-bold mb-2">Label 2</label>
-                                        <input type="text" name="custom_value_2" id="custom_value_2" value="{{ old('custom_value_2') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_2') is-invalid @enderror">
-                                        <x-input-error :messages="$errors->get('custom_value_2')" class="mt-2" />
-                                    </div> -->
-
-                                     <!-- Hidden Custom Fields -->
-
-                                    <div class="mb-2 hidden" id="customField1">
-                                        <label for="custom_label_1" class="block text-gray-700 text-md font-bold mb-2">Label 1</label>
-                                        <input type="text" name="custom_label_1" id="custom_label_1" value="{{ old('custom_label_1') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_1') is-invalid @enderror">
-                                        <x-input-error :messages="$errors->get('custom_label_1')" class="mt-2" />
-                                    </div>
-
-                                    <div class="mb-2 hidden" id="customValue1">
-                                        <label for="custom_value_1" class="block text-gray-700 text-md font-bold mb-2">Value 1</label>
-                                        <input type="text" name="custom_value_1" id="custom_value_1" value="{{ old('custom_value_1') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_1') is-invalid @enderror">
-                                        <x-input-error :messages="$errors->get('custom_value_1')" class="mt-2" />
-                                    </div>
-
-                                    <div class="mb-2 hidden" id="customField2">
-                                        <label for="custom_label_2" class="block text-gray-700 text-md font-bold mb-2">Label 2</label>
-                                        <input type="text" name="custom_label_2" id="custom_label_2" value="{{ old('custom_label_2') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_2') is-invalid @enderror">
-                                        <x-input-error :messages="$errors->get('custom_label_2')" class="mt-2" />
-                                    </div>
-
-                                    <div class="mb-2 hidden" id="customValue2">
-                                        <label for="custom_value_2" class="block text-gray-700 text-md font-bold mb-2">Value 2</label>
-                                        <input type="text" name="custom_value_2" id="custom_value_2" value="{{ old('custom_value_2') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_2') is-invalid @enderror">
-                                        <x-input-error :messages="$errors->get('custom_value_2')" class="mt-2" />
-                                    </div>
-
-                                    <!-- Add Fields Button -->
-                                    <div class="flex mb-4 mt-5 justify-center">
-                                        <button type="button" class="w-80 bg-green-500 text-white px-4 py-2 rounded-md" id="addFieldsButton">
-                                            Add Fields
-                                        </button>
-                                    </div>
-
-                                    
                                     <div class="flex mb-4 mt-5 justify-center">
                                         <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                             Save
@@ -262,9 +216,9 @@
                                 </th>
 
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('custom_label_1')" class="w-full h-full flex items-center justify-center">
-                                        Label 1
-                                        @if ($sortField == 'custom_label_1')
+                                    <button wire:click="sortBy('participant_group')" class="w-full h-full flex items-center justify-center">
+                                        Group/Department
+                                        @if ($sortField == 'participant_group')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                             @else
@@ -273,62 +227,29 @@
                                         @endif
                                     </button>
                                 </th>
-
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('custom_value_1')" class="w-full h-full flex items-center justify-center">
-                                        Value 1
-                                        @if ($sortField == 'custom_value_1')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
-
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('custom_label_2')" class="w-full h-full flex items-center justify-center">
-                                        Label 2
-                                        @if ($sortField == 'custom_label_2')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
-
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('custom_value_2')" class="w-full h-full flex items-center justify-center">
-                                        Value 2
-                                        @if ($sortField == 'custom_value_2')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
-
                                
                                 <th class="border border-gray-400 px-3 py-2">Action</th>
                             </tr>
                         </thead>
                         <tbody >
                         @foreach ($participants as $participant)
-                                <tr class="hover:bg-gray-100" wire:model="selectedCategory">
+                                <tr class="hover:bg-gray-100" wire:model="selectedEvent">                                  
                                     <td class="text-black border border-gray-400  ">{{ $participant->id }}</td> 
                                     <td class="text-black border border-gray-400">{{ $participant->event->event_name}}</td> 
-                                    <td class="text-black border border-gray-400">{{ $participant->participant_photo}}</td>                          
+                                    <td class="text-black border border-gray-400 border-t-0 border-r-0 border-l-0 px-2 py-1 flex items-center justify-center" >
+                                        @if ($participant->participant_photo && Storage::exists('public/participant_photo/' . $participant->participant_photo))
+                                            <a  href="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" 
+                                                class="hover:border border-red-500 rounded-full" title="Click to view Picture"
+                                                data-fancybox data-caption="Participant: {{ $participant->participant_name }}, {{ $participant->participant_gender }}">
+                                                <img src="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" class="rounded-full w-9 h-9">
+                                            </a>
+                                        @else
+                                            <img data-fancybox src="{{ asset('assets/img/user.png') }}" class="cursor-pointer w-9 h-9 hover:border hover:border-red-500 rounded-full" title="Click to view Picture" >
+                                        @endif
+                                    </td>                         
                                     <td class="text-black border border-gray-400">{{ $participant->participant_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>
-                                    <td class="text-black border border-gray-400">{{ $participant->custom_label_1}}</td>
-                                    <td class="text-black border border-gray-400">{{ $participant->custom_value_1}}</td>
-                                    <td class="text-black border border-gray-400">{{ $participant->custom_label_2}}</td>
-                                    <td class="text-black border border-gray-400">{{ $participant->custom_value_2}}</td>
+                                    <td class="text-black border border-gray-400">{{ $participant->participant_group}}</td>
                                     <td class="text-black border border-gray-400 px-1 py-1">
                                         <div class="flex justify-center items-center space-x-2">
                                             @if($eventToShow && $participant)
@@ -338,12 +259,7 @@
                                                     participant_photo: {{ json_encode($participant->participant_photo) }},
                                                     participant_name: {{ json_encode($participant->participant_name) }},
                                                     participant_gender: {{ json_encode($participant->participant_gender) }},
-                                                    custom_label_1: {{ json_encode($participant->custom_label_1) }},
-                                                    custom_value_1: {{ json_encode($participant->custom_value_1) }},
-                                                    custom_label_2: {{ json_encode($participant->custom_label_2) }},
-                                                    custom_value_2: {{ json_encode($participant->custom_value_2) }},
-                                                   
-                                                    }">
+                                                    participant_group: {{ json_encode($participant->participant_group) }},}">
                                                 <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                                                     <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
                                                 </a>
@@ -367,10 +283,9 @@
                                                                         <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                                                     </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2 text-left">Photo</label>
-                                                                        <input type="file" name="participant_photo" id="participant_photo" x-model="participant_photo" value="{{ $participant->participant_photo }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_photo') is-invalid @enderror">
-                                                                        <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
+                                                                    <div class="mb-4 text-center flex flex-col items-center">
+                                                                        <img id="blah2" src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" alt="Default photo Icon" class="max-w-xs mb-2" />
+                                                                        <input type="file" onchange="readURL2(this);" name="participant_photo" id="participant_photo" class="p-2 bg-gray-800 text-white" accept="image/*" />
                                                                     </div>
                                                                     
                                                                     <div class="mb-4">
@@ -398,27 +313,9 @@
                                                                     </div>
 
                                                                     <div class="mb-4">
-                                                                        <label for="custom_label_1" class="block text-gray-700 text-md font-bold mb-2 text-left">Label 1</label>
-                                                                        <input type="text" name="custom_label_1" id="custom_label_1" x-model="custom_label_1" value="{{ $participant->custom_label_1 }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_1') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('custom_label_1')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="mb-4">
-                                                                        <label for="custom_value_1" class="block text-gray-700 text-md font-bold mb-2 text-left">Value 1</label>
-                                                                        <input type="text" name="custom_value_1" id="custom_value_1" x-model="custom_value_1" value="{{ $participant->custom_value_1 }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_1') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('custom_value_1')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="mb-4">
-                                                                        <label for="custom_label_2" class="block text-gray-700 text-md font-bold mb-2 text-left">Label 2</label>
-                                                                        <input type="text" name="custom_label_2" id="custom_label_2" x-model="custom_label_2" value="{{ $participant->custom_label_2 }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_label_2') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('custom_label_2')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="mb-4">
-                                                                        <label for="custom_value_2" class="block text-gray-700 text-md font-bold mb-2 text-left">Value 2</label>
-                                                                        <input type="text" name="custom_value_2" id="custom_value_2" x-model="custom_value_2" value="{{ $participant->custom_value_2 }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('custom_value_2') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('custom_value_2')" class="mt-2" />
+                                                                        <label for="participant_group" class="block text-gray-700 text-md font-bold mb-2 text-left">Group/Department</label>
+                                                                        <input type="text" name="participant_group" id="participant_group" x-model="participant_group" value="{{ $participant->participant_group }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_group') is-invalid @enderror">
+                                                                        <x-input-error :messages="$errors->get('participant_group')" class="mt-2" />
                                                                     </div>
 
                                                                    
@@ -479,45 +376,45 @@
         @endif
     </div>
 
-    <!-- <script>
+    <script>
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Restrict morning times to 12:00 AM to 11:59 AM
-            var morningStartTime = document.getElementById('morning_start_time');
-            var morningEndTime = document.getElementById('morning_end_time');
-
-            morningStartTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] >= 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 AM and 11:59 AM');
-                }
-            });
-
-            morningEndTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] >= 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 AM and 11:59 AM');
-                }
-            });
-
-            // Restrict afternoon times to 12:00 PM to 11:59 PM
-            var afternoonStartTime = document.getElementById('afternoon_start_time');
-            var afternoonEndTime = document.getElementById('afternoon_end_time');
-
-            afternoonStartTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] < 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 PM and 11:59 PM');
-                }
-            });
-
-            afternoonEndTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] < 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 PM and 11:59 PM');
-                }
+            tippy('[data-tippy-content]', {
+                allowHTML: true,
+                theme: 'light', // Optional: Change the tooltip theme (light, dark, etc.)
+                placement: 'right-end', // Optional: Adjust tooltip placement
             });
         });
-    </script> -->
+
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+        <script>
+        Fancybox.bind('[data-fancybox]', {
+            contentClick: "iterateZoom",
+            Images: {
+                Panzoom: {
+                    maxScale: 3,
+                    },
+                initialSize: "fit",
+            },
+            Toolbar: {
+            display: {
+                left: ["infobar"],
+                middle: [
+                "zoomIn",
+                "zoomOut",
+                "toggle1to1",
+                "rotateCCW",
+                "rotateCW",
+                "flipX",
+                "flipY",
+                ],
+                right: ["slideshow", "download", "thumbs", "close"],
+            },
+            },
+        });    
+        </script>
+
 
     <script>
 
@@ -530,8 +427,7 @@
                     participant.participant_photo.toLowerCase().includes(searchTerm) ||
                     participant.participant_name.toLowerCase().includes(searchTerm) ||
                     participant.participant_gender.toLowerCase().includes(searchTerm) ||
-                    participant.participant_comment.toLowerCase().includes(searchTerm) ||
-                    participant.participant_department.toLowerCase().includes(searchTerm) ||
+                    participant.participant_group.toLowerCase().includes(searchTerm) ||
                     participant.event.event_name.toLowerCase().includes(searchTerm)
                 );
             }
@@ -596,27 +492,56 @@
 
     </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let fieldCount = 0;
-        const addFieldsButton = document.getElementById('addFieldsButton');
-        const customField1 = document.getElementById('customField1');
-        const customValue1 = document.getElementById('customValue1');
-        const customField2 = document.getElementById('customField2');
-        const customValue2 = document.getElementById('customValue2');
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('imagePreview');
+                output.src = reader.result;
+                document.getElementById('imagePreviewContainer').style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+    <script>
+    function handleImageError(image) {
+        // Set the default image
+        image.src = "{{ asset('assets/img/user.png') }}";
+        
+        // Display the error message
+        document.getElementById('errorMessage').style.display = 'block';
+    }
+    </script>
 
-        addFieldsButton.addEventListener('click', function () {
-            fieldCount++;
-            if (fieldCount === 1) {
-                customField1.classList.remove('hidden');
-                customValue1.classList.remove('hidden');
-            } else if (fieldCount === 2) {
-                customField2.classList.remove('hidden');
-                customValue2.classList.remove('hidden');
-                addFieldsButton.classList.add('hidden'); // Hide the button after showing all fields
+    <script>
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#blah')
+                            .attr('src', e.target.result);
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
+                }
             }
-        });
-    });
+    </script>
+    <!--  -->
+    <script>
+            function readURL2(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#blah2')
+                            .attr('src', e.target.result);
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
 </script>
 
 

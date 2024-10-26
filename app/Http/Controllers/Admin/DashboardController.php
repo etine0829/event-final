@@ -20,6 +20,20 @@ class DashboardController extends Controller
             return view('Admin.dashboard.dashboard');
 
     }
+    public function indexJudge()
+    {
+        
+            return view('Admin.dashboard.dashboard');
+
+    }
+
+    public function indexStaff()
+    {
+        
+            return view('Admin.dashboard.dashboard');
+
+    }
+
 
     
 }

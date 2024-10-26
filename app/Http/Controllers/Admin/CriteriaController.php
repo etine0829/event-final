@@ -110,10 +110,45 @@ class CriteriaController extends Controller
      */
     public function destroy(string $id)
     {
+        
         $criteria = Criteria::findOrFail($id);
         $criteria->delete();
 
-        return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.criteria.index' : 'event_manager.criteria.index')
-            ->with('success', 'Criteria deleted successfully.');
+        if (Auth::user()->hasRole('admin'))
+        {
+            return redirect()->route('admin.criteria.index')->with('success', 'Criteria deleted successfully.');
+        }
+        else {
+            return redirect()->route('event_manager.criteria.index')->with('success', 'Criteria deleted successfully.');
+        }
+    }
+
+    public function deleteAll(Request $request)
+    {       
+         $count = Criteria::count();
+
+        if ($count === 0) {
+            return redirect()->route('admin.criteria.index')->with('info', 'There are no criteria to delete.');
+        }
+
+        try {
+            // Use a transaction to ensure data integrity
+            \DB::beginTransaction();
+
+            // Delete related data in other tables first (e.g., staff)
+            Criteria::whereHas('criteria')->delete();
+
+            // Now you can delete the event
+            Criteria::truncate();
+
+            \DB::commit();
+
+            return redirect()->route('admin.criteria.index')->with('success', 'All criteria deleted successfully.');
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            // Log the error or handle it appropriately
+            return redirect()->route('admin.criteria.index')->with('error', 'Cannot delete criteria because they have associated data.');
+        }
     }
 }

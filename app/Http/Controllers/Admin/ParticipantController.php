@@ -40,15 +40,16 @@ class ParticipantController extends Controller
  
          $validatedData = $request->validate([
             'event_id' => 'required|exists:events,id',
-            'participant_photo' => 'nullable|string|max:255',
+            'participant_photo' => 'image|max:2048',
             'participant_name' => 'required|string|max:255',
             'participant_gender' => 'required|string|max:255',
+            'participant_group' => 'nullable|string|max:255',
             'participant_comment' => 'nullable|string|max:255',
-            'custom_label_1' => 'nullable|string|max:255',
-            'custom_label_2' => 'nullable|string|max:255',
-            'custom_value_1' => 'nullable|string|max:255',
-            'custom_value_2' => 'nullable|string|max:255', 
+             
          ]);
+
+         // Handle file upload if 'course_photo' is present
+         
          // Attempt to create the participant record
          try {
              Participant::create($validatedData);
@@ -122,11 +123,9 @@ class ParticipantController extends Controller
                     $request->participant_photo !== $participant->participant_photo ||
                     $request->participant_name !== $participant->participant_name ||
                     $request->participant_gender !== $participant->participant_gender ||
-                    $request->participant_comment !== $participant->participant_comment ||
-                    $request->custom_label_1 !== $participant->custom_label_1 ||
-                    $request->custom_value_1 !== $participant->custom_value_1 ||
-                    $request->custom_label_2 !== $participant->custom_label_2 ||
-                    $request->custom_value_2 !== $participant->custom_value_2)
+                    $request->participant_group !== $participant->participant_group ||
+                    $request->participant_comment !== $participant->participant_comment
+                    )
                 {
                     $hasChanges = true;
                 }
@@ -141,12 +140,10 @@ class ParticipantController extends Controller
                     'event_id' => 'required|exists:events,id',
                     'participant_photo' => 'nullable|string|max:255',
                     'participant_name' => 'required|string|max:255',
-                    'participant_gender' => 'required|in:Male,Female',
+                    'participant_gender' => 'required|in:male,female',
+                    'participant_group' => 'nullable|string|max:255',
                     'participant_comment' => 'nullable|string|max:255',
-                    'custom_label_1' => 'nullable|string|max:255',
-                    'custom_label_2' => 'nullable|string|max:255',
-                    'custom_value_1' => 'nullable|string|max:255',
-                    'custom_value_2' => 'nullable|string|max:255',
+                   
                 ]);
     
                 // Update the participant record
@@ -157,143 +154,52 @@ class ParticipantController extends Controller
                 $errors = $e->errors();
                 return redirect()->back()->withErrors($errors)->with('error', $errors['participant_id'][0] ?? 'Validation error');
             }
+        }     
+    }
+
+    public function destroy(string $id)
+    {
+        
+        $participant = Participant::findOrFail($id);
+        $participant->delete();
+
+        if (Auth::user()->hasRole('admin'))
+        {
+            return redirect()->route('admin.participant.index')->with('success', 'Participant deleted successfully.');
+        }
+        else {
+            return redirect()->route('event_manager.participant.index')->with('success', 'Participant deleted successfully.');
         }
     }
-    
- //         } else if (Auth::user()->hasRole('admin_staff')) {
-         
- //             try {
- //                 $validatedData = $request->validate([
- //                     'school_id' => 'required|exists:schools,id',
- //                     'department_id' => [
- //                         'required',
- //                         'string',
- //                         'max:255',
- //                         Rule::unique('departments')->where(function ($query) use ($request, $department) {
- //                             return $query->where('school_id', $request->school_id)
- //                                         ->where('id', '<>', $department->id);
- //                         }),
- //                     ],
- //                     'department_abbreviation' => [
- //                         'required',
- //                         'string',
- //                         'max:255',
- //                         Rule::unique('departments')->where(function ($query) use ($request, $department) {
- //                             return $query->where('school_id', $request->school_id)
- //                                         ->where('id', '<>', $department->id);
- //                         }),
- //                     ],
- //                     'department_name' => 'required|string|max:255',
- //                     'dept_identifier' => 'required|string|max:255',
- //                 ]);
-                 
- //                 $hasChanges = false;
- //                 if ($request->school_id !== $department->school_id ||
- //                     $request->department_id !== $department->department_id ||
- //                     $request->department_abbreviation !== $department->department_abbreviation ||
- //                     $request->department_name !== $department->department_name ||
- //                     $request->dept_identifier !== $department->dept_identifier) 
- //                 {
- //                     $hasChanges = true;
- //                 }
- 
- //                 if (!$hasChanges) {
- //                     return redirect()->route('staff.department.index')->with('info', 'No changes were made.');
- //                 }
- 
- //                 // Update the department record
- //                 $department->update($validatedData);
- 
- //                 return redirect()->route('staff.department.index')->with('success', 'Department updated successfully.');
- //             } catch (ValidationException $e) {
- //                 $errors = $e->errors();
- //                 return redirect()->back()->withErrors($errors)->with('error', $errors['department_id'][0] ?? 'Validation error');
- //             }
- 
- //         }
- 
- //     }
- 
- //     /**
- //      * Remove the specified resource from storage.
- //      */
- //     // public function destroy(Department $department)
- //     // {
- //     //     if (Auth::user()->hasRole('admin')) {
- 
- //     //         if ($department->employees()->exists()) {
- //     //             return redirect()->route('admin.department.index')->with('error', 'Cannot delete department because it has associated data.');
- //     //         }
- 
- //     //         $department->delete();
- 
- //     //         return redirect()->route('admin.department.index')->with('success', 'Department/s deleted successfully.');
- 
- //     //     } else if (Auth::user()->hasRole('admin_staff')) {
- 
- //     //         if ($department->employees()->exists()) {
- //     //             return redirect()->route('staff.department.index')->with('error', 'Cannot delete department because it has associated data.');
- //     //         }
- 
- //     //         $department->delete();
- 
- //     //         return redirect()->route('staff.department.index')->with('success', 'Department/s deleted successfully.');
- 
- //     //     }
- 
- //     // }
- 
- //     public function destroy(Department $department)
- //     {
- //         // Determine the route and role-based message
- //         $route = Auth::user()->hasRole('admin') ? 'admin.department.index' : 'staff.department.index';
- //         $role = Auth::user()->hasRole('admin') ? 'admin' : 'admin_staff';
- 
- //         try {
- //             // Check if there are associated employees
- //             if ($department->employees()->exists()) {
- //                 return redirect()->route($route)->with('error', 'Cannot delete department because it has associated data.');
- //             }
- 
- //             // Attempt to delete the department
- //             $department->delete();
- 
- //             return redirect()->route($route)->with('success', 'Department/s deleted successfully.');
- 
- //         } catch (\Illuminate\Database\QueryException $e) {
- //             // Check for foreign key constraint violation
- //             if ($e->getCode() == '23000') {
- //                 return redirect()->route($route)->with('error', 'Cannot delete department due to a foreign key constraint violation.');
- //             }
- 
- //             // Handle other types of SQL exceptions
- //             return redirect()->route($route)->with('error', 'An unexpected error occurred while trying to delete the department.');
- //         }
- //     }
- 
- //     public function deleteAll(Request $request)
- //     {
- 
- //         $schoolId = $request->input('school_id');
- 
- //         if (!$schoolId) {
- //             return redirect()->back()->with('error', 'No school selected.');
- //         }
- 
- //         // Check if there are any departments associated with this school
- //         $departmentsWithEmployees = Department::where('school_id', $schoolId)->whereHas('employees')->exists();
- 
- //         if ($departmentsWithEmployees) {
- //             return redirect()->route('admin.department.index')->with('error', 'Cannot delete departments because they have associated employees.');
- //         }
- 
- //         // If no departments have associated employees, proceed with deletion
- //         Department::where('school_id', $schoolId)->delete();
- 
- //         return redirect()->back()->with('success', 'All departments for the selected school have been deleted.');
- 
-         
- //     }
+
+    public function deleteAll(Request $request)
+    {       
+         $count = Participant::count();
+
+        if ($count === 0) {
+            return redirect()->route('admin.participant.index')->with('info', 'There are no participant to delete.');
+        }
+
+        try {
+            // Use a transaction to ensure data integrity
+            \DB::beginTransaction();
+
+            // Delete related data in other tables first (e.g., staff)
+            Participant::whereHas('participant')->delete();
+
+            // Now you can delete the event
+            Participant::truncate();
+
+            \DB::commit();
+
+            return redirect()->route('admin.participant.index')->with('success', 'All participant deleted successfully.');
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            // Log the error or handle it appropriately
+            return redirect()->route('admin.participant.index')->with('error', 'Cannot delete participant because they have associated data.');
+        }
+    }
  
   }
  

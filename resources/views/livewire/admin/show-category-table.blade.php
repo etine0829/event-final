@@ -250,7 +250,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <form id="deleteSelected" action="{{ route('admin.category.destroy', [':id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $category->id }}', '{{ $category->category_id }}', '{{ $category->category_name }}', '{{ $category->score }}');">
+                                            <form id="deleteSelected" action="{{ route('admin.category.destroy', $category->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">

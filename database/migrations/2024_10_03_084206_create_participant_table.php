@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('participant_photo')->nullable();
             $table->string('participant_name');
             $table->string('participant_gender');
+            $table->string('participant_group')->nullable();
             $table->string('participant_comment')->nullable();
 
             $table->timestamps();

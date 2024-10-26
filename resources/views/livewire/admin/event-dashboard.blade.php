@@ -220,7 +220,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <form id="deleteSelected" action="" method="POST" >
+                                    <form id="deleteSelected" action="{{ route('admin.event.destroy', $event->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $event->id }}', '{{ $event->event_name }}');">
                                         @csrf
                                         @method('DELETE')
                                         <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
@@ -236,6 +236,52 @@
             {{ $events->links() }}
         @endif
     </div>
+
+    <script>
+
+        function confirmDeleteAll(event) {
+            event.preventDefault(); // Prevent form submission initially
+
+            Swal.fire({
+                title: 'Are you sure to delete all records?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete all!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If confirmed, submit the form programmatically
+                    document.getElementById('deleteAll').submit();
+                }
+            });
+        }
+
+        function ConfirmDeleteSelected(event, eventID, eventName) {
+        event.preventDefault(); // Prevent form submission initially
+
+        Swal.fire({
+            title: `Are you sure you want to delete the event ${eventName}?`,
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('deleteSelected');
+                // Replace the placeholder with the actual event ID
+                form.action = `{{ route('admin.event.destroy', ':Id') }}`.replace(':Id', eventID);
+                form.submit();
+            }
+        });
+
+        return false; 
+    }
+
+    </script>
 
 
 @elseif (Auth::user()->hasRole('admin_staff')) 
@@ -293,11 +339,54 @@
             <div class="flex w-full sm:w-auto mt-2 sm:mt-0 sm:ml-2">
                 <input wire:model.live="search" type="text" class="border text-black border-gray-300 rounded-md p-2 w-full" placeholder="Search..." autofocus>
             </div>
-        </div>
-
-
-        
+        </div>  
     </div>
+
+    <script>
+
+        function confirmDeleteAll(event) {
+            event.preventDefault(); // Prevent form submission initially
+
+            Swal.fire({
+                title: 'Are you sure to delete all records?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete all!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If confirmed, submit the form programmatically
+                    document.getElementById('deleteAll').submit();
+                }
+            });
+        }
+
+        function ConfirmDeleteSelected(event, schoolID, schoolName) {
+        event.preventDefault(); // Prevent form submission initially
+
+        Swal.fire({
+            title: `Are you sure you want to delete the school ${schoolName}?`,
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('deleteSelected');
+                // Replace the placeholder with the actual school ID
+                form.action = `{{ route('staff.school.destroy', ':schoolId') }}`.replace(':schoolId', schoolID);
+                form.submit();
+            }
+        });
+
+        return false; 
+    }
+
+    </script>
 
    
 @endif

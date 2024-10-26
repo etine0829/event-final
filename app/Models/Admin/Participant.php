@@ -16,11 +16,8 @@ class Participant extends Model
         'participant_photo',
         'participant_name',
         'participant_gender',
+        'participant_group',
         'participant_comment',
-        'custom_label_1',
-        'custom_value_1',
-        'custom_label_2',
-        'custom_value_2'
     ];
 
     public function event()

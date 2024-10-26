@@ -36,6 +36,7 @@ class UserRoutePageName extends Component
                 'admin.criteria.index' => __('Admin - Manage Criteria'),
                 'admin.participant.index' => __('Admin - Manage Participant'),
                 'admin.judge.index' => __('Admin - Add Judges'),
+                'admin.add_user.index' => __('Admin - Add User'),
                 
                 'admin.student.index' => __('Admin - Manage Student'),
                 'admin.course.index' => __('Admin - Manage Courses'),
@@ -54,29 +55,30 @@ class UserRoutePageName extends Component
             $this->title = $titles[$routeName] ?? __('University of Bohol Attendance System');
 
         }
-        else if (Auth::user()->hasRole('admin_staff')) {
+        else if (Auth::user()->hasRole('event_manager')) {
 
             $titles = [
 
-                'staff.dashboard' => __('Staff | Dashboard'),
-                'staff.school.index' => __('Staff | Manage School Year'),
-                'staff.department.index' => __('Staff | Manage Department'),
-                'staff.workinghour.index' => __('Staff | Manage Dept Working Hour'),
-                'staff.course.index' => __('Staff | Manage Courses'),
-                'staff.employee.index' => __('Staff | Manage Employee'),
-                'staff.student.index' => __('Staff | Manage Student'),
+                //admin route pages name
+                'event_manager.dashboard' => __('Event Manager | Dashboard'),
+                //route page name for managing school
+                'event_manager.event.index' => __('Event Manager | Manage Event'),
+                'event_manager.category.index' => __('Event Manager | Manage Category'),
+                'event_manager.criteria.index' => __('Event Manager | Manage Criteria'),
+                'event_manager.participant.index' => __('Event Manager | Manage Participant'),
+                'event_manager.judge.index' => __('Event Manager | Add Judges'),
 
             ];
 
             $this->title = $titles[$routeName] ?? __('University of Bohol Attendance System');
 
         }
-        else if (Auth::user()->hasRole('employee')) {
+        else if (Auth::user()->hasRole('judge')) {
 
             $titles = [
 
                 //employee route pages name
-                'hr.dashboard' => __('Human Resource | Dashboard'),
+                'judge.dashboard' => __('Judges | Dashboard'),
             ];
 
             $this->title = $titles[$routeName] ?? __('University of Bohol Attendance System');
