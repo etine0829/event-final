@@ -74,7 +74,7 @@
                             <x-caps-lock-detector />
                                 @csrf
                                     <div class="mb-2">
-                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event: </label>
+                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
                                         <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
                                                 <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
                                         </select>
