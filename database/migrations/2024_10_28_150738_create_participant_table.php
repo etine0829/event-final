@@ -14,15 +14,16 @@ return new class extends Migration
         Schema::create('participant', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('event_id');
+            $table->unsignedBigInteger('group_id')->nullable();
             $table->string('participant_photo')->nullable();
             $table->string('participant_name');
             $table->string('participant_gender');
-            $table->string('participant_group')->nullable();
             $table->string('participant_comment')->nullable();
 
             $table->timestamps();
 
             $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');
+            $table->foreign('group_id')->references('id')->on('group')->onDelete('restrict');
         });
     }
 

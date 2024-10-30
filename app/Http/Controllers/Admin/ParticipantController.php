@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;    
 use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
-use App\Models\Admin\Event;
 use App\Models\Admin\Participant;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
 
 
 class ParticipantController extends Controller
@@ -31,35 +32,45 @@ class ParticipantController extends Controller
      /**
       * Store a newly created resource in storage.
       */
-     public function store(Request $request)
- {   
-     if (Auth::user()->hasRole('admin')) {
- 
-        //  // // Log the incoming request data for debugging
-        //  \Log::info('Category Store Request Data:', $request->all());
- 
-         $validatedData = $request->validate([
-            'event_id' => 'required|exists:events,id',
-            'participant_photo' => 'image|max:2048',
-            'participant_name' => 'required|string|max:255',
-            'participant_gender' => 'required|string|max:255',
-            'participant_group' => 'nullable|string|max:255',
-            'participant_comment' => 'nullable|string|max:255',
-             
-         ]);
-
-         // Handle file upload if 'course_photo' is present
-         
-         // Attempt to create the participant record
-         try {
-             Participant::create($validatedData);
-             return redirect()->route('admin.participant.index')
-                 ->with('success', 'Participant created successfully.');
-         } catch (\Exception $e) {
-             return redirect()->route('admin.participant.index')->with('error', 'Failed to create participant: ' . $e->getMessage());
-         }
-     }
- }
+      public function store(Request $request)
+      {
+          if (Auth::user()->hasRole('admin')) {
+              // Log incoming request data
+              \Log::info('Store Request Data:', $request->all());
+      
+              $validatedData = $request->validate([
+                  'event_id' => 'required|exists:events,id',
+                  'group_id' => 'nullable|string|max:255',
+                  'participant_photo' => 'nullable|image|max:2048',
+                  'participant_name' => 'required|string|max:255',
+                  'participant_gender' => 'required|string|max:255',
+                  'participant_comment' => 'nullable|string|max:255',
+              ]);
+      
+              if ($request->hasFile('participant_photo')) {
+                  $fileNameWithExt = $request->file('participant_photo')->getClientOriginalName();
+                  $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                  $extension = $request->file('participant_photo')->getClientOriginalExtension();
+                  $fileNameToStore = $filename . '_' . time() . '.' . $extension;
+                  $path = $request->file('participant_photo')->storeAs('public/participant_photo', $fileNameToStore);
+                  $validatedData['participant_photo'] = $fileNameToStore;
+              } else {
+                  $validatedData['participant_photo'] = 'user.png';
+              }
+      
+              try {
+                  Participant::create($validatedData);
+                  return redirect()->route('admin.participant.index')
+                      ->with('success', 'Participant created successfully.');
+              } catch (\Exception $e) {
+                  \Log::error('Participant creation failed: ' . $e->getMessage());
+                  return redirect()->back()->with('error', 'Failed to create participant.');
+              }
+          } else {
+              return redirect()->back()->with('error', 'Unauthorized action.');
+          }
+      }
+      
  
             
          //     $validatedData = $request->validate([
@@ -120,11 +131,11 @@ class ParticipantController extends Controller
                 // Check if changes exist before validation
                 $hasChanges = false;
                 if ($request->event_id !== $participant->event_id ||
-                    $request->participant_photo !== $participant->participant_photo ||
+                    $request->group_id !== $participant->group_id ||
                     $request->participant_name !== $participant->participant_name ||
                     $request->participant_gender !== $participant->participant_gender ||
-                    $request->participant_group !== $participant->participant_group ||
-                    $request->participant_comment !== $participant->participant_comment
+                    $request->participant_comment !== $participant->participant_comment ||
+                    $request->participant_photo !== $participant->participant_photo
                     )
                 {
                     $hasChanges = true;
@@ -138,12 +149,11 @@ class ParticipantController extends Controller
                 // If changes exist, then validate the input
                 $validatedData = $request->validate([
                     'event_id' => 'required|exists:events,id',
-                    'participant_photo' => 'nullable|string|max:255',
+                    'group_id' => 'nullable|exists:events,id',
                     'participant_name' => 'required|string|max:255',
                     'participant_gender' => 'required|in:male,female',
-                    'participant_group' => 'nullable|string|max:255',
                     'participant_comment' => 'nullable|string|max:255',
-                   
+                    'participant_photo' => 'nullable|string|max:255',
                 ]);
     
                 // Update the participant record

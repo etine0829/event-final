@@ -34,6 +34,7 @@ class UserRoutePageName extends Component
                 'admin.event.index' => __('Admin - Manage Event'),
                 'admin.category.index' => __('Admin - Manage Category'),
                 'admin.criteria.index' => __('Admin - Manage Criteria'),
+                'admin.group.index' => __('Admin - Manage Participant Group'),
                 'admin.participant.index' => __('Admin - Manage Participant'),
                 'admin.judge.index' => __('Admin - Add Judges'),
                 'admin.add_user.index' => __('Admin - Add User'),
@@ -52,7 +53,7 @@ class UserRoutePageName extends Component
                 
             ];
 
-            $this->title = $titles[$routeName] ?? __('University of Bohol Attendance System');
+            $this->title = $titles[$routeName] ?? __('Event Tabulation Management System');
 
         }
         else if (Auth::user()->hasRole('event_manager')) {
@@ -70,7 +71,7 @@ class UserRoutePageName extends Component
 
             ];
 
-            $this->title = $titles[$routeName] ?? __('University of Bohol Attendance System');
+            $this->title = $titles[$routeName] ?? __('Event Tabulation Management System');
 
         }
         else if (Auth::user()->hasRole('judge')) {
@@ -81,11 +82,11 @@ class UserRoutePageName extends Component
                 'judge.dashboard' => __('Judges | Dashboard'),
             ];
 
-            $this->title = $titles[$routeName] ?? __('University of Bohol Attendance System');
+            $this->title = $titles[$routeName] ?? __('Event Tabulation Management System');
 
         }
          else {
-            $this->title = __('University of Bohol Attendance System');
+            $this->title = __('Event Tabulation Management System');
         }
 
     }

@@ -5,6 +5,7 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use \App\Models\Admin\Event; 
+use \App\Models\Admin\Group; 
 
 class Participant extends Model
 {
@@ -13,15 +14,19 @@ class Participant extends Model
 
     protected $fillable = [
         'event_id',
+        'group_id',
         'participant_photo',
         'participant_name',
         'participant_gender',
-        'participant_group',
         'participant_comment',
     ];
 
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id');
+    }
+    public function group()
+    {
+        return $this->belongsTo(Group::class, 'group_id');
     }
 }

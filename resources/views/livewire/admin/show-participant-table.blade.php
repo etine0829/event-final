@@ -1,28 +1,36 @@
-@php
-    session(['selectedEvent' => $selectedEvent]);
-@endphp
-@if (Auth::user()->hasRole('admin')) 
-    <div>
-        @if (session('success'))
-            <x-sweetalert type="success" :message="session('success')" />
-        @endif
+<div class="mb-4">
+        @php
+            session(['selectedEvent' => $selectedEvent]);
+            session(['selectedGroup' => $selectedGroup]);
+        @endphp
+    @if (session('success'))
+        <x-sweetalert type="success" :message="session('success')" />
+    @endif
 
-        @if (session('info'))
-            <x-sweetalert type="info" :message="session('info')" />
-        @endif
+    @if (session('info'))
+        <x-sweetalert type="info" :message="session('info')" />
+    @endif
 
-        @if (session('error'))
-            <x-sweetalert type="error" :message="session('error')" />
-        @endif
+    @if (session('error'))
+        <x-sweetalert type="error" :message="session('error')" />
+    @endif
+    <div class="flex justify-between mb-4 sm:-mt-4">
+    @if (Auth::user()->hasRole('admin'))
+        <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Participant</div>
+    @else
+        <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Event Manager / Manage Participant</div>
+    @endif
+    </div>
 
-        <div class="flex justify-between mb-4 sm:-mt-4">
-            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Participant</div>
+    
+    <div class="flex justify-between mb-4 sm:-mt-4">
+            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase"></div>
         </div>
         <div class="flex flex-col md:flex-row items-start md:items-center md:justify-start">
             <!-- Dropdown and Delete Button -->
             <div class="flex items-center w-full md:w-auto">
-                <label for="event_id" class="block text-sm text-gray-700 font-bold md:mr-4 truncate uppercase">Event</label>
-                <select wire:model="selectedEvent" id="event_id" name="event_id" wire:change="updateCategory"
+                <label for="event_id" class="block text-sm text-gray-700 font-bold md:mr-4 truncate uppercase">Event:</label>
+                <select wire:model="selectedEvent" id="event_id" name="event_id" wire:change="updateEmployees"
                         class="cursor-pointer text-sm shadow appearance-none border pr-16 rounded py-2 px-2 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror md:w-auto"
                         required>
                     <option value="">Event</option>
@@ -32,7 +40,7 @@
                 </select>
                 
                 @if($eventToShow)
-                    <!-- <form id="deleteAll" action="{{ route('admin.category.deleteAll') }}" method="POST" onsubmit="return confirmDeleteAll(event);" class="flex ml-4">
+                    <!-- <form id="deleteAll" action="{{ route('admin.group.deleteAll') }}" method="POST" onsubmit="return confirmDeleteAll(event);" class="flex ml-4">
                     @csrf
                     @method('DELETE')
                     <input type="hidden" name="event_id" id="event_id_to_delete">
@@ -54,10 +62,14 @@
             </div>
         </div>
         <hr class="border-gray-200 my-4">
+
+        @if(!$eventToShow)
+            <p class="text-black text-sm mt-11 mb-4 uppercase text-center">No selected Event</p>
+        @endif
         
-        @if($eventToShow)
-       
-        <div class="flex justify-between">
+
+    @if($eventToShow)
+    <div class="flex justify-between">
             <p class="text-black mt-2 text-sm mb-4">Selected Event: <text class="uppercase text-red-500">{{ $eventToShow->event_name }}</text></p>
             <div x-data="{ open: false }">
                 <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
@@ -69,16 +81,52 @@
                             <p class="text-xl font-bold">Add Participant</p>
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
-                        <div class="mb-4" id="dynamicInput">
-                            <form action="{{ route('admin.participant.store') }}" method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <form action="{{ route('admin.participant.store') }}" method="POST" class=""  enctype="multipart/form-data">
                             <x-caps-lock-detector />
-                                @csrf
+                                    @csrf
+
                                     <div class="mb-2">
                                         <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
                                         <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
                                                 <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
                                         </select>
                                         <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="group_id" class="block text-gray-700 text-md font-bold mb-2">Group</label>
+                                        <select id="group_id" name="group_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('group_id') is-invalid @enderror">
+                                            
+                                            <!-- Placeholder option -->
+                                            <option value="">Select Group</option>
+                                            
+                                            <!-- Dynamically set the selected option -->
+                                            @foreach($groups as $group)
+                                                <option value="{{ $group->id }}" 
+                                                    @if(isset($groupToShow) && $group->id == $groupToShow->id) selected @endif>
+                                                    {{ $group->group_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
+                                    </div>
+
+
+                                    <div class="mb-2">
+                                        <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
+                                        <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
+                                        <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Gender</label>
+                                        <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
+                                                <option value="">Select Option</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                        </select>
+                                        <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                     </div>
 
                                     <div class="mb-2">
@@ -92,44 +140,22 @@
                                         <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                     </div>
 
-                                    <div class="mb-2">
-                                        <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
-                                        <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
-                                        <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
-                                    </div>
-
-                                    <div class="mb-2">
-                                        <label for="participant_group" class="block text-gray-700 text-md font-bold mb-2">Group/Department</label>
-                                        <input type="text" name="participant_group" id="participant_group" value="{{ old('participant_group') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_group') is-invalid @enderror">
-                                        <x-input-error :messages="$errors->get('participant_group')" class="mt-2" />
-                                    </div>
-
-                                    <div class="mb-2">
-                                        <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Gender</label>
-                                        <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
-                                                <option value="">Select Option</option>
-                                                <option value="male">Male</option>
-                                                <option value="female">Female</option>
-                                        </select>
-                                        <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
-                                    </div>
-
-                                    <div class="flex mb-4 mt-5 justify-center">
+                                    <div class="flex mb-4 mt-10 justify-center">
                                         <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                             Save
                                         </button>
                                     </div>
-                            </form> 
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         @else
-            
         @endif
+
         @if($search && $participants->isEmpty())
-        <p class="text-black mt-8 text-center">No participant found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
+        <p class="text-black mt-8 text-center">No Group found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
         <div class="flex justify-center mt-2">
             @if($search)
                 <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
@@ -143,7 +169,7 @@
             @endif</text></p>
         @else
 
-            @if($eventToShow)
+        @if($eventToShow)
                 
                 <div class="overflow-x-auto">
                     <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
@@ -160,11 +186,10 @@
                                             @endif
                                         @endif
                                     </button>
-                                </th>
-
+                                </th>       
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('event_name')" class="w-full h-full flex items-center justify-center">
-                                        Event
+                                        Event Name
                                         @if ($sortField == 'event_name')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
@@ -174,12 +199,10 @@
                                         @endif
                                     </button>
                                 </th>
-                                
-                                
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('participant_photo')" class="w-full h-full flex items-center justify-center">
-                                        Photo
-                                        @if ($sortField == 'participant_photo')
+                                    <button wire:click="sortBy('group_name')" class="w-full h-full flex items-center justify-center">
+                                        Group Name
+                                        @if ($sortField == 'group_name')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                             @else
@@ -187,8 +210,7 @@
                                             @endif
                                         @endif
                                     </button>
-                                </th>
-
+                                </th> 
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('participant_name')" class="w-full h-full flex items-center justify-center">
                                         Name
@@ -214,11 +236,10 @@
                                         @endif
                                     </button>
                                 </th>
-
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('participant_group')" class="w-full h-full flex items-center justify-center">
-                                        Group/Department
-                                        @if ($sortField == 'participant_group')
+                                    <button wire:click="sortBy('participant_photo')" class="w-full h-full flex items-center justify-center">
+                                        Photo
+                                        @if ($sortField == 'participant_photo')
                                             @if ($sortDirection == 'asc')
                                                 &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
                                             @else
@@ -227,110 +248,107 @@
                                         @endif
                                     </button>
                                 </th>
-                               
                                 <th class="border border-gray-400 px-3 py-2">Action</th>
                             </tr>
                         </thead>
                         <tbody >
-                        @foreach ($participants as $participant)
-                                <tr class="hover:bg-gray-100" wire:model="selectedEvent">                                  
-                                    <td class="text-black border border-gray-400  ">{{ $participant->id }}</td> 
-                                    <td class="text-black border border-gray-400">{{ $participant->event->event_name}}</td> 
-                                    <td class="text-black border border-gray-400 border-t-0 border-r-0 border-l-0 px-2 py-1 flex items-center justify-center" >
-                                        @if ($participant->participant_photo && Storage::exists('public/participant_photo/' . $participant->participant_photo))
-                                            <a  href="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" 
-                                                class="hover:border border-red-500 rounded-full" title="Click to view Picture"
-                                                data-fancybox data-caption="Participant: {{ $participant->participant_name }}, {{ $participant->participant_gender }}">
-                                                <img src="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" class="rounded-full w-9 h-9">
-                                            </a>
-                                        @else
-                                            <img data-fancybox src="{{ asset('assets/img/user.png') }}" class="cursor-pointer w-9 h-9 hover:border hover:border-red-500 rounded-full" title="Click to view Picture" >
-                                        @endif
-                                    </td>                         
+                            @foreach ($participants as $participant)
+                                <tr class="hover:bg-gray-100" wire:key="participant-{{ $participant->id }}">
+                                    <td class="text-black border border-gray-400  ">{{ $participant->id }}</td>      
+                                    <td class="text-black border border-gray-400">{{ $participant->event->event_name}}</td>       
+                                    <td class="text-black border border-gray-400">{{ $participant->group?->group_name ?? 'N/A' }}</td>          
                                     <td class="text-black border border-gray-400">{{ $participant->participant_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>
-                                    <td class="text-black border border-gray-400">{{ $participant->participant_group}}</td>
+                                    <td class="text-black border border-gray-400">{{ $participant->participant_photo}}</td>
                                     <td class="text-black border border-gray-400 px-1 py-1">
                                         <div class="flex justify-center items-center space-x-2">
                                             @if($eventToShow && $participant)
                                             <div x-data="{ open: false, 
-                                                id: {{ json_encode($participant->id) }},
-                                                    event: {{ json_encode($participant->event_id) }},
-                                                    participant_photo: {{ json_encode($participant->participant_photo) }},
-                                                    participant_name: {{ json_encode($participant->participant_name) }},
-                                                    participant_gender: {{ json_encode($participant->participant_gender) }},
-                                                    participant_group: {{ json_encode($participant->participant_group) }},}">
-                                                <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
-                                                    <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
-                                                </a>
-                                                <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                                    <div @click.away="open = true" class="w-[35%] bg-white p-6 rounded-lg shadow-lg  mx-auto">
-                                                        <div class="flex justify-between items-start pb-3"> <!-- Changed items-center to items-start -->
-                                                            <p class="text-xl font-bold">Edit Participant</p>
-                                                            <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
-                                                        </div>
-                                                        <div class="mb-4">
-                                                            <form id="updateCategoryForm" action="{{ route('admin.participant.update', $participant->id )}}" method="POST" class="h-[500px] overflow-y-auto pr-4">
-                                                                <x-caps-lock-detector />
+                                                        id: {{ json_encode($participant->id) }},
+                                                        event: {{ json_encode($participant->event_id) }},
+                                                        group: {{ json_encode($participant->group_id) }},
+                                                        participant_name: {{ json_encode($participant->participant_name) }},
+                                                        participant_gender: {{ json_encode($participant->participant_gender) }},
+                                                        participant_photo: {{ json_encode($participant->participant_photo) }} 
+                                                    }">
+                                            <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
+                                                <i class="fa-solid fa-pen fa-xs"></i>
+                                            </a>
+                                            <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                                                <div @click.away="open = false" class="w-[35%] bg-white p-6 rounded-lg shadow-lg mx-auto">
+                                                    <div class="flex justify-between items-start pb-3">
+                                                        <p class="text-xl font-bold">Edit Participant</p>
+                                                        <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
+                                                    </div>
+                                                    <form action="{{ route('admin.participant.update', $participant->id) }}" method="POST" enctype="multipart/form-data">
                                                                 @csrf
                                                                 @method('PUT')
-                                                                
+
+                                                                <!-- Event Selection -->
                                                                 <div class="mb-2">
-                                                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2 text-left">Event</label>
-                                                                        <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
-                                                                                <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
-                                                                        </select>
-                                                                        <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
-                                                                    </div>
+                                                                    <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
+                                                                    <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
+                                                                        <option value="">Select Event</option>
+                                                                        @foreach($events as $event)
+                                                                            <option value="{{ $event->id }}" {{ $participant->event_id == $event->id ? 'selected' : '' }}>{{ $event->event_name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
+                                                                </div>
 
-                                                                    <div class="mb-4 text-center flex flex-col items-center">
-                                                                        <img id="blah2" src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" alt="Default photo Icon" class="max-w-xs mb-2" />
-                                                                        <input type="file" onchange="readURL2(this);" name="participant_photo" id="participant_photo" class="p-2 bg-gray-800 text-white" accept="image/*" />
-                                                                    </div>
-                                                                    
-                                                                    <div class="mb-4">
-                                                                        <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Name</label>
-                                                                        <input type="text" name="participant_name" id="participant_name" x-model="participant_name" value="{{ $participant->participant_name }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
-                                                                    </div>
+                                                                <!-- Group Selection -->
+                                                                <div class="mb-2">
+                                                                    <label for="group_id" class="block text-gray-700 text-md font-bold mb-2">Group</label>
+                                                                    <select id="group_id" name="group_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('group_id') is-invalid @enderror">
+                                                                        <option value="">Select Group</option>
+                                                                        @foreach($groups as $group)
+                                                                            <option value="{{ $group->id }}" {{ $participant->group_id == $group->id ? 'selected' : '' }}>{{ $group->group_name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
+                                                                </div>
 
-                                                                    <div class="mb-2">
-                                                                        <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2 text-left">Gender </label>
-                                                                        <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
-                                                                        @if($participant->participant_gender === 'male')  
-                                                                                <option value="{{ $participant->participant_gender }}">
-                                                                                    @if($participant->participant_gender == 'male')
-                                                                                        Male
-                                                                                    @endif
-                                                                                </option>
-                                                                                <option value="female">Female</option>
-                                                                            @else
-                                                                                <option value="{{ $participant->participant_gender }}">Female</option>
-                                                                                <option value="male">Male</option>
-                                                                            @endif
-                                                                        </select>
-                                                                        <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
-                                                                    </div>
+                                                                <!-- Participant Name -->
+                                                                <div class="mb-2">
+                                                                    <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
+                                                                    <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name', $participant->participant_name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
+                                                                    <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
+                                                                </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="participant_group" class="block text-gray-700 text-md font-bold mb-2 text-left">Group/Department</label>
-                                                                        <input type="text" name="participant_group" id="participant_group" x-model="participant_group" value="{{ $participant->participant_group }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_group') is-invalid @enderror">
-                                                                        <x-input-error :messages="$errors->get('participant_group')" class="mt-2" />
-                                                                    </div>
+                                                                <!-- Participant Gender -->
+                                                                <div class="mb-2">
+                                                                    <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Gender</label>
+                                                                    <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
+                                                                        <option value="">Select Gender</option>
+                                                                        <option value="male" {{ $participant->participant_gender == 'male' ? 'selected' : '' }}>Male</option>
+                                                                        <option value="female" {{ $participant->participant_gender == 'female' ? 'selected' : '' }}>Female</option>
+                                                                    </select>
+                                                                    <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
+                                                                </div>
 
-                                                                   
-                                                                    <div class="flex mb-4 mt-10 justify-center">
-                                                                    <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
-                                                                        Save Changes
-                                                                    </button>
-                                                                    </div>
+                                                                <!-- Participant Photo -->
+                                                                <div class="mb-2">
+                                                                    <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
+                                                                    <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
+                                                                    <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
+                                                                        <img id="imagePreview" src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" class="rounded-lg w-32 h-auto mb-2">
+                                                                        <span class="text-sm text-gray-500">Select Photo</span>
+                                                                    </label>
+                                                                    <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
+                                                                </div>
 
+                                                                <!-- Submit Button -->
+                                                                <div class="flex justify-center mt-4">
+                                                                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
+                                                                </div>
                                                             </form>
+
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
-                                            <form id="deleteSelected" action="{{ route('admin.participant.destroy', [':id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_id }}', '{{ $participant->participant_name }}', '{{ $participant->score }}');">
+                                            <form id="deleteSelected" action="{{ route('admin.participant.destroy', $participant->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
@@ -354,7 +372,7 @@
                                         @endif                                    
                                     </div>
                                     <div class="justify-end">
-                                        <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of participant: <text class="ml-2">{{ $participantCounts[$eventToShow->id]->participant_count ?? 0 }}</text></p>
+                                        <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of group: <text class="ml-2">{{ $groupCounts[$eventToShow->id]->group_count ?? 0 }}</text></p>
                                         
                                     </div>
                                 </div> 
@@ -371,178 +389,150 @@
                     @endif
                 </div>
             @else
-                <p class="text-black mt-10  text-center">Select table to show data</p>
+                
             @endif
         @endif
     </div>
 
-    <script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
 
-        document.addEventListener('DOMContentLoaded', function() {
-            tippy('[data-tippy-content]', {
-                allowHTML: true,
-                theme: 'light', // Optional: Change the tooltip theme (light, dark, etc.)
-                placement: 'right-end', // Optional: Adjust tooltip placement
-            });
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        tippy('[data-tippy-content]', {
+            allowHTML: true,
+            theme: 'light', // Optional: Change the tooltip theme (light, dark, etc.)
+            placement: 'right-end', // Optional: Adjust tooltip placement
         });
+    });
 
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
-        <script>
-        Fancybox.bind('[data-fancybox]', {
-            contentClick: "iterateZoom",
-            Images: {
-                Panzoom: {
-                    maxScale: 3,
-                    },
-                initialSize: "fit",
-            },
-            Toolbar: {
-            display: {
-                left: ["infobar"],
-                middle: [
-                "zoomIn",
-                "zoomOut",
-                "toggle1to1",
-                "rotateCCW",
-                "rotateCW",
-                "flipX",
-                "flipY",
-                ],
-                right: ["slideshow", "download", "thumbs", "close"],
-            },
-            },
-        });    
-        </script>
+</script>
 
-
-    <script>
-
-    function searchparticipants(event) {
-            let searchTerm = event.target.value.toLowerCase();
-            if (searchTerm === '') {
-                this.participantsToShow = @json($participantToShow->toArray());
-            } else {
-                this.participantsToShow = this.participantsToShow.filter(participant =>
-                    participant.participant_photo.toLowerCase().includes(searchTerm) ||
-                    participant.participant_name.toLowerCase().includes(searchTerm) ||
-                    participant.participant_gender.toLowerCase().includes(searchTerm) ||
-                    participant.participant_group.toLowerCase().includes(searchTerm) ||
-                    participant.event.event_name.toLowerCase().includes(searchTerm)
-                );
-            }
-        }
-
-            function confirmDeleteAll(event) {
-            event.preventDefault(); // Prevent form submission initially
-
-            Swal.fire({
-                title: 'Select event to Delete All Records',
-                html: `
-                    <select id="event_id_select" class="cursor-pointer hover:border-red-500 swal2-select">
-                        <option value="">Select event</option>
-                        @foreach($events as $event)
-                            <option value="{{ $event->id }}">{{ $event->name }} - {{ $event->venue }} - {{ $event->participant_gender }}</option>
-                        @endforeach
-                    </select>
-                `,
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete all!',
-                preConfirm: () => {
-                    const eventId = Swal.getPopup().querySelector('#event_id_select').value;
-                    if (!eventId) {
-                        Swal.showValidationMessage(`Please select a event`);
-                    }
-                    return { eventId: eventId };
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const eventId = result.value.eventId;
-                    document.getElementById('event_id_to_delete').value = eventId;
-                    document.getElementById('deleteAll').submit();
-                }
-            });
-        }
-
-        function ConfirmDeleteSelected(event, rowId, participantId, participantname, participant_comment) {
-            event.preventDefault(); // Prevent form submission initially
-
-            Swal.fire({
-                title: `Are you sure you want to delete the participant ${participantId} - ${participantname} ${participant_comment} ?`,
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const form = document.getElementById('deleteSelected');
-                    // Replace the placeholders with the actual rowId and participantId
-                    const actionUrl = form.action.replace(':id', rowId).replace(':participant_id', participantId);
-                    form.action = actionUrl;
-                    form.submit();
-                }
-            });
-
-            return false; 
-        }
-
-    </script>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function previewImage(event) {
-            var reader = new FileReader();
-            reader.onload = function() {
-                var output = document.getElementById('imagePreview');
-                output.src = reader.result;
-                document.getElementById('imagePreviewContainer').style.display = 'block';
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    </script>
-    <script>
-    function handleImageError(image) {
-        // Set the default image
-        image.src = "{{ asset('assets/img/user.png') }}";
-        
-        // Display the error message
-        document.getElementById('errorMessage').style.display = 'block';
-    }
-    </script>
-
-    <script>
-            function readURL(input) {
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        $('#blah')
-                            .attr('src', e.target.result);
-                    };
-
-                    reader.readAsDataURL(input.files[0]);
-                }
-            }
-    </script>
-    <!--  -->
-    <script>
-            function readURL2(input) {
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        $('#blah2')
-                            .attr('src', e.target.result);
-                    };
-
-                    reader.readAsDataURL(input.files[0]);
-                }
-            }
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+<script>
+      Fancybox.bind('[data-fancybox]', {
+        contentClick: "iterateZoom",
+        Images: {
+            Panzoom: {
+                maxScale: 3,
+                },
+            initialSize: "fit",
+        },
+        Toolbar: {
+          display: {
+            left: ["infobar"],
+            middle: [
+              "zoomIn",
+              "zoomOut",
+              "toggle1to1",
+              "rotateCCW",
+              "rotateCW",
+              "flipX",
+              "flipY",
+            ],
+            right: ["slideshow", "download", "thumbs", "close"],
+          },
+        },
+      });    
 </script>
 
 
-@endif
+<script>
+    function confirmDeleteAll(event) {
+        event.preventDefault(); // Prevent form submission initially
+
+        Swal.fire({
+            title: 'Select Participant to Delete All Records',
+            html: `
+            
+                <select id="group_id_select" class="cursor-pointer hover:border-red-500 swal2-select">
+                    <option value="">Select group</option>
+                     @foreach($participants as $group)
+                            <option value="{{ $group->id }}">{{ $group->group_id }} | {{ $group->group_name }} - {{ $group->score }}</option>
+                        @endforeach
+                </select>
+            `,
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete all!',
+            preConfirm: () => {
+                const groupId = Swal.getPopup().querySelector('#group_id_select').value;
+                if (!groupId) {
+                    Swal.showValidationMessage(`Please select a group`);
+                }
+                return { groupId: groupId };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const eventId = result.value.eventId;
+                document.getElementById('group_id_to_delete').value = eventId;
+                document.getElementById('deleteAll').submit();
+            }
+        });
+    }
+
+    function ConfirmDeleteSelected(event, rowId, participantName) {
+        event.preventDefault(); // Prevent form submission initially
+
+        Swal.fire({
+            title: `Are you sure you want to delete the participant ${participantName} ?`,
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('deleteSelected');
+                // Replace the placeholders with the actual rowId and employeeId
+                const actionUrl = form.action.replace(':id', rowId);
+                form.action = actionUrl;
+                form.submit();
+            }
+        });
+
+        return false; 
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function previewImage(event) {
+    const file = event.target.files[0]; // Get the selected file
+
+    if (file) {
+        const imagePreview = document.getElementById('imagePreview');
+        imagePreview.src = URL.createObjectURL(file); // Display the image
+        imagePreview.onload = () => URL.revokeObjectURL(imagePreview.src); // Clean up memory
+    }
+}
+
+</script>
+<script>
+    
+function handleImageError(image) {
+    // Set the default image
+    image.src = "{{ asset('assets/img/user.png') }}";
+    
+    // Display the error message
+    document.getElementById('errorMessage').style.display = 'block';
+}
+</script>
+
+<script>
+         function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah')
+                        .attr('src', e.target.result);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+</script>
+<!--  -->

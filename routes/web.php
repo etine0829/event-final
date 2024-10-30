@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CriteriaController;
+use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\JudgesController;
 
@@ -49,6 +50,15 @@ Route::middleware(['auth'])->group(function () {
             'update' => 'criteria.update'   
         ]);
         Route::delete('criteria', [CriteriaController::class, 'deleteAll'])->name('criteria.deleteAll');
+
+        Route::resource('group', GroupController::class)->names([
+            'index' => 'group.index',
+            'create' => 'group.create',
+            'store' => 'group.store',
+            'edit' => 'group.edit',
+            'update' => 'group.update'   
+        ]);
+        Route::delete('group', [GroupController::class, 'deleteAll'])->name('group.deleteAll');
 
         Route::resource('participant', ParticipantController::class)->names([
             'index' => 'participant.index',
@@ -110,6 +120,16 @@ Route::middleware(['auth'])->group(function () {
         ]);
         Route::delete('criteria', [CriteriaController::class, 'deleteAll'])->name('criteria.deleteAll');
 
+       
+        Route::resource('group', GroupController::class)->names([
+            'index' => 'group.index',
+            'create' => 'group.create',
+            'store' => 'group.store',
+            'edit' => 'group.edit',
+            'update' => 'group.update'   
+        ]);
+        Route::delete('group', [GroupController::class, 'deleteAll'])->name('group.deleteAll');
+
         Route::resource('participant', ParticipantController::class)->names([
             'index' => 'participant.index',
             'create' => 'participant.create',
@@ -129,6 +149,17 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('judge', [JudgesController::class, 'deleteAll'])->name('judge.deleteAll');
 
       
+    });
+
+});
+
+
+
+// judge route
+
+Route::middleware(['auth'])->group(function () {
+    Route::middleware(['role:judge'])->prefix('judge')->name('judge.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'indexJudge'])->name('dashboard');
     });
 
 });

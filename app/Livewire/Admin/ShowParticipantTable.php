@@ -3,25 +3,26 @@
 namespace App\Livewire\Admin;
 
 use \App\Models\Admin\Event; 
+use \App\Models\Admin\Group; 
 use \App\Models\Admin\Participant; 
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
 
+
 class ShowParticipantTable extends Component
 {
-    
-    use WithPagination;
-
+    use WithPagination; 
     public $search = '';
+    public $sortField = 'id';
     public $sortDirection = 'asc';
     public $selectedEvent = null;
-    public $selectedParticipant = null;
-    public $sortField = 'id';
-    public $participantToShow;
+    public $selectedGroup = null;
+    public $groupsToShow;
     public $eventToShow;
+    public $groupToShow;
 
-    protected $listeners = ['updateCategory'];
+    protected $listeners = ['updateEmployees', 'updateEmployeesByDepartment'];
 
     public function updatingSearch()
     {
@@ -31,16 +32,23 @@ class ShowParticipantTable extends Component
     public function mount()
     {
         $this->selectedEvent = session('selectedEvent', null);
-        $this->participantToShow = collect([]);
-        $this->eventToShow = collect([]); 
+        $this->selectedGroup = session('selectedGroup', null);
+        $this->groupsToShow = collect([]); // Initialize as an empty collection
+        $this->eventToShow = collect([]); // Initialize as an empty collection
+        $this->groupToShow = collect([]);
     }
 
     public function updatingSelectedEvent()
     {
-        $this->resetPage();      
+        $this->resetPage();
+        $this->updateEmployees();
     }
-    
 
+    public function updatingSelectedCategory()
+    {
+        $this->resetPage();
+        $this->updateEmployeesByDepartment();
+    }
 
     public function sortBy($field)
     {
@@ -53,14 +61,14 @@ class ShowParticipantTable extends Component
         $this->sortField = $field;
     }
 
-public function render()
+    public function render()
     {
-        $query = Participant::with('event');
+        $query = Participant::with('group')->with('event');
 
         // Apply search filters
         $query = $this->applySearchFilters($query);
 
-        // Apply selected school filter
+        // Apply selected event filter
         if ($this->selectedEvent) {
             $query->where('event_id', $this->selectedEvent);
             $this->eventToShow = Event::findOrFail($this->selectedEvent);
@@ -72,54 +80,79 @@ public function render()
             $this->type_of_scoring = null; // Reset if no event is selected
         }
 
-        $participants = $query->orderBy($this->sortField, $this->sortDirection)
-                             ->paginate(25);
+        // Apply selected category filter
+        if ($this->selectedGroup) {
+            $query->where('group_id', $this->selectedGroup);
+            $this->groupToShow = Group::find($this->selectedGroup);
+        } else {
+            $this->groupToShow = null; // Reset departmentToShow if no department is selected
+        }
+
+        $participants = $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
+
 
         $events = Event::all();
+        // $departments = Department::where('school_id', $this->selectedEvent)->get();
+        $groups = Group::where('event_id', $this->selectedEvent)
+        ->get(['id','group_name']);
 
 
-        $participantCounts = Participant::select('event_id', \DB::raw('count(*) as participant_count'))
-                                  ->groupBy('event_id')
-                                  ->get()
-                                  ->keyBy('event_id');
+
+        // Count employees by department
+        $groupCounts = Participant::select('event_id', \DB::raw('count(*) as group_count'))
+            ->groupBy('event_id')
+            ->get()
+            ->keyBy('event_id');
 
         return view('livewire.admin.show-participant-table', [
             'participants' => $participants,
             'events' => $events,
-            'participantCounts' => $participantCounts,
-            
+            'groups' => $groups,
+            'groupCounts' => $groupCounts,
+            'type_of_scoring' => $this->type_of_scoring,
         ]);
     }
 
-    public function updateCategory()
+    public function updateEmployees()
     {
-        // Update participantToShow based on selected school
+        // Update groupToShow based on selected school
         if ($this->selectedEvent) {
-            $this->participantToShow = Participant::where('event_id', $this->selectedEvent)
-                ->get(); // Ensure this returns a collection
+            $this->groupsToShow = Group::where('event_id', $this->selectedEvent)->get();
         } else {
-            $this->participantToShow = collect(); // Reset to empty collection if no school is selected
+            $this->groupsToShow = collect(); // Reset to empty collection if no school is selected
         }
 
+        // Ensure departmentToShow is reset if the selected school changes
+        $this->selectedGroup = null;
+        $this->groupToShow = null;
+    }
+
+public function updateEmployeesByDepartment()
+{
+    if ($this->selectedGroup && $this->selectedEvent) {
+        $this->groupToShow = Group::where('id', $this->selectedGroup)
+                                            ->where('event_id', $this->selectedEvent)
+                                            ->first();
+    } else {
+        $this->groupToShow = null;
         
     }
+}
+
+
 
     protected function applySearchFilters($query)
     {
         return $query->where(function (Builder $query) {
             $query->where('id', 'like', '%' . $this->search . '%')
-                ->orWhere('participant_photo', 'like', '%' . $this->search . '%')        
-                ->orWhere('participant_name', 'like', '%' . $this->search . '%')
-                ->orWhere('participant_gender', 'like', '%' . $this->search . '%')
-                ->orWhere('participant_group', 'like', '%' . $this->search . '%')
-                ->orWhere('participant_comment', 'like', '%' . $this->search . '%')
-                ->orWhereHas('event', function (Builder $query) {
-                    $query->where('event_name', 'like', '%' . $this->search . '%')
-                        ->orWhere('venue', 'like', '%' . $this->search . '%')
-                        ->orWhere('type_of_scoring', 'like', '%' . $this->search . '%');
-                });
+            ->orWhere('participant_photo', 'like', '%' . $this->search . '%')        
+            ->orWhere('participant_name', 'like', '%' . $this->search . '%')
+            ->orWhere('participant_gender', 'like', '%' . $this->search . '%')
+            ->orWhere('participant_comment', 'like', '%' . $this->search . '%')
+                ->orWhereHas('group', function (Builder $query) {
+                $query->where('group_name', 'like', '%' . $this->search . '%');
+            });
         });
     }
-
-        
-    }	
+    
+}
