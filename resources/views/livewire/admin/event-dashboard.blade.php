@@ -94,18 +94,7 @@
             <table class="table-auto border-collapse border border-gray-400 w-full text-sm text-center mb-4">
                 <thead class="bg-gray-200 text-black">
                     <tr>    
-                        <th class="border border-gray-400 px-3 py-2">
-                            <button wire:click="sortBy('id')" class="w-full h-full flex items-center justify-center">
-                                ID #
-                                @if ($sortField == 'id')
-                                    @if ($sortDirection == 'asc')
-                                        &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                    @else
-                                        &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                    @endif
-                                @endif
-                            </button>
-                        </th>
+                      
                         <th class="border border-gray-400 px-3 py-2">
                             <button wire:click="sortBy('event_name')" class="w-full h-full flex items-center justify-center">
                                 Event Name
@@ -148,7 +137,6 @@
                 <tbody>
                     @foreach ($events as $event)
                         <tr>
-                            <td class="text-black border border-gray-400 px-3 py-2">{{ $event->id }}</td>
                             <td class="text-black border border-gray-400 px-3 py-2">{{ $event->event_name }}</td>
                             <td class="text-black border border-gray-400 px-3 py-2">{{ $event->venue}}</td>
                             <td class="text-black border border-gray-400 px-3 py-2">

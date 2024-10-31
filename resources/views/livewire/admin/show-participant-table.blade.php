@@ -176,30 +176,6 @@
                         <thead class="bg-gray-200 text-black">
                             <tr>
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('id')" class="w-full h-full flex items-center justify-center">
-                                        Count #
-                                        @if ($sortField == 'id')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>       
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('event_name')" class="w-full h-full flex items-center justify-center">
-                                        Event Name
-                                        @if ($sortField == 'event_name')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
-                                <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('group_name')" class="w-full h-full flex items-center justify-center">
                                         Group Name
                                         @if ($sortField == 'group_name')
@@ -253,9 +229,7 @@
                         </thead>
                         <tbody >
                             @foreach ($participants as $participant)
-                                <tr class="hover:bg-gray-100" wire:key="participant-{{ $participant->id }}">
-                                    <td class="text-black border border-gray-400  ">{{ $participant->id }}</td>      
-                                    <td class="text-black border border-gray-400">{{ $participant->event->event_name}}</td>       
+                                <tr class="hover:bg-gray-100" wire:key="participant-{{ $participant->id }}">         
                                     <td class="text-black border border-gray-400">{{ $participant->group?->group_name ?? 'N/A' }}</td>          
                                     <td class="text-black border border-gray-400">{{ $participant->participant_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>

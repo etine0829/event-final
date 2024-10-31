@@ -149,19 +149,6 @@
                         <thead class="bg-gray-200 text-black">
                             <tr>
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('id')" class="w-full h-full flex items-center justify-center">
-                                        Count #
-                                        @if ($sortField == 'id')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
-                                
-                                <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('picture')" class="w-full h-full flex items-center justify-center">
                                         Picture
                                         @if ($sortField == 'picture')
@@ -206,8 +193,6 @@
                         <tbody >
                             @foreach ($judges as $judge)
                                 <tr class="hover:bg-gray-100" wire:model="selectedCategory">
-                                    <td class="text-black border border-gray-400  ">{{ $judge->id }}</td>
-                                    <!-- <td class="text-black border border-gray-400  ">{{ $judge->judge_id }}</td> -->
                                     <td class="text-black border border-gray-400">{{ $judge->name}}</td>
                                     <td class="text-black border border-gray-400">{{ $judge->picture}}</td>
                                     <td class="text-black border border-gray-400">{{ $judge->email}}</td>

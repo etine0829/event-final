@@ -129,33 +129,7 @@
                 <div class="overflow-x-auto">
                     <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
                         <thead class="bg-gray-200 text-black">
-                            <tr>
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('id')" class="w-full h-full flex items-center justify-center">
-                                        Count #
-                                        @if ($sortField == 'id')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
-                                
-                                
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('event_name')" class="w-full h-full flex items-center justify-center">
-                                        Event Name
-                                        @if ($sortField == 'event_name')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
+                            <tr>   
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('category_name')" class="w-full h-full flex items-center justify-center">
                                         Category Name
@@ -186,9 +160,7 @@
                         </thead>
                         <tbody >
                             @foreach ($categories as $category)
-                                <tr class="hover:bg-gray-100" wire:model="selectedCategory">
-                                    <td class="text-black border border-gray-400  ">{{ $category->id }}</td>      
-                                    <td class="text-black border border-gray-400">{{ $category->event->event_name}}</td>               
+                                <tr class="hover:bg-gray-100" wire:model="selectedCategory">             
                                     <td class="text-black border border-gray-400">{{ $category->category_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $category->score}}</td>
                                     <!-- <td class="text-black border border-gray-400">{{ $category->event->name}}</td>
