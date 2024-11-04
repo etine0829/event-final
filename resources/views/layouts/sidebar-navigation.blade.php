@@ -113,12 +113,9 @@
                 </li>
                 
                 <li>
-                    <a href="{{ route('register') }}" class="relative flex flex-row items-center h-11 focus:outline-none  hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-yellow-500 hover:text-white pr-6 
-                    ">
-                        <span class="inline-flex justify-center items-center ml-4">
-                            {{-- <i class="fa-solid fa-gauge-high fa-sm text-gray-200 "></i> --}}
-                        </span>
-                        <span class="ml-2 text-sm tracking-wide truncate text-gray-200">Add User</span>
+                    <a href="{{ route('admin.user.index')}}" class="w-[500px] flex items-center h-11 pl-4 pr-6 text-sm hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 over:bg-blue-800 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-yellow-500 hover:text-white 
+                        {{ request()->routeIs('admin.user.index') ? 'border-l-yellow-500 bg-[#172029] text-white' : 'hover:bg-blue-800 dark:hover:bg-slate-700 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-yellow-500 hover:text-white' }}">
+                        &nbsp;<i class="fa-solid fa-user-circle fa-sm text-gray-200 mr-2"></i> Add User
                     </a>
                 </li>
                 

@@ -33,6 +33,11 @@ class Event extends Model
         return $this->hasMany(Category::class);
     }
 
+    public function criteria()
+    {
+        return $this->hasMany(Criteria::class);
+    }
+
     public function participant()
     {
         return $this->hasMany(Participant::class);

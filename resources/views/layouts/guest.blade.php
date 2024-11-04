@@ -15,11 +15,13 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
+    <!-- this is for the welcome page -->
     <body class="font-sans text-gray-900 antialiased bg-yellow-dark">
         <div>
             <div class="flex justify-end mt-5 mr-4 px-4 sm:mr-10 sm:px-8">
             {{ $slot }}
             </div>
+            
             <div class="flex justify-center items-center h-screen">                       
                     <div class="relative">
                         <div class="flex flex-col md:flex-row items-center justify-center text-center md:text-left">
@@ -34,16 +36,6 @@
                 </div>
 
         </div>
-        
-        <!-- <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0  dark:bg-gray-900">
 
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div> -->
-            <!-- <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-            </div> -->
-        <!-- </div> -->
     </body>
 </html>

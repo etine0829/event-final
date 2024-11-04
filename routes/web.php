@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Admin\CriteriaController;
 use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\JudgesController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -20,6 +22,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         // Route::get('/manage-event', [EventController::class, 'index'])->name('event.dashboard');
 
@@ -77,6 +80,16 @@ Route::middleware(['auth'])->group(function () {
             'update' => 'judge.update'   
         ]);
         Route::delete('judge', [JudgesController::class, 'deleteAll'])->name('judge.deleteAll');
+
+        Route::resource('user', UserController::class)->names([
+            'index' => 'user.index',
+            'create' => 'user.create',
+            'store' => 'user.store',
+            'edit' => 'user.edit',
+            'update' => 'user.update'   
+        ]);
+        Route::delete('user', [UserController::class, 'deleteAll'])->name('user.deleteAll');
+
 
       
     });
