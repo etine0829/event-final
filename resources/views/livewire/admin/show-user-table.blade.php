@@ -33,12 +33,6 @@
                                 </div>
 
                                 <div class="mb-4">
-                                    <label for="picture" class="block text-gray-700 text-md font-bold mb-2">Picture</label>
-                                    <input type="text" name="picture" id="picture" value="{{ old('picture') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('picture') is-invalid @enderror">
-                                    <x-input-error :messages="$errors->get('picture')" class="mt-2" />
-                                </div>
-
-                                <div class="mb-4">
                                     <label for="email" class="block text-gray-700 text-md font-bold mb-2">Email</label>
                                     <input type="email" name="email" id="email" value="{{ old('email') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') is-invalid @enderror" required>
                                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
@@ -94,19 +88,6 @@
                 <thead class="bg-gray-200 text-black">
                     <tr>
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('picture')" class="w-full h-full flex items-center justify-center">
-                                        Picture
-                                        @if ($sortField == 'picture')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
-
-                                <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('name')" class="w-full h-full flex items-center justify-center">
                                         Name
                                         @if ($sortField == 'name')
@@ -152,7 +133,6 @@
                     @foreach ($users as $user)
                         <tr>
                             <td class="text-black border border-gray-400">{{ $user->name}}</td>
-                            <td class="text-black border border-gray-400">{{ $user->picture}}</td>
                             <td class="text-black border border-gray-400">{{ $user->email}}</td>
                             <td class="text-black border border-gray-400 px-3 py-2">
                                 @if($user->role == 'event_manager')
@@ -168,7 +148,6 @@
                                     <div x-data="{ open: false, 
                                             Id: '{{ $user->id }}', 
                                             name: {{ json_encode($user->name) }},
-                                            picture: {{ json_encode($user->picture) }},
                                             email: {{ json_encode($user->email) }},
                                             password: {{ json_encode($user->password) }},
                                             role: {{ json_encode($user->role) }},
@@ -191,12 +170,6 @@
                                                                         <label for="name" class="block text-gray-700 text-md font-bold mb-2 text-left">Name</label>
                                                                         <input type="text" name="name" id="name" x-model="name" value="{{ $user->name }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required autofocus>
                                                                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="mb-4">
-                                                                        <label for="picture" class="block text-gray-700 text-md font-bold mb-2 text-left">Picture</label>
-                                                                        <input type="text" name="picture" id="picture" x-model="picture" value="{{ $user->picture }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('picture') is-invalid @enderror" required autofocus>
-                                                                        <x-input-error :messages="$errors->get('picture')" class="mt-2" />
                                                                     </div>
 
                                                                     <div class="mb-4">

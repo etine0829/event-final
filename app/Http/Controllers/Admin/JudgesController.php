@@ -29,7 +29,6 @@ class JudgesController extends Controller
         $validatedData = $request->validate([
             'event_id' => 'required|exists:events,id',
             'name' => 'required|string|max:255',
-            'picture' => 'string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:users,email', 
             'password' => ['required'],
         ]);
@@ -60,7 +59,6 @@ class JudgesController extends Controller
         //         $validatedData = $request->validate([
         //             'event_id' => 'required|exists:events,id',
         //             'name' => 'required|string|max:255',
-        //             'picture' => 'string|max:255',
         //             'email' => 'required|string|lowercase|email|max:255|unique:users,email,' . $judge->id, // Allow updating the email but keep uniqueness
         //             'password' => ['nullable', 'confirmed', Rules\Password::defaults()], // Password can be nullable if not changing
         //         ]);
@@ -100,7 +98,6 @@ class JudgesController extends Controller
                                         ->where('id', '<>', $judge->id);
                         }),
                     ],
-                    'picture' => 'required|string|max:255',
                     'email' => 'required|string|max:255',
                     
                     
@@ -109,7 +106,6 @@ class JudgesController extends Controller
                 $hasChanges = false;
                 if ($request->event_id !== $judge->event_id ||
                     $request->name !== $judge->name ||
-                    $request->picture !== $judge->picture ||
                     $request->email !== $judge->email ||
                     $request->password !== $judge->password
                      ) 
