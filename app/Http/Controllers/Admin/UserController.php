@@ -89,14 +89,12 @@ class UserController extends Controller
                         'string',
                         'max:255',
                     ],
-                    'picture' => 'required|string|max:255',
                     'email' => 'required|string|max:255',
                     'role' => 'required|in:event_manager,staff,judge', 
                 ]);
                 
                 $hasChanges = false;
                 if ($request->name !== $user->name ||
-                    $request->picture !== $user->picture ||
                     $request->email !== $user->email ||
                     $request->password !== $user->password ||
                     $request->role !== $user->role
