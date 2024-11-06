@@ -143,84 +143,52 @@
                                     Jugde
                                 @endif
                             </td>
-                            <td class="text-center text-black border border-gray-400 px-2 py-.5">
-                                <div class="flex justify-center items-center space-x-2">
-                                    <div x-data="{ open: false, 
-                                            Id: '{{ $user->id }}', 
-                                            name: {{ json_encode($user->name) }},
-                                            email: {{ json_encode($user->email) }},
-                                            password: {{ json_encode($user->password) }},
-                                            role: {{ json_encode($user->role) }},
-                                            }">
-                                        <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
-                                            <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
-                                        </a>
-                                        <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                            <div @click.away="open = true" class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
-                                                <div class="flex justify-between items-start pb-3"> <!-- Changed items-center to items-start -->
-                                                    <p class="text-xl font-bold">Edit User</p>
-                                                    <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
-                                                </div>
-                                                <div class="mb-4">
-                                                    <form id="updateUserForm" action="{{ route('admin.user.update', $user->id )}}" method="POST" class="">
-                                                        @csrf
-                                                        @method('PUT')
-                                                            <div class="mb-2">
-                                                                    <div class="mb-4">
-                                                                        <label for="name" class="block text-gray-700 text-md font-bold mb-2 text-left">Name</label>
-                                                                        <input type="text" name="name" id="name" x-model="name" value="{{ $user->name }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required autofocus>
-                                                                        <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="mb-4">
-                                                                        <label for="email" class="block text-gray-700 text-md font-bold mb-2 text-left">Email</label>
-                                                                        <input type="text" name="email" id="email" x-model="email" value="{{ $user->email }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="mb-4">
-                                                                        <label for="password" class="block text-gray-700 text-md font-bold mb-2 text-left">Password</label>
-                                                                        <input type="text" name="password" id="password" x-model="password" value="{{ $user->password }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('password') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="mb-2">
-                                                                        <label for="role" class="block text-gray-700 text-md font-bold mb-2 text-left">Role: </label>
-                                                                        <select id="role" name="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('role') is-invalid @enderror" required>
-                                                                            <option value="{{ $user->role }}">
-                                                                                @if ($user->role == 'event_manager')
-                                                                                    Event Manager
-                                                                                @elseif ($user->role == 'staff')
-                                                                                    Staff
-                                                                                @else
-                                                                                    Judge
-                                                                                @endif
-                                                                            </option>
-                                                                            <option value="event_manager">Event Manager</option>
-                                                                            <option value="staff">Staff</option>
-                                                                            <option value="judge">Judge</option>
-                                                                        </select>
-                                                                        <x-input-error :messages="$errors->get('role')" class="mt-2" />
-                                                                    </div>
-
-                                                        <div class="flex mb-4 mt-5 justify-center">
-                                                            <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
-                                                                Save
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
+                            <td class="text-center text-black border border-gray-400 px-2 py-.5 space-x-3">
+                            <div class="flex justify-center items-center space-x-2">
+                                <div x-data="{ open: false, 
+                                        Id: '{{ $user->id }}', 
+                                        name: {{ json_encode($user->name) }},
+                                        email: {{ json_encode($user->email) }},
+                                        password: {{ json_encode($user->password) }},  
+                                        role: {{ json_encode($user->role) }},
+                                        }">
+                                    <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
+                                        <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
+                                    </a>
+                                    <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 space-x-3">
+                                        <div @click.away="open = false" class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                                            <div class="flex justify-between items-start pb-3">
+                                                <p class="text-xl font-bold">Edit User</p>
+                                                <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
+                                            </div>
+                                            <div class="mb-4">
+                                                <form id="updateUserForm" action="{{ route('admin.user.update', $user->id )}}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <!-- Name Field -->
+                                                    <div class="mb-4">
+                                                        <label for="name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
+                                                        <input type="text" name="name" id="name" x-model="name" value="{{ $user->name }}" class="shadow rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required autofocus>
+                                                        <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                                                    </div>
+                                                    <!-- Other fields go here... -->
+                                                    <div class="flex mb-4 mt-5 justify-center">
+                                                        <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
-                                    <form id="deleteSelected" action="{{ route('admin.user.destroy', $user->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $user->id }}', '{{ $user->name }}');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
-                                            <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
-                                        </button>
-                                    </form>
                                 </div>
+                                <form id="deleteSelected" action="{{ route('admin.user.destroy', $user->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $user->id }}', '{{ $user->name }}');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
+                                        <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
+                                    </button>
+                                </form>
+                            </div>
+
                             </td>
                         </tr>
                     @endforeach

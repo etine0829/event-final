@@ -235,19 +235,21 @@
                                     <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_photo}}</td>
                                     <td class="text-black border border-gray-400 px-1 py-1">
-                                        <div class="flex justify-center items-center space-x-2">
-                                            @if($eventToShow && $participant)
-                                            <div x-data="{ open: false, 
-                                                        id: {{ json_encode($participant->id) }},
-                                                        event: {{ json_encode($participant->event_id) }},
-                                                        group: {{ json_encode($participant->group_id) }},
-                                                        participant_name: {{ json_encode($participant->participant_name) }},
-                                                        participant_gender: {{ json_encode($participant->participant_gender) }},
-                                                        participant_photo: {{ json_encode($participant->participant_photo) }} 
-                                                    }">
+                                    <div class="flex justify-center items-center space-x-2 flex-nowrap">
+                                        @if($eventToShow && $participant)
+                                        <div x-data="{ open: false, 
+                                                id: {{ json_encode($participant->id) }},
+                                                event: {{ json_encode($participant->event_id) }},
+                                                group: {{ json_encode($participant->group_id) }},
+                                                participant_name: {{ json_encode($participant->participant_name) }},
+                                                participant_gender: {{ json_encode($participant->participant_gender) }},
+                                                participant_photo: {{ json_encode($participant->participant_photo) }} 
+                                            }">
+                                            <!-- Edit Button -->
                                             <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                                                 <i class="fa-solid fa-pen fa-xs"></i>
                                             </a>
+                                            <!-- Edit Modal Content -->
                                             <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                                                 <div @click.away="open = false" class="w-[35%] bg-white p-6 rounded-lg shadow-lg mx-auto">
                                                     <div class="flex justify-between items-start pb-3">
@@ -255,82 +257,27 @@
                                                         <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                     </div>
                                                     <form action="{{ route('admin.participant.update', $participant->id) }}" method="POST" enctype="multipart/form-data">
-                                                                @csrf
-                                                                @method('PUT')
+                                                        @csrf
+                                                        @method('PUT')
 
-                                                                <!-- Event Selection -->
-                                                                <div class="mb-2">
-                                                                    <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
-                                                                    <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
-                                                                        <option value="">Select Event</option>
-                                                                        @foreach($events as $event)
-                                                                            <option value="{{ $event->id }}" {{ $participant->event_id == $event->id ? 'selected' : '' }}>{{ $event->event_name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
-                                                                </div>
+                                                        <!-- Form content here -->
 
-                                                                <!-- Group Selection -->
-                                                                <div class="mb-2">
-                                                                    <label for="group_id" class="block text-gray-700 text-md font-bold mb-2">Group</label>
-                                                                    <select id="group_id" name="group_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('group_id') is-invalid @enderror">
-                                                                        <option value="">Select Group</option>
-                                                                        @foreach($groups as $group)
-                                                                            <option value="{{ $group->id }}" {{ $participant->group_id == $group->id ? 'selected' : '' }}>{{ $group->group_name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
-                                                                </div>
-
-                                                                <!-- Participant Name -->
-                                                                <div class="mb-2">
-                                                                    <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
-                                                                    <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name', $participant->participant_name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
-                                                                    <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
-                                                                </div>
-
-                                                                <!-- Participant Gender -->
-                                                                <div class="mb-2">
-                                                                    <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Gender</label>
-                                                                    <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
-                                                                        <option value="">Select Gender</option>
-                                                                        <option value="male" {{ $participant->participant_gender == 'male' ? 'selected' : '' }}>Male</option>
-                                                                        <option value="female" {{ $participant->participant_gender == 'female' ? 'selected' : '' }}>Female</option>
-                                                                    </select>
-                                                                    <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
-                                                                </div>
-
-                                                                <!-- Participant Photo -->
-                                                                <div class="mb-2">
-                                                                    <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
-                                                                    <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
-                                                                    <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
-                                                                        <img id="imagePreview" src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" class="rounded-lg w-32 h-auto mb-2">
-                                                                        <span class="text-sm text-gray-500">Select Photo</span>
-                                                                    </label>
-                                                                    <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
-                                                                </div>
-
-                                                                <!-- Submit Button -->
-                                                                <div class="flex justify-center mt-4">
-                                                                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
-                                                                </div>
-                                                            </form>
-
-                                                        </div>
-                                                    </div>
+                                                    </form>
                                                 </div>
-
                                             </div>
-                                            <form id="deleteSelected" action="{{ route('admin.participant.destroy', $participant->id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
-                                                    <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
-                                                </button>
-                                            </form>
-                                            @endif
                                         </div>
+
+                                        <!-- Delete Button -->
+                                        <form id="deleteSelected" action="{{ route('admin.participant.destroy', $participant->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
+                                                <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
+                                            </button>
+                                        </form>
+                                        @endif
+                                    </div>
+
                                     </td>
                                 </tr>
                             @endforeach

@@ -16,24 +16,29 @@
             <!-- Sidebar for categories -->
             <div>
                 <ul>
-                    @forelse ($events as $event)
-                        <li> {{ $event->event_name }}</li>
-                    @empty
-                        <li>No events assigned.</li>
-                    @endforelse
+                    <div class="text-4xl flex flex-col text-center pt-4">  
+                        <ul class="list-none text-center">
+                            @forelse ($events as $event)
+                                <li>{{ $event->event_name }}</li>
+                            @empty
+                                <li>No events available.</li>
+                            @endforelse
+                        </ul>
+                    </div>
                 </ul>
             </div>
             
             <div>
                 <ul>
-                    @foreach($categories as $category)
-                        <li class="cursor-pointer" wire:click="showCategories({{ $category->id }})">
-                            {{ $category->category_name }}
-                        </li>
+                    @foreach($categories as $index => $category)
+                        <div class="@php echo ['bg-yellow-600', 'bg-green-600', 'bg-blue-600', 'bg-red-600'][$index % 4]; @endphp p-4 rounded-md mb-2">
+                            <li class="cursor-pointer text-white" wire:click="showCategories({{ $category->id }})">
+                                {{ $category->category_name }}
+                            </li>
+                        </div>
                     @endforeach
                 </ul>
             </div>
-
         </div>
     @endif
 
