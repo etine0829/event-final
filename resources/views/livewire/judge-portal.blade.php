@@ -26,12 +26,23 @@
             <div class="grid grid-cols-2 gap-4 w-full max-w-2xl">
                 @foreach($categories as $index => $category)
                     <div class="{{ ['bg-yellow-600', 'bg-green-600', 'bg-blue-600', 'bg-red-600'][$index % 4] }} p-4 rounded-md text-white text-center cursor-pointer" 
-                         wire:click="showCategories({{ $category->id }})">
+                         wire:click="loadCategoryDetails({{ $category->id }})">
                         {{ $category->category_name }}
+                        <br>
                         {{ $category->score }}
                     </div>
                 @endforeach
             </div>
+
+            @if($selectedCategory)
+
+                <h2>Criteria for {{ $selectedCategory->name }}</h2>
+                <ul>
+                    @foreach($criterion as $criteria)
+                        <li>{{ $criteria->criteria_name }} (Weight: {{ $criteria->score }})</li>
+                    @endforeach
+                </ul>
+            @endif
         </div>
     </div>
 @endif

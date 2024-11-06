@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('picture')->nullable()->after('name');
-            // $table->unsignedBigInteger('event_id')->nullable()->after('id');
+            $table->unsignedBigInteger('event_id')->nullable()->after('id');
 
-            // $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');
+            $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');
         });
     }
 

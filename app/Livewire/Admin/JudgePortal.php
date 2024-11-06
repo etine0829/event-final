@@ -44,7 +44,7 @@ class JudgePortal extends Component
 
         
         if ($user && $user->hasRole('judge') && $user->event) {
-            $this->categories = $user->event->categories;
+            $this->categories = $user->event->categories()->with(['criteria'])->get();
         } else {
             $this->categories = collect(); 
         }
