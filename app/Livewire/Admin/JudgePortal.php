@@ -15,66 +15,62 @@ class JudgePortal extends Component
     public $events;
     public $categories;
     public $judges;
-    public $selectedCategory;
+    public $selectedCategory = null;
     public $participants = [];
     public $criteria = [];
-    
+    public $selectedCategoryToShow;
+    public $isLoading = false;
 
     public function mount()
     {
-        $this->categories = Category::with(['criteria'])->get();
-        $this->AssignedEvents();
-        $this->AssignedCategories();
-    }
-
-    public function AssignedEvents()
-    {
-        $user = Auth::user();
-
-        if ($user->hasRole('judge')) {
-            $this->events = Event::where('id', $user->event_id)->get();
-        } else {
-            $this->events = collect(); 
-        }
-    }
-
-    public function AssignedCategories()
-    {
-        $user = Auth::user();
-
-        
-        if ($user && $user->hasRole('judge') && $user->event) {
-            $this->categories = $user->event->categories()->with(['criteria'])->get();
-        } else {
-            $this->categories = collect(); 
-        }
+        $this->events = collect();
+        $this->categories = collect();
+        $this->selectedCategory = null;
+        $this->participants = [];
+        $this->criteria = [];
     }
 
     public function loadCategoryDetails($categoryId)
     {
-        $this->selectedCategory = Category::find($categoryId);
+        // Clear previous data
+        $this->criteria = collect();
+        $this->participants = collect();
+
+        // Load selected category with criteria
+        $this->selectedCategory = Category::with('criteria')->find($categoryId);
 
         if ($this->selectedCategory) {
-           
-            $this->participants = $this->selectedCategory->participants;
+            $eventId = $this->selectedCategory->event_id;
+
+            // Load participants for the event
+            $this->participants = Participant::where('event_id', $eventId)
+                ->with('group') // Ensure the group relationship is defined in Participant model
+                ->get();
+
+            // Load criteria for the selected category
             $this->criteria = $this->selectedCategory->criteria;
         }
     }
 
-    public function selectCategory($categoryId)
-    {
-        $this->selectedCategory = Category::with(['criteria'])->find($categoryId);
-    }
-
-    
-
     public function render()
     {
+        $user = Auth::user();
+
+        // Load events and categories for judges
+        if ($user && $user->hasRole('judge')) {
+            $this->events = Event::where('id', $user->event_id)->get();
+            $this->categories = $user->event ? $user->event->categories : collect();
+        }
+
+        // Prepare selected category details if available
+        $this->selectedCategoryToShow = $this->selectedCategory
+            ? Category::with('criteria')->find($this->selectedCategory->id)
+            : null;
+
         return view('livewire.judge-portal', [
-            'judges' => $this->judges,
             'events' => $this->events,
             'categories' => $this->categories,
-            'selectedCategory' => $this->selectedCategory,
+            'selectedCategory' => $this->selectedCategoryToShow,
             'participants' => $this->participants,
             'criteria' => $this->criteria,
         ]);
