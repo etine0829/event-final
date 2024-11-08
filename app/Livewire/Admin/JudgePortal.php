@@ -56,7 +56,6 @@ class JudgePortal extends Component
 
         if ($this->selectedCategory) {
            
-            $this->participants = $this->selectedCategory->participants;
             $this->criteria = $this->selectedCategory->criteria;
         }
     }
