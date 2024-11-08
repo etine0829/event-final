@@ -56,14 +56,8 @@ class JudgePortal extends Component
         $this->selectedCategory = Category::with('criteria')->find($categoryId);
 
         if ($this->selectedCategory) {
-            $eventId = $this->selectedCategory->event_id;
-
-            // Load participants for the event
-            $this->participants = Participant::where('event_id', $eventId)
-                ->with('group') // Ensure the group relationship is defined in Participant model
-                ->get();
-
-            // Load criteria for the selected category
+           
+            $this->participants = $this->selectedCategory->participants;
             $this->criteria = $this->selectedCategory->criteria;
         }
     }

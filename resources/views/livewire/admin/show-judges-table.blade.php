@@ -70,38 +70,18 @@
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4">
-                        <form action="{{ route('admin.judge.store') }}" method="POST">
+                        <form action="{{ route('admin.assign-judge') }}" method="POST">
                             @csrf
                             <div class="mb-2">
-                                <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event: </label>
-                                <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
-                                    <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
+                                <label for="judge_id">Judge:</label>
+                                <select name="judge_id" id="judge_id" class="form-control" required>
+                                    <option value="">Select Judge</option>
+                                    @foreach($judges as $judge)
+                                        <option value="{{ $judge->id }}" {{ old('judge_id') == $judge->id ? 'selected' : '' }}>
+                                            {{ $judge->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
-                                <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
-                                <input type="text" name="name" id="name" value="{{ old('name') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required>
-                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="email" class="block text-gray-700 text-md font-bold mb-2">Email</label>
-                                <input type="email" name="email" id="email" value="{{ old('email') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') is-invalid @enderror" required>
-                                <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="password" class="block text-gray-700 text-md font-bold mb-2">Password</label>
-                                <input type="password" name="password" id="password" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('password') is-invalid @enderror" required>
-                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="password_confirmation" class="block text-gray-700 text-md font-bold mb-2">Confirm Password</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                             </div>
 
                             <div class="flex mb-4 mt-5 justify-center">
@@ -129,7 +109,6 @@
             @endif
         </div>
         @elseif(!$search && $judges->isEmpty())
-            
             <p class="text-black mt-8 text-center uppercase">No data available in judge<text class="text-red-500">
                 @if($eventToShow)
                 {{ $eventToShow->event_name}}
@@ -137,7 +116,12 @@
         @else
 
             @if($eventToShow)
-                
+            @if($judgeToShow->isEmpty())
+                            <!-- Display message if no judges are associated with the selected event -->
+                            <tr>
+                                <td colspan="3" class="text-center text-red-500 font-bold">No judges assigned to this event.</td>
+                            </tr>
+                        @else
                 <div class="overflow-x-auto">
                     <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
                         <thead class="bg-gray-200 text-black">
@@ -172,86 +156,38 @@
                             </tr>
                         </thead>
                         <tbody >
-                            @foreach ($judges as $judge)
+                        
+                            @foreach ($judgeToShow as $judge)
                                 <tr class="hover:bg-gray-100" wire:model="selectedCategory">
-                                    <td class="text-black border border-gray-400">{{ $judge->name}}</td>
-                                    <td class="text-black border border-gray-400">{{ $judge->email}}</td>
-                                    <!-- <td class="text-black border border-gray-400">{{ $judge->password}}</td> -->
-                                    
-                                    <!-- <td class="text-black border border-gray-400">{{ $judge->event->name}}</td>
-                                    <td class="text-black border border-gray-400">{{ ucfirst($judge->dept_identifier) }}</td> -->
+                                    <td class="text-black border border-gray-400">{{ $judge->name }}</td>
+                                    <td class="text-black border border-gray-400">{{ $judge->email }}</td>
+
                                     <td class="text-black border border-gray-400 px-1 py-1">
                                         <div class="flex justify-center items-center space-x-2">
                                             @if($eventToShow && $judge)
-                                            <div x-data="{ open: false, 
-                                                id: {{ json_encode($judge->id) }},
+                                                <div x-data="{ open: false, 
+                                                    id: {{ json_encode($judge->id) }},
                                                     name: {{ json_encode($judge->name) }},
                                                     email: {{ json_encode($judge->email) }},
                                                     password: {{ json_encode($judge->password) }},
-                                                    }">
-                                                <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
-                                                    <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
-                                                </a>
-                                                <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                                    <div @click.away="open = true" class="w-[35%] bg-white p-6 rounded-lg shadow-lg  mx-auto">
-                                                        <div class="flex justify-between items-start pb-3"> <!-- Changed items-center to items-start -->
-                                                            <p class="text-xl font-bold">Edit judge</p>
-                                                            <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
-                                                        </div>
-                                                        <div class="mb-4">
-                                                            <form id="updateCategoryForm" action="{{ route('admin.judge.update', $judge->id )}}" method="POST" class="">
-                                                                <x-caps-lock-detector />
-                                                                @csrf
-                                                                @method('PUT')
-                                                                
-                                                                <div class="mb-2">
-                                                                        <label for="event_id" class="block text-gray-700 text-md font-bold mb-2 text-left">Event: </label>
-                                                                        <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
-                                                                                <option value="{{ $eventToShow->id }}">{{ $eventToShow->event_name }}</option>
-                                                                        </select>
-                                                                        <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
-                                                                    </div>
-                                                                    <div class="mb-4">
-                                                                        <label for="name" class="block text-gray-700 text-md font-bold mb-2 text-left">Name</label>
-                                                                        <input type="text" name="name" id="name" x-model="name" value="{{ $judge->name }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required autofocus>
-                                                                        <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="mb-4">
-                                                                        <label for="email" class="block text-gray-700 text-md font-bold mb-2 text-left">Email</label>
-                                                                        <input type="text" name="email" id="email" x-model="email" value="{{ $judge->email }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="mb-4">
-                                                                        <label for="password" class="block text-gray-700 text-md font-bold mb-2 text-left">Password</label>
-                                                                        <input type="text" name="password" id="password" x-model="password" value="{{ $judge->password }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('password') is-invalid @enderror" required>
-                                                                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                                                                    </div>
-
-                                                                    <div class="flex mb-4 mt-10 justify-center">
-                                                                    <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
-                                                                        Save Changes
-                                                                    </button>
-                                                                    </div>
-
-                                                            </form>
-                                                        </div>
-                                                    </div>
+                                                }">
+                                                    <!-- You can add the edit or action buttons here -->
                                                 </div>
-                                            </div>
-                                            <form id="deleteSelected" action="{{ route('admin.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
-                                                    <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
-                                                </button>
-                                            </form>
+                                                <form id="deleteSelected" action="{{ route('admin.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
+                                                        <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <p>No judges assigned to this event.</p>
                                             @endif
                                         </div>
                                     </td>
                                 </tr>
                             @endforeach
+                        @endif
                         </tbody>
                     </table>
                     @if($eventToShow)

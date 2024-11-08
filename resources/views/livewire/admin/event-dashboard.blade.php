@@ -11,7 +11,7 @@
         @if (session('error'))
             <x-sweetalert type="error" :message="session('error')" />
         @endif
-        <div class="flex justify-between mb-4 sm:-mt-4">
+        <div class="flex justify-between mb-4 sm:-mt-4 ">
             <div class="font-bold text-md tracking-wide text-black  mt-2 uppercase">Admin / Manage Event</div>
             <div x-data="{ open: false }">
                 <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
@@ -20,13 +20,13 @@
                 <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div @click.away="open = true" class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
                         <div class="flex justify-between items-center pb-3">
-                            <p class="text-xl font-bold">Add Event</p>
+                            <p class="text-xl font-bold ">Add Event</p>
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4">
                             <form action="{{ route('admin.event.store') }}" method="POST" class="">
                                 @csrf
-                                <div class="mb-4">
+                                <div class="mb-4  ">
                                     <label for="event_name" class="block text-gray-700 text-md font-bold mb-2">Event Name</label>
                                     <!-- <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_name') is-invalid @enderror" required autofocus> -->
                                     <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('event_name') is-invalid @enderror" required autofocus>
@@ -96,7 +96,7 @@
                     <tr>    
                       
                         <th class="border border-gray-400 px-3 py-2">
-                            <button wire:click="sortBy('event_name')" class="w-full h-full flex items-center justify-center">
+                            <button wire:click="sortBy('event_name')" class=" w-full h-full flex items-center justify-center">
                                 Event Name
                                 @if ($sortField == 'event_name')
                                     @if ($sortDirection == 'asc')
@@ -137,7 +137,7 @@
                 <tbody>
                     @foreach ($events as $event)
                         <tr>
-                            <td class="text-black border border-gray-400 px-3 py-2">{{ $event->event_name }}</td>
+                            <td class="text-black border border-gray-400 px-3 py-2 ">{{ $event->event_name }}</td>
                             <td class="text-black border border-gray-400 px-3 py-2">{{ $event->venue}}</td>
                             <td class="text-black border border-gray-400 px-3 py-2">
                                 @if($event->type_of_scoring == 'points')
@@ -227,46 +227,38 @@
 
     <script>
 
-        function confirmDeleteAll(event) {
-            event.preventDefault(); // Prevent form submission initially
-
-            Swal.fire({
-                title: 'Are you sure to delete all records?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete all!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // If confirmed, submit the form programmatically
-                    document.getElementById('deleteAll').submit();
-                }
-            });
-        }
-
-        function ConfirmDeleteSelected(event, eventID, eventName) {
+        
+    
+    // Function to confirm deletion of a selected event with visually appealing design
+    function ConfirmDeleteSelected(event, eventID, eventName) {
         event.preventDefault(); // Prevent form submission initially
 
         Swal.fire({
-            title: `Are you sure you want to delete the event ${eventName}?`,
-            text: "You won't be able to revert this!",
+            title: `Are you sure you want to delete the event "${eventName}"?`,
+            text: "This action cannot be undone!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonColor: '#ff6b6b', // Soft red for confirmation
+            cancelButtonColor: '#6c757d', // Gray for cancellation
+            confirmButtonText: '<i class="fas fa-trash"></i> Yes, delete it!',
+            cancelButtonText: '<i class="fas fa-times"></i> Cancel',
+
+            color: '#4a4a4a', // Dark   er text color
+            customClass: {
+                popup: 'animate__animated animate__fadeInUp', // Fade in animation for the popup
+                confirmButton: 'btn btn-danger rounded-full px-6 py-3 text-lg', // Large rounded confirmation button
+                cancelButton: 'btn btn-secondary rounded-full px-6 py-3 text-lg' // Large rounded cancel button
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 const form = document.getElementById('deleteSelected');
-                // Replace the placeholder with the actual event ID
+                // Dynamically set form action with the event ID
                 form.action = `{{ route('admin.event.destroy', ':Id') }}`.replace(':Id', eventID);
-                form.submit();
+                form.submit(); // Submit the form if confirmed
             }
         });
 
-        return false; 
+        return false; // Prevent the default form submission until confirmed
     }
 
     </script>

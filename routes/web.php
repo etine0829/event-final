@@ -23,6 +23,10 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
+        Route::get('assign-judge', [JudgesController::class, 'showAssignJudgeForm'])->name('assign-judge.form');
+        Route::post('assign-judge', [JudgesController::class, 'assignJudgeToEvent'])->name('assign-judge');
+
+
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         // Route::get('/manage-event', [EventController::class, 'index'])->name('event.dashboard');
 
@@ -90,7 +94,11 @@ Route::middleware(['auth'])->group(function () {
         ]);
         Route::delete('user', [UserController::class, 'deleteAll'])->name('user.deleteAll');
 
+        // Route to show the form for assigning a judge
+        Route::get('assign-judge', [JudgesController::class, 'showAssignJudgeForm'])->name('assign-judge.form');
 
+        // Route to handle the judge assignment
+        Route::post('assign-judge', [JudgesController::class, 'assignJudgeToEvent'])->name('assign-judge');
       
     });
 
@@ -174,6 +182,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:judge'])->prefix('judge')->name('judge.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'indexJudge'])->name('dashboard');
     });
+    
 
 });
 
