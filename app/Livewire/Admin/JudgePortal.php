@@ -15,11 +15,19 @@ class JudgePortal extends Component
     public $events;
     public $categories;
     public $judges;
-    public $selectedCategory = null;
+    
     public $participants = [];
     public $criteria = [];
     public $selectedCategoryToShow;
     public $isLoading = false;
+
+    public $selectedEvent = null;
+    public $selectedCategory = null;
+    public $showSelectedCateegory;
+    public $categoriesToShow;
+    public $eventToShow;
+
+    protected $listeners = ['updateCategory', 'showDepartmentSchedule'];
 
     public function mount()
     {
@@ -28,6 +36,14 @@ class JudgePortal extends Component
         $this->selectedCategory = null;
         $this->participants = [];
         $this->criteria = [];
+
+        $this->selectedEvent = session('selectedEvent', null);
+        $this->selectedCategory = session('selectedCategory', null);
+        $this->showSelectedCategory = session('showSelectedCategory', null);
+
+        $this->categoriesToShow = collect([]); // Initialize as an empty collection
+        $this->eventToShow = collect([]);
+
     }
 
     public function loadCategoryDetails($categoryId)
