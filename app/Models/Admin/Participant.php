@@ -29,4 +29,9 @@ class Participant extends Model
     {
         return $this->belongsTo(Group::class, 'group_id');
     }
+
+    public function scorecard()
+    {
+        return $this->belongsTo(Scorecard::class);
+    }
 }
