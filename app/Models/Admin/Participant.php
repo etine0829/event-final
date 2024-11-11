@@ -32,6 +32,6 @@ class Participant extends Model
 
     public function scorecard()
     {
-        return $this->belongsTo(Scorecard::class);
+        return $this->hasMany(Scorecard::class);
     }
 }

@@ -18,6 +18,12 @@
                         {{ $category->score }}
                     </div>
                 @endforeach
+
+                <a href="{{ route('my-scores') }}">
+                    <button class="bg-blue-200">
+                        My Score
+                    </button>
+                </a>
             </div>
         </div>
     @endif

@@ -10,7 +10,7 @@
             </div>
 
             <h2 class="text-3xl font-bold mb-4">{{ $category->category_name }}</h2>
-
+            
             <h3 class="text-xl font-semibold mb-4">Participants</h3>
 
             <!-- Gender Filter Tabs -->

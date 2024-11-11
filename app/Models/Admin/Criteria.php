@@ -33,9 +33,9 @@ class Criteria extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function scorecard()
+    public function scorecards()
     {
-        return $this->belongsTo(Scorecard::class);
+        return $this->hasMany(Scorecard::class);
     }
     
 }

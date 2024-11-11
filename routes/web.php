@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\JudgesController;
 use App\Http\Controllers\Admin\UserController;
 use App\Livewire\Admin\ShowScoringDetails;
 use App\Http\Controllers\Admin\ScorecardController;
+use App\Livewire\Admin\ShowScores;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -187,6 +188,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/category/{categoryId}', ShowScoringDetails::class)->name('category.details');
     Route::post('/submit-scores', [ScorecardController::class, 'store'])->name('score.store');
+    Route::get('/my-scores', ShowScores::class)->name('my-scores');
+ 
 
 });
 
