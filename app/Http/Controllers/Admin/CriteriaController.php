@@ -43,9 +43,11 @@ class CriteriaController extends Controller
         ]);
 
         // Check if a criteria with the same criteria_name already exists
-        $existingCriteriaByName = Criteria::where('criteria_name', $request->input('criteria_name'))->first();
+        $existingCriteriaByNameAndCategory = Criteria::where('criteria_name', $request->input('criteria_name'))
+        ->where('category_id',$request->input('category_id'))
+        ->first();
 
-        if (!$existingCriteriaByName) {
+        if (!$existingCriteriaByNameAndCategory) {
             $criteria = new Criteria();
             $criteria->event_id = $request->input('event_id');
             $criteria->category_id = $request->input('category_id');
@@ -56,7 +58,7 @@ class CriteriaController extends Controller
             return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.criteria.index' : 'event_manager.criteria.index')
                 ->with('success', 'Criteria created successfully.');
         } else {
-            $errorMessage = 'Criteria name ' . $request->input('criteria_name') . ' is already taken.';
+            $errorMessage = 'Criteria name ' . $request->input('criteria_name') . ' is already taken for this category.';
             return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.criteria.index' : 'event_manager.criteria.index')
                 ->with('error', $errorMessage . ' Try again.');
         }
