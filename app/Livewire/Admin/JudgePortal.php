@@ -2,27 +2,18 @@
 
 namespace App\Livewire\Admin;
 
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Admin\Event;
 use App\Models\Admin\Category;
-use App\Models\Admin\Criteria;
-use App\Models\Admin\Participant;
-use App\Models\User;
 
 class JudgePortal extends Component
 {
     public $events;
     public $categories;
-    public $judges;
-    public $selectedCategory;
-    public $participants = [];
-    public $criteria = [];
-    
 
     public function mount()
     {
-        $this->categories = Category::with(['criteria'])->get();
         $this->AssignedEvents();
         $this->AssignedCategories();
     }
@@ -42,7 +33,6 @@ class JudgePortal extends Component
     {
         $user = Auth::user();
 
-        
         if ($user && $user->hasRole('judge') && $user->event) {
             $this->categories = $user->event->categories;
         } else {
@@ -50,32 +40,18 @@ class JudgePortal extends Component
         }
     }
 
-    public function loadCategoryDetails($categoryId)
+    public function goToCategoryDetails($categoryId)
     {
-        $this->selectedCategory = Category::find($categoryId);
-
-        if ($this->selectedCategory) {
-           
-            $this->criteria = $this->selectedCategory->criteria;
-        }
+        // Redirect to the category details page with the selected category ID
+        return redirect()->route('category.details', ['categoryId' => $categoryId]);
     }
-
-    public function selectCategory($categoryId)
-    {
-        $this->selectedCategory = Category::with(['criteria'])->find($categoryId);
-    }
-
-    
 
     public function render()
     {
         return view('livewire.judge-portal', [
-            'judges' => $this->judges,
             'events' => $this->events,
             'categories' => $this->categories,
-            'selectedCategory' => $this->selectedCategory,
-            'participants' => $this->participants,
-            'criteria' => $this->criteria,
         ]);
     }
 }
+

@@ -25,6 +25,10 @@ class Category extends Model
     {
         return $this->hasMany(Criteria::class);
     }
+    public function scorecard()
+    {
+        return $this->belongsTo(Scorecard::class);
+    }
     
 }
 

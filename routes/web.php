@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\JudgesController;
 use App\Http\Controllers\Admin\UserController;
+use App\Livewire\Admin\ShowScoringDetails;
+use App\Http\Controllers\Admin\ScorecardController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -182,7 +184,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:judge'])->prefix('judge')->name('judge.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'indexJudge'])->name('dashboard');
     });
-    
+
+    Route::get('/category/{categoryId}', ShowScoringDetails::class)->name('category.details');
+    Route::post('/submit-scores', [ScorecardController::class, 'store'])->name('score.store');
 
 });
 
