@@ -19,7 +19,7 @@
                     </div>
                 @endforeach
 
-                <a href="{{ route('my-scores') }}">
+                <a href="{{ route('scores.show', ['eventId' => $event->id]) }}">
                     <button class="bg-blue-200">
                         My Score
                     </button>

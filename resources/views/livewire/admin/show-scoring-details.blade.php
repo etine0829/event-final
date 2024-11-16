@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('score.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('score.store') }}" method="POST" enctype="multipart/form-data" id="scoreForm">
                 @csrf <!-- CSRF Token -->
                 @foreach ($participants as $index => $participant)
                     <!-- Check gender filter -->
@@ -67,7 +67,16 @@
                                     @foreach ($criteria as $criterion)
                                         <div class="flex items-center mb-2">
                                             <label class="w-1/2 text-gray-700">{{ $criterion->criteria_name }}</label> 
-                                            <input type="number" name="scores[{{ $participant->id }}][criteria_scores][{{ $criterion->id }}]" required />
+                                            <input 
+                                                type="number" 
+                                                name="scores[{{ $participant->id }}][criteria_scores][{{ $criterion->id }}]" 
+                                                required 
+                                                min="0"
+                                                max="{{ $criterion->criteria_score }}"
+                                                class="score-input"
+                                                data-max="{{ $criterion->criteria_score }}"
+                                                oninput="validateMaxValue(this)"
+                                            />
                                             <input type="hidden" name="category_id" value="{{ $category->id }}">
                                             /{{ $criterion->criteria_score }}
                                         </div>
@@ -91,3 +100,13 @@
 </div>
 
 
+<script>
+    // JavaScript function to limit input value to max score
+    function validateMaxValue(input) {
+        const max = parseInt(input.getAttribute('max'));
+        let value = parseInt(input.value);
+        if (value > max) {
+            input.value = max;  // Set value to max if it exceeds
+        }
+    }
+</script>

@@ -11,59 +11,93 @@ use App\Models\Admin\Category;
 class ShowScores extends Component
 {
     public $categories = [];
+    public $eventId; // The selected event ID
 
-    public function mount()
+    public $scores = []; // Holds scores to be displayed and updated
+
+    public function mount($eventId)
     {
-        // Fetch all categories, with their criteria and related scorecard records
-        $categories = Category::with(['criteria.scorecards.participant'])->get();
+        $this->eventId = $eventId;
+        $this->loadCategories();
+    }
 
-        // Structure data by category, criteria, and participant scores
+    public function loadCategories()
+    {
+        $this->categories = []; // Reset categories array
+
+        // Fetch categories for the selected event along with criteria and scorecards
+        $categories = Category::where('event_id', $this->eventId)
+            ->with(['criteria', 'criteria.scorecards.participant'])
+            ->get();
+
         foreach ($categories as $category) {
-            // Only add category if it has criteria
-            if ($category->criteria->isEmpty()) {
-                continue; // Skip category if no criteria exist
-            }
-
             $categoryData = [
+                'id' => $category->id,
                 'name' => $category->category_name,
                 'criteria' => [],
+                'participants' => [],
             ];
 
+            // Fetch criteria
             foreach ($category->criteria as $criteria) {
-                // Skip criteria if no scorecards are found
-                if ($criteria->scorecards->isEmpty()) {
-                    continue;
-                }
-                
-                $criteriaData = [
+                $categoryData['criteria'][] = [
+                    'id' => $criteria->id,
                     'name' => $criteria->criteria_name,
-                    'participants' => [],
+                ];
+            }
+
+            // Fetch participants and their scores for each criterion
+            $participants = $category->criteria
+                ->flatMap(fn($criteria) => $criteria->scorecards)
+                ->groupBy(fn($scorecard) => $scorecard->participant->id ?? null);
+
+            foreach ($participants as $participantId => $scorecards) {
+                if ($participantId === null) continue;
+
+                $participant = $scorecards->first()->participant;
+
+                $participantData = [
+                    'id' => $participant->id,
+                    'name' => $participant->participant_name,
+                    'scores' => [],
+                    'avg_score' => $scorecards->avg('score'),
                 ];
 
-                // Iterate through scorecards and fetch participant data
-                foreach ($criteria->scorecards as $scorecard) {
-                    // Default participant name in case it's null
-                    $participantName = $scorecard->participant->participant_name ?? 'Unknown';
-                    
-                    // Push participant score and details to the criteria data
-                    $criteriaData['participants'][] = [
-                        'name' => $participantName,
-                        'score' => $scorecard->score,
-                        'avg_score' => $scorecard->avg_score ?? 'N/A',  // Default if avg_score is not available
-                    ];
+                foreach ($category->criteria as $criteria) {
+                    $score = $scorecards->firstWhere('criteria_id', $criteria->id)?->score ?? null;
+                    $participantData['scores'][$criteria->id] = $score;
+
+                    // Initialize scores array for editing
+                    $this->scores[$category->id][$participant->id][$criteria->id] = $score;
                 }
 
-                // Only add criteria if it has participants
-                if (!empty($criteriaData['participants'])) {
-                    $categoryData['criteria'][] = $criteriaData;
-                }
+                $categoryData['participants'][] = $participantData;
             }
 
-            // Only add category if it has criteria
-            if (!empty($categoryData['criteria'])) {
-                $this->categories[] = $categoryData;
+            $this->categories[] = $categoryData;
+        }
+    }
+
+    public function updateScores($categoryId)
+    {
+        if (!isset($this->scores[$categoryId])) return;
+
+        foreach ($this->scores[$categoryId] as $participantId => $criteriaScores) {
+            foreach ($criteriaScores as $criteriaId => $score) {
+                Scorecard::updateOrCreate(
+                    [
+                        'participant_id' => $participantId,
+                        'criteria_id' => $criteriaId,
+                    ],
+                    ['score' => $score]
+                );
             }
         }
+
+        session()->flash('success', "Scores for category ID {$categoryId} updated successfully!");
+
+        // Reload categories to reflect updated scores in the table
+        $this->loadCategories();
     }
 
     public function render()

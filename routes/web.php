@@ -188,12 +188,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/category/{categoryId}', ShowScoringDetails::class)->name('category.details');
     Route::post('/submit-scores', [ScorecardController::class, 'store'])->name('score.store');
-    Route::get('/my-scores', ShowScores::class)->name('my-scores');
+    Route::get('/scores/{eventId}', ShowScores::class)->name('scores.show');
+
+    
  
 
 });
 
-
+    
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
