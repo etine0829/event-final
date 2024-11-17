@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use \App\Models\User;
+use \App\Models\Admin\Event; 
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -32,16 +33,22 @@ class ShowUserTable extends Component
 
     public function render()
     {
-        $users = User::where('id', 'like', '%' . $this->search . '%')
-        ->orWhere('name', 'like', '%' . $this->search . '%')
-        ->orWhere('picture', 'like', '%' . $this->search . '%')
-        ->orWhere('email', 'like', '%' . $this->search . '%')
-        ->orWhere('role', 'like', '%' . $this->search . '%')
+        $users = User::where('role', '!=', 'admin') // Exclude admins
+            ->where(function ($query) {
+                $query->where('id', 'like', '%' . $this->search . '%')
+                    ->orWhere('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('picture', 'like', '%' . $this->search . '%')
+                    ->orWhere('email', 'like', '%' . $this->search . '%')
+                    ->orWhere('role', 'like', '%' . $this->search . '%');
+            })
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
+            $events = Event::all();
+
         return view('livewire.admin.show-user-table', [
             'users' => $users,
+            'events' => $events,
         ]);
     }
 }
