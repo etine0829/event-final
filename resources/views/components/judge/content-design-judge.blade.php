@@ -89,21 +89,22 @@
                 " x-show="!isFullScreen" class="flex w-full p-2 bg-blue-500 justify-between">
                 <div class="ml-2 mt-0.5 font-semibold tracking-wide text-white uppercase flex items-center space-x-2">
                     <span class="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">
-                        @php
+                       {{-- @php
                             $user = Auth::user();
 
-                            if ($user && $user->hasRole('judge')) {
-                                $events = \App\Models\Admin\Event::where('id', $user->event_id)->get();
-                            } else {
+                           // if ($user && $user->hasRole('judge')) {
+                           //     $events = \App\Models\Admin\Event::where('id', $user->event_id)->get();
+                          //  } else {
                                 $events = collect();
-                            }
+                          //  }
                         @endphp
 
-                        @forelse ($events as $event)
-                            <p style="font-family:Algerian;font-weight:bold">{{ $event->event_name }}</p>
-                        @empty
-                            <p>No events available.</p>
-                        @endforelse
+                       // @forelse ($events as $event)
+                            <p style="font-family:Algerian;font-weight:bold">{{ $user->name }}</p>
+                       // @empty
+                            <!-- <p>No events available.</p> -->
+                       // @endforelse --}}
+                       <p style="font-family:arial;font-weight:bold">Login as: {{ Auth::user()->name }}</p>
                     </span>
                 </div>
                 <div class="flex items-center space-x-4">
