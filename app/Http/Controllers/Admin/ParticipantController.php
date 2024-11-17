@@ -35,18 +35,38 @@ class ParticipantController extends Controller
       public function store(Request $request)
       {
           if (Auth::user()->hasRole('admin')) {
-              // Log incoming request data
-              \Log::info('Store Request Data:', $request->all());
+             
+
+            // Custom validation for participant_name to ensure no numbers or special characters
+            if (!preg_match('/^[a-zA-Z\s]+$/', $request->input('participant_name'))) {
+                return redirect()->back()->withErrors(['participant_name' => 'The participant name must only contain letters and spaces, and cannot have any numbers or special characters.']);
+            }
+            // Check if the participant already exists for this event
+            $existingParticipant = Participant::where('event_id', $request->input('event_id'))
+            ->where('group_id', $request->input('group_id'))
+            ->where('participant_name', $request->input('participant_name'))
+            ->first();
+    
+            if ($existingParticipant) {
+                // Redirect back with an error message if the participant already exists in the same group and event
+                return redirect()->back()->with('error', 'This participant is already registered in the selected group and event.');
+            }
+           
       
-              $validatedData = $request->validate([
-                  'event_id' => 'required|exists:events,id',
-                  'group_id' => 'nullable|string|max:255',
-                  'participant_photo' => 'nullable|image|max:2048',
-                  'participant_name' => 'required|string|max:255',
-                  'participant_gender' => 'required|string|max:255',
-                  'participant_comment' => 'nullable|string|max:255',
+            $validatedData = $request->validate([
+                'event_id' => 'required|exists:events,id',
+                'group_id' => 'nullable|string|max:255',
+                'participant_photo' => 'nullable|image|max:2048',
+                'participant_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z\s]+$/', // Ensure no numbers or special characters are allowed
+                ],
+                'participant_gender' => 'required|string|max:255',
+                'participant_comment' => 'nullable|string|max:255',
               ]);
-      
+              
               if ($request->hasFile('participant_photo')) {
                   $fileNameWithExt = $request->file('participant_photo')->getClientOriginalName();
                   $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
@@ -62,67 +82,15 @@ class ParticipantController extends Controller
                   Participant::create($validatedData);
                   return redirect()->route('admin.participant.index')
                       ->with('success', 'Participant created successfully.');
-              } catch (\Exception $e) {
-                  \Log::error('Participant creation failed: ' . $e->getMessage());
+              } catch (Exception $e) {
+                  Log::error('Participant creation failed: ' . $e->getMessage());
                   return redirect()->back()->with('error', 'Failed to create participant.');
               }
-          } else {
-              return redirect()->back()->with('error', 'Unauthorized action.');
-          }
+        } else {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
       }
       
- 
-            
-         //     $validatedData = $request->validate([
-         //         'school_id' => 'required|exists:schools,id',
-         //         'department_id' => [
-         //             'required',
-         //             'string',
-         //             'max:255',
-         //             Rule::unique('departments')->where(function ($query) use ($request) {
-         //                 return $query->where('school_id', $request->school_id);
-         //             })->ignore($request->department_id, 'department_id'), // Ensure to ignore by 'department_id'
-         //         ],
-         //         'department_abbreviation' => 'required|string|max:255',
-         //         'department_name' => 'required|string|max:255',
-         //         'dept_identifier' => 'required|string|max:255',
-         //     ], [
-         //         'department_id.unique' => 'The department ID is not valid.',
-         //     ]);
- 
-         //     // Attempt to create the Department record
-         //     try {
-         //         Department::create($validatedData);
-                 
-         //         // If creation succeeds, redirect with success message
-         //         return redirect()->route('staff.department.index')
-         //             ->with('success', 'Department created successfully.');
-         //     } catch (\Exception $e) {
-         //         // If an exception occurs (unlikely in normal validation flow)
-         //         // Handle any specific errors or logging as needed
-         //         // You can redirect back with an error message or do other error handling
-         //         return  redirect()->route('staff.department.index')->with('error','The department ID is already taken in this school.');
-         //     }
-     
- //     /**
- //      * Display the specified resource.
- //      */
- //     public function show(string $id)
- //     {
- //         //
- //     }
- 
- //     /**
- //      * Show the form for editing the specified resource.
- //      */
- //     public function edit(string $id)
- //     {
- //         //
- //     }
- 
- //     /**
- //      * Update the specified resource in storage.
- //      */
     public function update(Request $request, Participant $participant)
     {
         if (Auth::user()->hasRole('admin')) {
@@ -150,11 +118,16 @@ class ParticipantController extends Controller
                 $validatedData = $request->validate([
                     'event_id' => 'required|exists:events,id',
                     'group_id' => 'nullable|exists:events,id',
-                    'participant_name' => 'required|string|max:255',
+                    'participant_name'  => [
+                        'required',
+                        'string',
+                        'max:255',
+                        'regex:/^[a-zA-Z\s]+$/', // Ensure no numbers or special characters are allowed
+                    ],
                     'participant_gender' => 'required|in:male,female',
                     'participant_comment' => 'nullable|string|max:255',
                     'participant_photo' => 'nullable|string|max:255',
-                ]);
+                ], ['participant_name.regex' => 'The participant name must only contain letters and spaces, and cannot have any numbers or special characters.',]);
     
                 // Update the participant record
                 $participant->update($validatedData);
