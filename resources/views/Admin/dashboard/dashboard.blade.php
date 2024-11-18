@@ -26,7 +26,7 @@
 @elseif (Auth::user()->hasRole('judge'))
     <x-portal>
         <x-user-route-page-name :routeName="'judge.dashboard'" />
-        <x-content-design-judge>
+            <x-content-design-judge>
             <!-- Content Area -->
             <div x-data="{ isFullScreen: (window.innerHeight === screen.height) }" 
                 x-init="

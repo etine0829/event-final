@@ -16,19 +16,20 @@ class Scorecard extends Model
         'criteria_id',
         'participant_id',
         'score',
-        'comment',
+        'avg_score',
+        'comment', 
     ];
 
     public function category()
     {
-        return $this->hasmany(Category::class);
+        return $this->belongsTo(Category::class);
     }
     public function criteria()
     {
-        return $this->hasmany(Criteria::class);
+        return $this->belongsTo(Criteria::class);
     }
     public function participant()
     {
-        return $this->hasmany(Participant::class);
+        return $this->belongsTo(Participant::class);
     }
 }

@@ -51,101 +51,102 @@
             </div>
             <div>
                 @if (Auth::user()->hasRole('judge'))
-                    <div class="bg-slate-300 container mx-auto p-4">
-                        <!-- Back Button -->
-                        <div class="mb-4">
-                            <a href="{{ route('judge.dashboard')}}" >
-                            <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md Z-">
-                                Back
-                            </button></a>
-                        </div>
-
-                        <h2 class="text-3xl font-bold mb-4">{{ $category->category_name }}</h2>
-
-                        <h3 class="text-xl font-semibold mb-4">Participants</h3>
-
-                        <!-- Gender Filter Tabs -->
-                        <div class="mb-4">
-                            <div class="inline-flex rounded-md shadow-sm">
-                                <button 
-                                    class="px-4 py-2 text-sm font-medium text-center text-gray-700 bg-gray-100 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-gray-200"
-                                    wire:click="$set('genderFilter', 'all')" 
-                                    :class="{'bg-blue-500 text-white': genderFilter === 'all'}"
-                                >
-                                    All
-                                </button>
-                                <button 
-                                    class="px-4 py-2 text-sm font-medium text-center text-gray-700 bg-gray-100 border-t border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-gray-200"
-                                    wire:click="$set('genderFilter', 'male')" 
-                                    :class="{'bg-blue-500 text-white': genderFilter === 'male'}"
-                                >
-                                    Male
-                                </button>
-                                <button 
-                                    class="px-4 py-2 text-sm font-medium text-center text-gray-700 bg-gray-100 border-t border-b border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-gray-200"
-                                    wire:click="$set('genderFilter', 'female')" 
-                                    :class="{'bg-blue-500 text-white': genderFilter === 'female'}"
-                                >
-                                    Female
-                                </button>
-                            </div>
-                        </div>
-
-                        <form action="{{ route('score.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-lg rounded-lg p-8 w-full max-w-4xl mx-auto">
-                            @csrf <!-- CSRF Token -->
-
-                            @foreach ($participants as $index => $participant)
-                                <!-- Check gender filter -->
-                                @if ($genderFilter == 'all' || $participant->participant_gender == $genderFilter)
-                                    <div class="flex items-start mb-6 pb-6 border-b">
-                                        <!-- Profile Image Upload -->
-                                        <div class="w-1/4 flex justify-center items-center">
-                                            <label class="block">
-                                                <span class="sr-only">Upload image</span>
-                                                <div class="w-32 h-32 bg-gray-200 flex items-center justify-center rounded-lg">
-                                                    <svg class="h-12 w-12 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m16-10V3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2m3 4l3 3l4-4l5 5M13 7h6v6"/>
-                                                    </svg>
-                                                </div>
-                                                <input type="file" class="sr-only" />
-                                            </label>
-                                        </div>
-
-                                        <!-- Participant Information -->
-                                        <div class="w-3/4 pl-6">
-                                            <h4 class="text-xl font-semibold text-gray-700 mb-2">Group: <span class="font-medium">{{ $participant->group->group_name ?? 'No Group' }}</span></h4>
-                                            <p class="text-gray-600">Gender: <span class="font-medium">{{ $participant->participant_gender }}</span></p>
-                                            <p class="text-gray-800 font-medium mb-4">Name: <span class="font-medium">{{ $participant->participant_name }}</span></p>
-
-                                            <!-- Criteria Scores -->
-                                            <div class="space-y-4">
-                                                @foreach ($criteria as $criterion)
-                                                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
-                                                        <label class="w-full sm:w-1/3 text-gray-700 font-medium">{{ $criterion->criteria_name }}</label> 
-                                                        <div class="w-full sm:w-2/3">
-                                                            <input type="number" 
-                                                                name="scores[{{ $participant->id }}][criteria_scores][{{ $criterion->id }}]" 
-                                                                required
-                                                                class="border border-gray-300 p-3 rounded-md w-full text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
-                                                            <span class="text-sm text-gray-500 ml-2">/ {{ $criterion->criteria_score }}</span>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
-
-                            <!-- Submit Button -->
-                            <div class="text-center mt-6">
-                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-md w-full sm:w-auto">
-                                    Submit Scores
-                                </button>
-                            </div>
-                        </form>
-
+                    <!-- Back Button -->
+                    <div class=" mt-4 mr-5 ml-3 mb-3">
+                        <a href="{{ route('judge.dashboard') }}" class="inline-flex items-center text-gray-700 hover:text-gray-900">
+                            <i class="fas fa-arrow-left mr-2 text-lg"></i> <!-- Adjust margin-right and size -->
+                            <span>Back</span> <!-- Wrap the text in a span for better control -->
+                        </a>
                     </div>
+
+                   <!-- This div centers the content both vertically and horizontally -->
+                    <div class="flex justify-center items-center min-h-screen ">
+                        <!-- This container ensures the content has a maximum width of 4xl and centers it -->
+                        <div class="container mx-auto p-4 bg-slate-200 ring-offset-neutral-300 rounded-tl-lg rounded-tr-lg rounded-b-lg w-full max-w-4xl mr-4 ml-4">
+                            <h2 class="text-3xl text-center font-bold mb-6">{{ $category->category_name }}</h2>
+                            <h3 class="text-xl font-semibold mb-4">Participants</h3>
+
+                            <!-- Gender Filter Tabs -->
+                            <div class="mb-8">
+                                <div class="inline-flex justify-center rounded-md shadow-sm">
+                                    <button 
+                                        class="px-4 py-2 text-sm font-medium text-center text-gray-700 bg-gray-100 border border-gray-300 rounded-l-md focus:outline-none hover:bg-gray-200"
+                                        wire:click="$set('genderFilter', 'all')"
+                                        :class="{'bg-blue-500 text-white': genderFilter === 'all'}"
+                                    >
+                                        All
+                                    </button>
+                                    <button 
+                                        class="px-4 py-2 text-sm font-medium text-center text-gray-700 bg-gray-100 border-t border-b border-gray-300 focus:outline-none hover:bg-gray-200"
+                                        wire:click="$set('genderFilter', 'male')" 
+                                        :class="{'bg-blue-500 text-white': genderFilter === 'male'}"
+                                    >
+                                        Male
+                                    </button>
+                                    <button 
+                                        class="px-4 py-2 text-sm font-medium text-center text-gray-700 bg-gray-100 border-t border-b border-gray-300 rounded-r-md focus:outline-none hover:bg-gray-200"
+                                        wire:click="$set('genderFilter', 'female')" 
+                                        :class="{'bg-blue-500 text-white': genderFilter === 'female'}"
+                                    >
+                                        Female
+                                    </button>
+                                </div>
+                            </div>
+
+                            <form action="{{ route('score.store') }}" method="POST" enctype="multipart/form-data" id="scoreForm">
+                                @csrf <!-- CSRF Token -->
+                                <div class="space-y-6">
+                                    @foreach ($participants as $index => $participant)
+                                        @if ($genderFilter == 'all' || $participant->participant_gender == $genderFilter)
+                                            <div class="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 border-b-2 border-blue-500 pb-4">
+                                                <!-- Participant Image -->
+                                                <div class="w-full md:w-1/4 flex items-center justify-center">
+                                                    <div class="w-32 h-32 bg-gray-200 flex items-center justify-center rounded-lg">
+                                                        <svg class="h-12 w-12 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m16-10V3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2m3 4l3 3l4-4l5 5M13 7h6v6"/>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Participant Info and Score Inputs -->
+                                                <div class="w-full md:w-3/4 pl-4">
+                                                    <h4 class="text-lg font-semibold">Participant No. {{ $index + 1 }}: {{ $participant->participant_name }}</h4>
+                                                    <p class="text-gray-600">Gender: {{ $participant->participant_gender }}</p>
+
+                                                    <div class="mt-4 space-y-4">
+                                                        @foreach ($criteria as $criterion)
+                                                            <div class="flex items-center">
+                                                                <label class="w-1/2 text-gray-700">{{ $criterion->criteria_name }}</label> 
+                                                                <input 
+                                                                    type="number" 
+                                                                    name="scores[{{ $participant->id }}][criteria_scores][{{ $criterion->id }}]" 
+                                                                    required 
+                                                                    min="0"
+                                                                    max="{{ $criterion->criteria_score }}"
+                                                                    class="score-input p-2 border rounded-md"
+                                                                    data-max="{{ $criterion->criteria_score }}"
+                                                                    oninput="validateMaxValue(this)"
+                                                                />
+                                                                /{{ $criterion->criteria_score }}
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+
+                                    <!-- Submit Button -->
+                                    <div class="text-right mt-4">
+                                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md">
+                                            Submit Scores
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
                 @endif
             </div>
             </div>
