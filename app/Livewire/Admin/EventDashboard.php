@@ -39,12 +39,11 @@ class EventDashboard extends Component
             ->orWhere('type_of_scoring', 'like', '%' . $this->search . '%')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
-
+        
         return view('livewire.admin.event-dashboard', [
             'events' => $events,
         ]);
-        // return view('livewire.admin.event-dashboard', [
-        //     'events' => Event::search($this->search),
-        // ]);
+
+        
     }
 }

@@ -32,25 +32,7 @@
                                     <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('event_name') is-invalid @enderror" required autofocus>
                                     <x-input-error :messages="$errors->get('event_name')" class="mt-2" />
                                 </div>
-                                <!-- <div class="mb-4">
-                                    <label for="event_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Event Name</label>
-                                    <input type="text" name="event_name" id="event_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('event_name') is-invalid @enderror" required autofocus>
-                                    <x-input-error :messages="$errors->get('event_name')" class="mt-2" />
-                                </div>
-                                <div class="mb-4">
-                                    <label for="school_name" class="block text-gray-700 text-md font-bold mb-2 text-left">Event Venue</label>
-                                    <input type="text" name="venue" id="venue" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('venue') is-invalid @enderror" required >
-                                    <x-input-error :messages="$errors->get('venue')" class="mt-2" />
-                                </div>
-                                <div class="mb-2">
-                                        <label for="scoring_type" class="block text-gray-700 text-md font-bold mb-2">Scoring Type: </label>
-                                        <select id="scoring_type" name="scoring_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('scoring_type') is-invalid @enderror" required>
-                                                <option value="">Select Option</option>
-                                                <option value="points">By Points</option>
-                                                <option value="ranking">By Ranking</option>
-                                        </select>
-                                        <x-input-error :messages="$errors->get('scoring_type')" class="mt-2" />
-                                </div> -->
+                               
                                 <div class="mb-4">
                                     <label for="venue" class="block text-gray-700 text-md font-bold mb-2">Venue</label>
                                     <!-- <input type="text" name="event_name" id="event_name" value="{{ old('event_name') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_name') is-invalid @enderror" required autofocus> -->
@@ -79,13 +61,6 @@
                 </div>
             </div>
         </div>
-        <hr class="border-gray-200 my-4">
-        <div class="flex items-center mb-4 justify-end">
-            <div class="flex w-16 sm:w-auto mt-2 sm:mt-0 sm:ml-2">
-                <input wire:model.live="search" type="text" class="border text-black border-gray-300 rounded-md p-2 w-full" placeholder="Search..." autofocus>
-            </div>
-        </div>
-
         @if($search && $events->isEmpty())
             <p class="text-black mt-8 text-center">No events found for matching "{{ $search }}"</p>
         @elseif(!$search && $events->isEmpty())
@@ -266,7 +241,7 @@
 
 @elseif (Auth::user()->hasRole('admin_staff')) 
 
-    <div>
+
         @if (session('success'))
             <x-sweetalert type="success" :message="session('success')" />
         @endif
@@ -320,7 +295,7 @@
                 <input wire:model.live="search" type="text" class="border text-black border-gray-300 rounded-md p-2 w-full" placeholder="Search..." autofocus>
             </div>
         </div>  
-    </div>
+
 
     <script>
 

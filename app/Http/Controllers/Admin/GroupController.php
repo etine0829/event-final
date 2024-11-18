@@ -37,7 +37,17 @@ class GroupController extends Controller
              'group_name' => 'required|string|max:255',
      
          ]);
- 
+
+         // Check if the group_name already exists for the given event_id
+        $existingGroup = Group::where('event_id', $request->event_id)
+        ->where('group_name', $request->group_name)
+        ->exists();
+
+        if ($existingGroup) {
+        return redirect()->route('admin.group.index')
+        ->with('error', 'The group name already exists for this event.');
+        }
+    
          // Attempt to create the Category record
          try {
              Group::create($validatedData);

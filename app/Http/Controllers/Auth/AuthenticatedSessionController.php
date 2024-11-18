@@ -33,13 +33,16 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // Check if user is authenticated
-        if (Auth::check()) {
+
 
             if (Auth::user()->hasRole('admin')) 
             {
                 return redirect()->route('admin.dashboard')->with('success', 'Successful Login');
+
+            } else if (Auth::user()->hasRole('judge')) {
+                return redirect()->route('judge.dashboard')->with('success', 'Successful Login');
             }
-        }
+   
 
           return redirect()->intended('/'); // redirect to a default route
         // return view('auth.login');

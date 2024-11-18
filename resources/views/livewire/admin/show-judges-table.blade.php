@@ -25,7 +25,7 @@
                 <select wire:model="selectedEvent" id="event_id" name="event_id" wire:change="updateCategory"
                         class="cursor-pointer text-sm shadow appearance-none border pr-16 rounded py-2 px-2 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror md:w-auto"
                         required>
-                    <option value="">Event</option>
+                    <option value="0">Event</option>
                     @foreach($events as $event)
                         <option value="{{ $event->id }}">{{ $event->event_name }}</option>
                     @endforeach
@@ -102,123 +102,125 @@
             
         @endif
         @if($search && $judges->isEmpty())
-        <p class="text-black mt-8 text-center">No judge found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
-        <div class="flex justify-center mt-2">
-            @if($search)
-                <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
-            @endif
-        </div>
+            <p class="text-black mt-8 text-center">No judge found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
+            <div class="flex justify-center mt-2">
+                @if($search)
+                    <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
+                @endif
+            </div>
         @elseif(!$search && $judges->isEmpty())
             <p class="text-black mt-8 text-center uppercase">No data available in judge<text class="text-red-500">
                 @if($eventToShow)
-                {{ $eventToShow->event_name}}
-            @endif</text></p>
+                    {{ $eventToShow->event_name}}
+                @endif</text>
+            </p>
         @else
 
             @if($eventToShow)
-            @if($judgeToShow->isEmpty())
-                            <!-- Display message if no judges are associated with the selected event -->
-                            <tr>
-                                <td colspan="3" class="text-center text-red-500 font-bold">No judges assigned to this event.</td>
-                            </tr>
-                        @else
-                <div class="overflow-x-auto">
-                    <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
-                        <thead class="bg-gray-200 text-black">
-                            <tr>
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('name')" class="w-full h-full flex items-center justify-center">
-                                        Name
-                                        @if ($sortField == 'name')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
-                                            @endif
-                                        @endif
-                                    </button>
-                                </th>
 
-                                <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('email')" class="w-full h-full flex items-center justify-center">
-                                        Email
-                                        @if ($sortField == 'email')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                @if($judgeToShow->isEmpty())
+                    <!-- Display message if no judges are associated with the selected event -->
+                    <tr>
+                        <td colspan="3" class="text-center text-red-500 font-bold">No judges assigned to this event.</td>
+                    </tr>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
+                            <thead class="bg-gray-200 text-black">
+                                <tr>
+                                    <th class="border border-gray-400 px-3 py-2">
+                                        <button wire:click="sortBy('name')" class="w-full h-full flex items-center justify-center">
+                                            Name
+                                            @if ($sortField == 'name')
+                                                @if ($sortDirection == 'asc')
+                                                    &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                                @else
+                                                    &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                                @endif
                                             @endif
-                                        @endif
-                                    </button>
-                                </th>
+                                        </button>
+                                    </th>
 
-                                <th class="border border-gray-400 px-3 py-2">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody >
-                        
-                            @foreach ($judgeToShow as $judge)
-                                <tr class="hover:bg-gray-100" wire:model="selectedCategory">
-                                    <td class="text-black border border-gray-400">{{ $judge->name }}</td>
-                                    <td class="text-black border border-gray-400">{{ $judge->email }}</td>
-
-                                    <td class="text-black border border-gray-400 px-1 py-1">
-                                        <div class="flex justify-center items-center space-x-2">
-                                            @if($eventToShow && $judge)
-                                                <div x-data="{ open: false, 
-                                                    id: {{ json_encode($judge->id) }},
-                                                    name: {{ json_encode($judge->name) }},
-                                                    email: {{ json_encode($judge->email) }},
-                                                    password: {{ json_encode($judge->password) }},
-                                                }">
-                                                    <!-- You can add the edit or action buttons here -->
-                                                </div>
-                                                <form id="deleteSelected" action="{{ route('admin.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
-                                                        <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <p>No judges assigned to this event.</p>
+                                    <th class="border border-gray-400 px-3 py-2">
+                                        <button wire:click="sortBy('email')" class="w-full h-full flex items-center justify-center">
+                                            Email
+                                            @if ($sortField == 'email')
+                                                @if ($sortDirection == 'asc')
+                                                    &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                                @else
+                                                    &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                                @endif
                                             @endif
-                                        </div>
-                                    </td>
+                                        </button>
+                                    </th>
+
+                                    <th class="border border-gray-400 px-3 py-2">Action</th>
                                 </tr>
-                            @endforeach
+                            </thead>
+                            <tbody >
+                            
+                                @foreach ($judgeToShow as $judge)
+                                    <tr class="hover:bg-gray-100" wire:model="selectedCategory">
+                                        <td class="text-black border border-gray-400">{{ $judge->name }}</td>
+                                        <td class="text-black border border-gray-400">{{ $judge->email }}</td>
+
+                                        <td class="text-black border border-gray-400 px-1 py-1">
+                                            <div class="flex justify-center items-center space-x-2">
+                                                @if($eventToShow && $judge)
+                                                    <div x-data="{ open: false, 
+                                                        id: {{ json_encode($judge->id) }},
+                                                        name: {{ json_encode($judge->name) }},
+                                                        email: {{ json_encode($judge->email) }},
+                                                        password: {{ json_encode($judge->password) }},
+                                                    }">
+                                                        <!-- You can add the edit or action buttons here -->
+                                                    </div>
+                                                    <form id="deleteSelected" action="{{ route('admin.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
+                                                            <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <p>No judges assigned to this event.</p>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        @if($eventToShow)
+                            <tr>
+                                <td colspan="2">
+                                    <div class="flex justify-between">
+                                        <div class="uppercase text-black mt-2 text-sm mb-4">
+                                            @if($search)
+                                                {{ $judges->total() }} Search results 
+                                            @endif                                    
+                                        </div>
+                                        <div class="justify-end">
+                                            <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of judge: <text class="ml-2">{{ $judgeCounts[$eventToShow->id]->judge_count ?? 0 }}</text></p>
+                                            
+                                        </div>
+                                    </div> 
+                                </td>
+                                <td>
+                                    {{ $judges->links() }}
+                                </td>
+                                <div class="flex justify-center mt-2">
+                                    @if($search)
+                                        <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
+                                    @endif
+                                </div>
+                            </tr>
                         @endif
-                        </tbody>
-                    </table>
-                    @if($eventToShow)
-                        <tr>
-                            <td colspan="2">
-                                <div class="flex justify-between">
-                                    <div class="uppercase text-black mt-2 text-sm mb-4">
-                                        @if($search)
-                                            {{ $judges->total() }} Search results 
-                                        @endif                                    
-                                    </div>
-                                    <div class="justify-end">
-                                        <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of judge: <text class="ml-2">{{ $judgeCounts[$eventToShow->id]->judge_count ?? 0 }}</text></p>
-                                        
-                                    </div>
-                                </div> 
-                            </td>
-                            <td>
-                                {{ $judges->links() }}
-                            </td>
-                            <div class="flex justify-center mt-2">
-                                @if($search)
-                                    <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
-                                @endif
-                            </div>
-                        </tr>
-                    @endif
-                </div>
-            @else
-                <p class="text-black mt-10  text-center">Select table to show data</p>
-            @endif
+                    </div>
+                @else
+                    <p class="text-black mt-10  text-center">Select table to show data</p>
+                @endif
         @endif
     </div>
     <!-- <script>
@@ -263,18 +265,7 @@
 
     <script>
 
-    function searchcategorys(event) {
-            let searchTerm = event.target.value.toLowerCase();
-            if (searchTerm === '') {
-                this.judgesToShow = @json($judgeToShow->toArray());
-            } else {
-                this.judgesToShow = this.judgesToShow.filter(judge =>
-                    judge.judge_name.toLowerCase().includes(searchTerm) ||
-                    judge.judge_name.toLowerCase().includes(searchTerm) ||
-                    judge.event.event_name.toLowerCase().includes(searchTerm)
-                );
-            }
-        }
+
 
             function confirmDeleteAll(event) {
             event.preventDefault(); // Prevent form submission initially

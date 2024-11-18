@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth; 
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Illuminate\Auth\Events\Registered;
 
 class UserController extends Controller
 {
@@ -17,33 +19,86 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        
+
     // Ensure the authenticated user has the admin role
-    if (Auth::user()->hasRole('admin')) {
-        
-        // dd($request->all());
-        // Validate the incoming request data
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'picture' => 'string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:users,email', 
-            'password' => ['required'],
-            'role' => ['required', 'string', 'in:event_manager,judge,staff'],
-        ]);
+        if (Auth::user()->hasRole('admin')) {
 
-        try {
-            // Hash the password before saving
-            $validatedData['password'] = Hash::make($validatedData['password']);
+            // Validate the incoming request data
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'picture' => 'nullable|string|max:255', // Allow picture to be optional
+                'email' => 'required|string|email|max:255|unique:users,email', // Removed unnecessary 'lowercase'
+                'password' => 'required|string|min:8|confirmed', // Enforce password confirmation
+                'role' => 'required|string|in:event_manager,judge,staff',
+                'event_id' => 'required|exists:events,id',
+            ]);
 
-            // Create the new user  
-            $user = User::create($validatedData);
+            try {
+                // Hash the password before saving
+                $validatedData['password'] = Hash::make($validatedData['password']);
 
-            return redirect()->route('admin.user.index')
-                ->with('success', 'User created successfully.');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.user.index')->with('error', 'Failed to create user: ' . $e->getMessage());
+                // Create the new user
+                $user = User::create([
+                    'name' => $validatedData['name'],
+                    'picture' => $validatedData['picture'] ?? null, // Handle null picture gracefully
+                    'email' => $validatedData['email'],
+                    'password' => $validatedData['password'],
+                    'event_id' => $validatedData['event_id'],
+                ]);
+
+                // Assign the selected role to the user
+                $user->assignRole($validatedData['role']);
+
+                // Fire the Registered event
+                event(new Registered($user));
+
+                // Redirect with success message
+                return redirect()->route('admin.user.index')
+                    ->with('success', 'User created successfully.');
+            } catch (\Exception $e) {
+                // Log the error for debugging
+                Log::error('User creation failed: ' . $e->getMessage());
+
+                // Redirect with error message
+                return redirect()->route('admin.user.index')
+                    ->with('error', 'Failed to create user: ' . $e->getMessage());
+            }
         }
-    }
+
+        
+    // // Ensure the authenticated user has the admin role
+    // if (Auth::user()->hasRole('admin')) {
+        
+    //     // dd($request->all());
+    //     // Validate the incoming request data
+    //     $validatedData = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'picture' => 'string|max:255',
+    //         'email' => 'required|string|lowercase|email|max:255|unique:users,email', 
+    //         'password' => ['required'],
+    //         'role' => ['required', 'string', 'in:event_manager,judge,staff'],
+    //         'event_id' => 'required|exists:events,id',
+    //     ]);
+
+    //     try {
+    //         // Hash the password before saving
+    //         $validatedData['password'] = Hash::make($validatedData['password']);
+
+    //         // Create the new user  
+    //         $user = User::create($validatedData);
+
+    //         $user->assignRole($request->role);
+
+    //         event(new Registered($user));
+    
+    //         Auth::login($user);
+
+    //         return redirect()->route('admin.user.index')
+    //             ->with('success', 'User created successfully.');
+    //     } catch (\Exception $e) {
+    //         return redirect()->route('admin.user.index')->with('error', 'Failed to create user: ' . $e->getMessage());
+    //     }
+    // }
 }
 
     public function update(Request $request, User $user)

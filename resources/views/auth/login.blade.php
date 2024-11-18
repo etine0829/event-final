@@ -9,7 +9,7 @@
          </a>
 
         <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">  
-            <div @click.away="open = false" class="w-[90%] sm:w-[70%] md:w-[50%] lg:w-[35%] bg-white p-6 rounded-lg shadow-lg mx-auto">    
+            <div  class="w-[90%] sm:w-[70%] md:w-[50%] lg:w-[35%] bg-white p-6 rounded-lg shadow-lg mx-auto">    
                 <div class="flex items-start pb-3">
                     <img src="{{ asset('assets/img/login.png') }}" alt="login" class="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] mx-auto">
                     <a @click="open = false" class="flex justify-end cursor-pointer text-black text-sm py-2 rounded hover:text-red-500">X</a>

@@ -14,7 +14,7 @@ class ShowJudgesTable extends Component
 
     public $search = '';
     public $sortDirection = 'asc';
-    public $selectedEvent = null;
+    public $selectedEvent = 0;
     public $sortField = 'id';
     public $judgeToShow;
     public $eventToShow;
@@ -58,16 +58,29 @@ class ShowJudgesTable extends Component
         $query = $this->applySearchFilters($query);
 
         // Apply event filter
-        if ($this->selectedEvent) {
+        if($this->selectedEvent === '0'){
+            $this->eventToShow = null;
+            $this->judgeToShow = null;
+        }
+        else if ($this->selectedEvent) {
             $query->where('event_id', $this->selectedEvent);
             $this->eventToShow = Event::findOrFail($this->selectedEvent);
+            $this->judgeToShow = User::where('event_id', $this->selectedEvent)
+            ->get();
+
+
+            
         } else {
             $this->eventToShow = null;
+            $this->judgeToShow = null;
         }
 
+        
         // Fetch sorted judges with pagination
         $judges = $query->orderBy($this->sortField, $this->sortDirection)
                         ->paginate(25);
+
+
 
         $events = Event::all();
 
@@ -76,11 +89,13 @@ class ShowJudgesTable extends Component
                            ->groupBy('event_id')
                            ->get()
                            ->keyBy('event_id');
+  
 
         return view('livewire.admin.show-judges-table', [
             'judges' => $judges,
             'events' => $events,
             'judgeCounts' => $judgeCounts,
+            'judgeToShow' => $this->judgeToShow,
         ]);
     }
 

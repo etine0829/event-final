@@ -43,9 +43,11 @@ class User extends Authenticatable
         ];
     }
     
-    public function event()
-    {
-    return $this->belongsTo(Event::class);
+    // public function event()
+    // {
+    // return $this->belongsTo(Event::class);
+    // }
+    public function event() {
+        return $this->belongsTo(Event::class, 'event_id');
     }
-    
 }
