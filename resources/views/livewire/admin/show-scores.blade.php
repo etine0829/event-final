@@ -7,6 +7,7 @@
             <table class="table-auto border-collapse border border-gray-400 w-full mt-2">
                 <thead>
                     <tr>
+                        <th class="border border-gray-400 px-4 py-2">Rank</th> <!-- Rank Column -->
                         <th class="border border-gray-400 px-4 py-2">Participant Name</th>
                         @foreach ($category['criteria'] as $criteria)
                             <th class="border border-gray-400 px-4 py-2">{{ $criteria['name'] }}</th>
@@ -17,6 +18,8 @@
                 <tbody>
                     @foreach ($category['participants'] as $participant)
                         <tr>
+                            <!-- Rank Column: Display rank -->
+                            <td class="border border-gray-400 px-4 py-2">{{ $participant['rank'] }}</td>
                             <td class="border border-gray-400 px-4 py-2">{{ $participant['name'] }}</td>
                             @foreach ($category['criteria'] as $criteria)
                                 <td class="border border-gray-400 px-4 py-2">

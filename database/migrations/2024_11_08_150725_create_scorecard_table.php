@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('participant_id');
             $table->integer('score');
             $table->integer('avg_score');
-    
+            
             
             $table->timestamps();
 
