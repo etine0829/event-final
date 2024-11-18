@@ -38,7 +38,7 @@ class ShowUserTable extends Component
         ->orWhere('email', 'like', '%' . $this->search . '%')
         ->orWhere('role', 'like', '%' . $this->search . '%')
             ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+            ->paginate(20);
 
         return view('livewire.admin.show-user-table', [
             'users' => $users,

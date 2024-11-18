@@ -90,10 +90,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('user', UserController::class)->names([
             'index' => 'user.index',
-            'create' => 'user.create',
-            'store' => 'user.store',
-            'edit' => 'user.edit',
-            'update' => 'user.update'   
         ]);
         Route::delete('user', [UserController::class, 'deleteAll'])->name('user.deleteAll');
 

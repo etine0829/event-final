@@ -15,6 +15,11 @@ class NoCacheMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Exclude assets from no-cache headers
+        if ($request->is('css/*') || $request->is('js/*') || $request->is('images/*') || $request->is('storage/*')) {
+            return $next($request);
+        }
+
         $response = $next($request);
 
         return $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')

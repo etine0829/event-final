@@ -38,7 +38,10 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "php artisan config:clear",
+            "php artisan route:clear",
+            "php artisan view:clear"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
@@ -48,6 +51,7 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ]
+        
     },
     "extra": {
         "laravel": {
@@ -65,4 +69,6 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true
+
+    
 }

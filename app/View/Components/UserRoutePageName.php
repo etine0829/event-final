@@ -38,17 +38,8 @@ class UserRoutePageName extends Component
                 'admin.participant.index' => __('Admin - Manage Participant'),
                 'admin.judge.index' => __('Admin - Add Judges'),
                 'admin.user.index' => __('Admin - Add User'),
+                'admin.result.index' => __('Admin - Result'),
                 
-                'admin.student.index' => __('Admin - Manage Student'),
-                'admin.course.index' => __('Admin - Manage Courses'),
-                'admin.attendance.employee_attendance' => __('Admin - Employee Attendance'),
-                'admin.attendance.employeeSearch' => __('Admin - Employee Attendance Search'),
-                'admin.attendance.student_attendance' => __('Admin - Student Attendance'),
-                'admin.attendance.employee_attendance.payroll' =>  __('Admin - Manage Attendance Reports by Department'),
-                'admin.attendance.employee_attendance.payroll.all' =>  __('Admin - Manage All Employees Attendance Reports'),
-                'admin.attendance.employee_attendance.portal' => __('Employee Attendance Portal'),
-                'admin.attendance.gracePeriodSet' => __('Admin - Attendance Grace Period'),
-                'admin.attendance.holiday' => __('Admin - Add Holiday'),
 
                 
             ];
