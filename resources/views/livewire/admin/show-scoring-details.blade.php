@@ -95,6 +95,7 @@
 
                             <form action="{{ route('score.store') }}" method="POST" enctype="multipart/form-data" id="scoreForm">
                                 @csrf <!-- CSRF Token -->
+                                <input type="hidden" name="category_id" value="{{ $category->id }}">
                                 <div class="space-y-6">
                                     @foreach ($participants as $index => $participant)
                                         @if ($genderFilter == 'all' || $participant->participant_gender == $genderFilter)

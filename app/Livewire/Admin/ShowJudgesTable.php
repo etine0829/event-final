@@ -4,7 +4,7 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\User;  
-use \App\Models\Admin\Event; 
+use App\Models\Admin\Event; 
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -16,97 +16,91 @@ class ShowJudgesTable extends Component
     public $sortDirection = 'asc';
     public $selectedEvent = 0;
     public $sortField = 'id';
-    public $judgeToShow;
+    public $judgeToShow = [];  // Initialize as an array for simplicity
     public $eventToShow;
+    public $selectedJudge;
 
     protected $listeners = ['updateCategory'];
-
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
 
     public function mount()
     {
         $this->selectedEvent = session('selectedEvent', null);
-        $this->judgeToShow = collect([]); // Initialize as an empty collection
-        $this->eventToShow = collect([]); // Initialize as an empty collection
+        $this->judgeToShow = []; // Initialize as an empty array for simplicity
+        $this->eventToShow = null;
     }
 
-    public function updatingSelectedEvent()
-    {
-        $this->resetPage();
+    public function assignJudgeToEvent()
+{
+    // Ensure we have a valid event and judge selected
+    if (!$this->selectedEvent || !$this->selectedJudge) {
+        session()->flash('error', 'Please select both an event and a judge.');
+        return;
     }
 
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortDirection = 'asc';
-        }
+    // Find the event and judge by their IDs
+    $event = Event::find($this->selectedEvent);
+    $judge = User::find($this->selectedJudge);  // Assuming judge is a User model
 
-        $this->sortField = $field;
+    // Check if event and judge exist
+    if (!$event || !$judge) {
+        session()->flash('error', 'Invalid event or judge.');
+        return;
     }
 
-    public function render()
-    {
-        // Query to fetch judges
-        $query = User::with('event');
+    // Update the judge's event_id field with the selected event ID
+    $judge->event_id = $this->selectedEvent;
+    $judge->save();
 
-        // Apply search filters
-        $query = $this->applySearchFilters($query);
+    // Flash success message
+    session()->flash('success', 'Judge successfully assigned to the event.');
 
-        // Apply event filter
-        if($this->selectedEvent === '0'){
-            $this->eventToShow = null;
-            $this->judgeToShow = null;
-        }
-        else if ($this->selectedEvent) {
-            $query->where('event_id', $this->selectedEvent);
-            $this->eventToShow = Event::findOrFail($this->selectedEvent);
-            $this->judgeToShow = User::where('event_id', $this->selectedEvent)
-            ->get();
+    // Optionally reset the selected judge after assignment
+    $this->reset(['selectedJudge']);
+}
 
 
-            
-        } else {
-            $this->eventToShow = null;
-            $this->judgeToShow = null;
-        }
+public function render()
+{
+    // Query to fetch judges
+    $query = User::with('event')->whereHas('roles', function ($query) {
+        $query->where('name', 'judge'); // Filter by 'judge' role
+    });
 
-        
-        // Fetch sorted judges with pagination
-        $judges = $query->orderBy($this->sortField, $this->sortDirection)
-                        ->paginate(25);
+    // Apply search filters
+    $query = $this->applySearchFilters($query);
 
-
-
-        $events = Event::all();
-
-        // Count the number of judges for each event
-        $judgeCounts = User::select('event_id', \DB::raw('count(*) as judge_count'))
-                           ->groupBy('event_id')
-                           ->get()
-                           ->keyBy('event_id');
-  
-
-        return view('livewire.admin.show-judges-table', [
-            'judges' => $judges,
-            'events' => $events,
-            'judgeCounts' => $judgeCounts,
-            'judgeToShow' => $this->judgeToShow,
-        ]);
+    // Apply event filter if selected
+    if ($this->selectedEvent) {
+        $this->eventToShow = Event::find($this->selectedEvent);
+        $this->judgeToShow = User::where('event_id', $this->selectedEvent)
+                                 ->whereHas('roles', function ($query) {
+                                     $query->where('name', 'judge'); // Filter by 'judge' role
+                                 })
+                                 ->get();
+    } else {
+        $this->eventToShow = null;
+        $this->judgeToShow = [];
     }
+
+    // Fetch sorted judges with pagination
+    $judges = $query->orderBy($this->sortField, $this->sortDirection)->paginate(25);
+
+    // Fetch all events
+    $events = Event::all();
+
+    return view('livewire.admin.show-judges-table', [
+        'judges' => $judges,
+        'events' => $events,
+        'judgeToShow' => $this->judgeToShow, // Pass the updated judges list
+    ]);
+}
 
     public function updateCategory()
     {
-        // Update judgeToShow based on selected event
         if ($this->selectedEvent) {
-            $this->judgeToShow = User::where('event_id', $this->selectedEvent)
-                                     ->get();
+            $this->judgeToShow = User::where('event_id', $this->selectedEvent)->get();
         } else {
-            $this->judgeToShow = collect(); // Reset to empty collection if no event is selected
+            $this->judgeToShow = []; // Reset to empty collection if no event is selected
         }
     }
 

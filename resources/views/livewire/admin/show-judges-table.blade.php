@@ -1,6 +1,7 @@
 @php
     session(['selectedEvent' => $selectedEvent]);
 @endphp
+
 @if (Auth::user()->hasRole('admin')) 
     <div>
         @if (session('success'))
@@ -18,89 +19,68 @@
         <div class="flex justify-between mb-4 sm:-mt-4">
             <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Judges</div>
         </div>
+        
         <div class="flex flex-col md:flex-row items-start md:items-center md:justify-start">
-            <!-- Dropdown and Delete Button -->
             <div class="flex items-center w-full md:w-auto">
                 <label for="event_id" class="block text-sm text-gray-700 font-bold md:mr-4 truncate uppercase">Event:</label>
                 <select wire:model="selectedEvent" id="event_id" name="event_id" wire:change="updateCategory"
                         class="cursor-pointer text-sm shadow appearance-none border pr-16 rounded py-2 px-2 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror md:w-auto"
                         required>
-                    <option value="0">Event</option>
+                    <option value="0">Select Event</option>
                     @foreach($events as $event)
                         <option value="{{ $event->id }}">{{ $event->event_name }}</option>
                     @endforeach
                 </select>
-                
-                @if($eventToShow)
-                    <!-- <form id="deleteAll" action="{{ route('admin.category.deleteAll') }}" method="POST" onsubmit="return confirmDeleteAll(event);" class="flex ml-4">
-                    @csrf
-                    @method('DELETE')
-                    <input type="hidden" name="event_id" id="event_id_to_delete">
-                    <button type="submit" class="text-xs lg:text-sm bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-700">
-                        <i class="fa-solid fa-trash fa-sm"></i>
-                    </button>
-                </form> -->
-                @else
-                    
-                @endif
             </div>
-            <!-- Search Input -->
+
             <div class="w-full flex justify-end mt-4 md:mt-0 md:ml-4">
-                @if(empty($selectedEvent)) 
-                    
-                @else
-                    <input wire:model.live="search" type="text" class="text-sm border text-black border-gray-300 rounded-md px-3 py-1.5 w-64" placeholder="Search..." autofocus>
+                @if($selectedEvent)
+                    <input wire:model.debounce.500ms="search" type="text" class="text-sm border text-black border-gray-300 rounded-md px-3 py-1.5 w-64" placeholder="Search..." autofocus>
                 @endif
             </div>
         </div>
+        
         <hr class="border-gray-200 my-4">
         
         @if($eventToShow)
-       
-        <div class="flex justify-between">
-            <p class="text-black mt-2 text-sm mb-4">Selected Event: <text class="uppercase text-red-500">{{ $eventToShow->event_name }}</text></p>
-            <div x-data="{ open: false }">
-                <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
-                    <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Judges
-                </button>
-                <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div @click.away="open = true" class="w-[30%] max-h-[90%]  bg-white p-6 rounded-lg shadow-lg  mx-auto overflow-y-auto">
-                        <div class="flex justify-between items-center pb-3">
-                            <p class="text-xl font-bold">Add Judges</p>
-                            <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
-                        </div>
-                        <div class="mb-4">
-                        <form action="{{ route('admin.assign-judge') }}" method="POST">
-                            @csrf
-                            <div class="mb-2">
-                                <label for="judge_id">Judge:</label>
-                                <select name="judge_id" id="judge_id" class="form-control" required>
-                                    <option value="">Select Judge</option>
-                                    @foreach($judges as $judge)
-                                        <option value="{{ $judge->id }}" {{ old('judge_id') == $judge->id ? 'selected' : '' }}>
-                                            {{ $judge->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+            <div class="flex justify-between">
+                <p class="text-black mt-2 text-sm mb-4">Selected Event: <text class="uppercase text-red-500">{{ $eventToShow->event_name }}</text></p>
+                
+                <div x-data="{ open: false }">
+                    <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
+                        <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Judges
+                    </button>
 
-                            <div class="flex mb-4 mt-5 justify-center">
-                                <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
-                                    Save
-                                </button>
+                    <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                        <div @click.away="open = true" class="w-[30%] max-h-[90%] bg-white p-6 rounded-lg shadow-lg mx-auto overflow-y-auto">
+                            <div class="flex justify-between items-center pb-3">
+                                <p class="text-xl font-bold">Add Judges</p>
+                                <button @click="open = false" class="text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                             </div>
-                        </form>
+                            <form wire:submit.prevent="assignJudgeToEvent" class="mb-4">
+                                <div class="mb-2">
+                                    <label for="judge_id">Judge:</label>
+                                    <select wire:model="selectedJudge" id="judge_id" class="form-control" required>
+                                        <option value="">Select Judge</option>
+                                        @foreach($judges as $judge)
+                                            <option value="{{ $judge->id }}">{{ $judge->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
+                                <div class="flex mb-4 mt-5 justify-center">
+                                    <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
+                                </div>
+                            </form>
 
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-        @else
-            
         @endif
+
+        <hr class="border-gray-200 my-4">
+        
         @if($search && $judges->isEmpty())
             <p class="text-black mt-8 text-center">No judge found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
             <div class="flex justify-center mt-2">
@@ -174,6 +154,8 @@
                                                         password: {{ json_encode($judge->password) }},
                                                     }">
                                                         <!-- You can add the edit or action buttons here -->
+
+                                                        
                                                     </div>
                                                     <form id="deleteSelected" action="{{ route('admin.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">
                                                         @csrf
@@ -223,51 +205,9 @@
                 @endif
         @endif
     </div>
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Restrict morning times to 12:00 AM to 11:59 AM
-            var morningStartTime = document.getElementById('morning_start_time');
-            var morningEndTime = document.getElementById('morning_end_time');
-
-            morningStartTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] >= 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 AM and 11:59 AM');
-                }
-            });
-
-            morningEndTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] >= 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 AM and 11:59 AM');
-                }
-            });
-
-            // Restrict afternoon times to 12:00 PM to 11:59 PM
-            var afternoonStartTime = document.getElementById('afternoon_start_time');
-            var afternoonEndTime = document.getElementById('afternoon_end_time');
-
-            afternoonStartTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] < 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 PM and 11:59 PM');
-                }
-            });
-
-            afternoonEndTime.addEventListener('input', function() {
-                if (this.value.split(':')[0] < 12) {
-                    this.value = '';
-                    alert('Please select a time between 12:00 PM and 11:59 PM');
-                }
-            });
-        });
-    </script> -->
 
     <script>
-
-
-
-            function confirmDeleteAll(event) {
+        function confirmDeleteAll(event) {
             event.preventDefault(); // Prevent form submission initially
 
             Swal.fire({

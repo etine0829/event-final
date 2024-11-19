@@ -26,16 +26,7 @@
                         <div class="mb-4">
                             <form action="{{ route('admin.user.store') }}" method="POST" class="">
                                 @csrf
-                                <div class="mb-2">
-                                        <label for="role" class="block text-gray-700 text-md font-bold mb-2">Event Name: </label>
-                                        <select id="role" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
-                                        @foreach($events as $event)
-                                            <option value="{{ $event->id }}">{{ $event->event_name }}</option>
-                                        @endforeach
-                                        </select>
-                                        <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
-                                </div>
-
+                                
                                 <div class="mb-4">
                                     <label for="name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
                                     <input type="text" name="name" id="name" value="{{ old('name') }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required>

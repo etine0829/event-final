@@ -30,7 +30,7 @@ class UserController extends Controller
                 'email' => 'required|string|email|max:255|unique:users,email', // Removed unnecessary 'lowercase'
                 'password' => 'required|string|min:8|confirmed', // Enforce password confirmation
                 'role' => 'required|string|in:event_manager,judge,staff',
-                'event_id' => 'required|exists:events,id',
+                
             ]);
 
             try {
@@ -43,7 +43,7 @@ class UserController extends Controller
                     'picture' => $validatedData['picture'] ?? null, // Handle null picture gracefully
                     'email' => $validatedData['email'],
                     'password' => $validatedData['password'],
-                    'event_id' => $validatedData['event_id'],
+                   
                 ]);
 
                 // Assign the selected role to the user
