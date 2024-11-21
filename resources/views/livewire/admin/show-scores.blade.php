@@ -1,10 +1,14 @@
 <div>
-    <h1 class="text-2xl font-bold mb-4">Editable Scores</h1>
+    @include('layouts.judge_head')
 
-    @forelse ($categories as $category)
-        <div class="mb-6 border p-4 rounded shadow">
-            <h2 class="text-xl font-semibold mb-2">{{ $category['name'] }}</h2>
-            <table class="table-auto border-collapse border border-gray-400 w-full mt-2">
+    <div>
+        <h1 class="text-2xl font-bold mb-4">Editable Scores</h1>
+
+        @forelse ($categories as $category)
+            <div class="mb-6 border p-4 rounded shadow">
+                <h2 class="text-xl font-semibold mb-2">{{ $category['name'] }}</h2>
+                <div class="overflow-x-auto"> <!-- Add this div to make the table scrollable on small screens -->
+                <table class="table-auto border-collapse border border-gray-400 w-full mt-2">
                 <thead>
                     <tr>
                         <th class="border border-gray-400 px-4 py-2">Participant Name</th>
@@ -12,6 +16,7 @@
                             <th class="border border-gray-400 px-4 py-2">{{ $criteria['name'] }}</th>
                         @endforeach
                         <th class="border border-gray-400 px-4 py-2">Average Score</th>
+                        <th class="border border-gray-400 px-4 py-2">Rank</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,25 +33,29 @@
                                 </td>
                             @endforeach
                             <td class="border border-gray-400 px-4 py-2">{{ $participant['avg_score'] }}</td>
+                            <td class="border border-gray-400 px-4 py-2">{{ $participant['rank'] ?? 'N/A' }}</td>
+                            
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+                </div>
 
-            <button 
-                class="bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600"
-                wire:click="updateScores({{ $category['id'] }})"
-            >
-                Save Changes for {{ $category['name'] }}
-            </button>
-        </div>
-    @empty
-        <p>No categories available for this event.</p>
-    @endforelse
+                <button 
+                    class="bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600"
+                    wire:click="updateScores({{ $category['id'] }})"
+                >
+                    Save Changes for {{ $category['name'] }}
+                </button>
+            </div>
+        @empty
+            <p>No categories available for this event.</p>
+        @endforelse
 
-    @if (session()->has('success'))
-        <div class="bg-green-500 text-white p-3 rounded mt-4">
-            {{ session('success') }}
-        </div>
-    @endif
+        @if (session()->has('success'))
+            <div class="bg-green-500 text-white p-3 rounded mt-4">
+                {{ session('success') }}
+            </div>
+        @endif
+    </div>
 </div>

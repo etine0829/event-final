@@ -37,7 +37,6 @@ class ShowUserTable extends Component
             ->where(function ($query) {
                 $query->where('id', 'like', '%' . $this->search . '%')
                     ->orWhere('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('picture', 'like', '%' . $this->search . '%')
                     ->orWhere('email', 'like', '%' . $this->search . '%')
                     ->orWhere('role', 'like', '%' . $this->search . '%');
             })

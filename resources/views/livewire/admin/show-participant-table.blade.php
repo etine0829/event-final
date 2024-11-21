@@ -133,15 +133,16 @@
                                         <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
                                         <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
                                             <div id="imagePreviewContainer" class="mb-2 text-center">
-                                                <img id="imagePreview" src="{{ asset('assets/img/user.png') }}" class="rounded-lg w-32 h-auto">
+                                                <img id="imagePreview" src="{{ asset('storage/default/user.png') }}" class="rounded-lg w-32 h-auto">
                                             </div>
                                             <span class="text-sm text-gray-500">Select Photo</span>
                                         </label>
-                                        <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
+                                        <span id="photoError" class="text-red-500 text-sm"></span>
                                     </div>
-
+                                    
+                                    <!-- Save Button -->
                                     <div class="flex mb-4 mt-10 justify-center">
-                                        <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
+                                        <button type="submit" id="saveButton" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                             Save
                                         </button>
                                     </div>
@@ -518,4 +519,36 @@ function handleImageError(image) {
             }
         }
 </script>
-<!--  -->
+
+<!-- this will handle the photo large size -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const photoInput = document.getElementById('participant_photo');
+        const saveButton = document.getElementById('saveButton');
+        const photoError = document.getElementById('photoError');
+        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+
+        photoInput.addEventListener('change', function () {
+            const file = photoInput.files[0];
+
+            // Reset the error message and enable button by default
+            photoError.textContent = '';
+            saveButton.disabled = false;
+
+            if (file && file.size > maxSize) {
+                photoError.textContent = 'The photo exceeds the maximum size of 2MB.';
+                saveButton.disabled = true; // Disable the Save button
+            }
+
+            // Show a preview of the image
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>

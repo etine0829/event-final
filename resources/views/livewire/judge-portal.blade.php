@@ -8,20 +8,22 @@
         @endforelse
     </div>
 
-    <div class="grid grid-cols gap-4 w-full max-w-2xl">
-        @foreach($categories as $index => $category)
-            <div class="{{ ['bg-yellow-600', 'bg-green-600', 'bg-blue-600', 'bg-red-600'][$index % 4] }} p-4 rounded-md text-white text-center cursor-pointer hover:scale-105 transition-transform duration-300" wire:click="goToCategoryDetails({{ $category->id }})">
-                {{ $category->category_name }} {{ $category->score }} %
+    <!-- Categories Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-5xl">
+        @foreach($categories as $category)
+            <div class="bg-gray-100 border border-gray-300 p-4 rounded-lg shadow-md text-center cursor-pointer hover:shadow-lg transition-shadow duration-300" 
+                wire:click="goToCategoryDetails({{ $category->id }})">
+                <h2 class="text-xl font-bold">{{ $category->category_name }} {{ $category->score }} %</h2>
                 <h3>(click to open)</h3>
             </div>
         @endforeach
 
+        
          <!-- Show the My Score button only for the current event -->
-         <a href="{{ route('scores.show', ['eventId' => $event->id]) }}">
-                <button class="bg-blue-200">
-                    My Score
-                </button>
-            </a>
-
+        <a href="{{ route('scores.show', ['eventId' => $event->id]) }}">
+            <button class="bg-blue-200">
+                My Score
+            </button>
+        </a>
     </div>
 </div>

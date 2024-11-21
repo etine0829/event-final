@@ -125,7 +125,7 @@
                                     @if($type_of_scoring === 'points')
                                         <div class="mb-2">
                                             <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                            <input type="text" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
+                                            <input type="number" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
                                             <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
                                         </div>
                                     @endif
@@ -195,7 +195,7 @@
                                         @if($type_of_scoring === 'points')
                                             <div class="mb-2">
                                                 <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                                <input type="text" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
+                                                <input type="number" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
                                                 <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
                                             </div>
                                         @endif
@@ -326,7 +326,7 @@
                                                             @if($type_of_scoring === 'points')
                                                                 <div class="mb-2">
                                                                     <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                                                    <input type="text" name="criteria_score" id="criteria_score" value="{{ $criteria->criteria_score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
+                                                                    <input type="number" name="criteria_score" id="criteria_score" value="{{ $criteria->criteria_score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
                                                                     <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
                                                                 </div>
                                                             @endif

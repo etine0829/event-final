@@ -17,7 +17,7 @@ class Scorecard extends Model
         'participant_id',
         'score',
         'avg_score',
-        'comment', 
+        'rank', 
     ];
 
     public function category()

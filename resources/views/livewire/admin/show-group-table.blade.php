@@ -83,7 +83,8 @@
 
                                     <div class="mb-2">
                                         <label for="group_name" class="block text-gray-700 text-md font-bold mb-2">Group Name</label>
-                                        <input type="text" name="group_name" id="group_name" value="{{ old('group_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('group_name') is-invalid @enderror" required>
+                                        <input type="text" name="group_name" id="group_name" value="{{ old('group_name') }}" 
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('group_name') is-invalid @enderror" required>
                                         <x-input-error :messages="$errors->get('group_name')" class="mt-2" />
                                     </div>                                  
 

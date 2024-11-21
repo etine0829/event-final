@@ -7,6 +7,7 @@ use App\Models\Admin\Event;
 use App\Models\Admin\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class GroupController extends Controller
 {

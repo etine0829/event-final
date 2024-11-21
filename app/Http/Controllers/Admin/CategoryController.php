@@ -43,13 +43,24 @@ class CategoryController extends Controller
             'score' => 'nullable|string|max:255',
         ]);
 
-        // Attempt to create the Category record
-        try {
-            Category::create($validatedData);
-            return redirect()->route('admin.category.index')
+        // Check if a criteria with the same criteria_name already exists
+        $existingCategoryName = Category::where('category_name', $request->input('category_name'))
+        ->where('event_id',$request->input('event_id'))
+        ->first();
+
+        if (!$existingCategoryName) {
+            $category = new Category();
+            $category->event_id = $request->input('event_id');;
+            $category->category_name = $request->input('category_name');
+            $category->score = $request->input('score');
+            $category->save();
+
+            return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.category.index' : 'event_manager.category.index')
                 ->with('success', 'Category created successfully.');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.category.index')->with('error', 'Failed to create category: ' . $e->getMessage());
+        } else {
+            $errorMessage = 'Category name ' . $request->input('category_name') . ' is already taken for this category.';
+            return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.category.index' : 'event_manager.category.index')
+                ->with('error', $errorMessage . ' Try again.');
         }
     }
     else if (Auth::user()->hasRole('event_manager')) {
@@ -122,32 +133,22 @@ class CategoryController extends Controller
     }
 
     public function destroy(Category $category)
-    {
-        if (Auth::user()->hasRole('admin')) {
-
-            // Check if there are any associated records
-            if ($category->criteria()->exists()) {
-                return redirect()->route('admin.category.index')->with('error', 'Cannot delete category because it has associated data.');
-            }
-
-            // If no associated records, proceed with deletion
-            $category->delete();
-
-            return redirect()->route('admin.category.index')->with('success', 'Event deleted successfully.');
-
-        } else if (Auth::user()->hasRole('event_manager')) {
-            
-            // Check if there are any associated records
-            if ($category->criteria()->exists()) {
-                return redirect()->route('admin.category.index')->with('error', 'Cannot delete category because it has associated data.');
-            }
-
-            // If no associated records, proceed with deletion
-            $category->delete();
-
-            return redirect()->route('admin.category.index')->with('success', 'Category deleted successfully.');
+{
+    if (Auth::user()->hasAnyRole(['admin', 'event_manager'])) {
+        // Check if there are any associated records
+        if ($category->criteria()->exists()) {
+            return redirect()->route('admin.category.index')->with('error', 'Cannot delete category because it has associated data.');
         }
+
+        // If no associated records, proceed with deletion
+        $category->delete();
+
+        return redirect()->route('admin.category.index')->with('success', 'Category deleted successfully.');
     }
+
+    return redirect()->route('admin.category.index')->with('error', 'Unauthorized access.');
+}
+
 
     public function deleteAll(Request $request)
     {

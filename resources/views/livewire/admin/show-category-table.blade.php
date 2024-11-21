@@ -206,7 +206,7 @@
                                                                     @if($type_of_scoring === 'points')
                                                                         <div class="mb-4" id="scoreContainer">
                                                                             <label for="score" class="block text-gray-700 text-md font-bold mb-2 text-left">Score</label>
-                                                                            <input type="text" name="score" id="score" x-model="score" value="{{ $category->score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
+                                                                            <input type="number" name="score" id="score" x-model="score" value="{{ $category->score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
                                                                             <x-input-error :messages="$errors->get('score')" class="mt-2" />
                                                                         </div>
                                                                     @endif
@@ -222,13 +222,36 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <form id="deleteSelected" action="{{ route('admin.category.destroy', $category->id) }}" method="POST">
+                                            <form id="deleteSelected" action="{{ route('admin.category.destroy', $category->id) }}" method="POST" onsubmit="return confirmDeletion(event)">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
+                                                <button class="bg-red-500 text-white text-sm px-2 py-1 rounded hover:bg-red-700">
                                                     <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
                                                 </button>
                                             </form>
+
+                                            <script>
+                                                function confirmDeletion(event) {
+                                                    event.preventDefault(); // Prevent the form from submitting immediately
+
+                                                    Swal.fire({
+                                                        title: 'Are you sure?',
+                                                        text: "This action cannot be undone!",
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#d33',
+                                                        cancelButtonColor: '#3085d6',
+                                                        confirmButtonText: 'Yes, delete it!',
+                                                        cancelButtonText: 'Cancel'
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            // If confirmed, submit the form
+                                                            event.target.submit();
+                                                        }
+                                                    });
+                                                }
+                                            </script>
+
                                             @endif
                                         </div>
                                     </td>
@@ -267,31 +290,6 @@
             @endif
         @endif
     </div>
-
-   <!-- <script>
-            document.addEventListener('DOMContentLoaded', function () {
-        const eventSelect = document.getElementById('event_id');
-        const scoreContainer = document.getElementById('scoreContainer');
-
-        // Hide or show the score input based on scoring type
-        function toggleScoreVisibility() {
-            const selectedEvent = eventSelect.options[eventSelect.selectedIndex];
-            const scoringType = selectedEvent.getAttribute('data-scoring');
-
-            if (scoringType === 'ranking') {
-                scoreContainer.style.display = 'none'; // Hide score input
-            } else {
-                scoreContainer.style.display = 'block'; // Show score input
-            }
-        }
-
-        // Initial check
-        toggleScoreVisibility();
-
-        // Add event listener if the event selection changes
-        eventSelect.addEventListener('change', toggleScoreVisibility);
-    });
-    </script>  -->
 
     <script>
 

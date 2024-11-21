@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Livewire\Admin;
+
 
 use Livewire\Component;
 use App\Models\Admin\Scorecard;
@@ -8,12 +10,15 @@ use App\Models\Admin\Participant;
 use App\Models\Admin\Criteria;
 use App\Models\Admin\Category;
 
+
 class ShowScores extends Component
 {
     public $categories = [];
     public $eventId; // The selected event ID
 
+
     public $scores = []; // Holds scores to be displayed and updated
+
 
     public function mount($eventId)
     {
@@ -21,14 +26,17 @@ class ShowScores extends Component
         $this->loadCategories();
     }
 
+
     public function loadCategories()
     {
         $this->categories = []; // Reset categories array
+
 
         // Fetch categories for the selected event along with criteria and scorecards
         $categories = Category::where('event_id', $this->eventId)
             ->with(['criteria', 'criteria.scorecards.participant'])
             ->get();
+
 
         foreach ($categories as $category) {
             $categoryData = [
@@ -38,6 +46,7 @@ class ShowScores extends Component
                 'participants' => [],
             ];
 
+
             // Fetch criteria
             foreach ($category->criteria as $criteria) {
                 $categoryData['criteria'][] = [
@@ -46,15 +55,19 @@ class ShowScores extends Component
                 ];
             }
 
+
             // Fetch participants and their scores for each criterion
             $participants = $category->criteria
                 ->flatMap(fn($criteria) => $criteria->scorecards)
                 ->groupBy(fn($scorecard) => $scorecard->participant->id ?? null);
 
+
             foreach ($participants as $participantId => $scorecards) {
                 if ($participantId === null) continue;
 
+
                 $participant = $scorecards->first()->participant;
+
 
                 $participantData = [
                     'id' => $participant->id,
@@ -63,42 +76,76 @@ class ShowScores extends Component
                     'avg_score' => $scorecards->avg('score'),
                 ];
 
+
                 foreach ($category->criteria as $criteria) {
                     $score = $scorecards->firstWhere('criteria_id', $criteria->id)?->score ?? null;
                     $participantData['scores'][$criteria->id] = $score;
+
 
                     // Initialize scores array for editing
                     $this->scores[$category->id][$participant->id][$criteria->id] = $score;
                 }
 
+
                 $categoryData['participants'][] = $participantData;
             }
+
 
             $this->categories[] = $categoryData;
         }
     }
 
-    public function updateScores($categoryId)
-    {
-        if (!isset($this->scores[$categoryId])) return;
 
-        foreach ($this->scores[$categoryId] as $participantId => $criteriaScores) {
-            foreach ($criteriaScores as $criteriaId => $score) {
-                Scorecard::updateOrCreate(
-                    [
-                        'participant_id' => $participantId,
-                        'criteria_id' => $criteriaId,
-                    ],
-                    ['score' => $score]
-                );
-            }
+    public function updateScores($categoryId)
+{
+    if (!isset($this->scores[$categoryId])) return;
+
+
+    // Loop through the scores for the category
+    foreach ($this->scores[$categoryId] as $participantId => $criteriaScores) {
+        $totalScore = 0;
+        $criteriaCount = 0;
+
+
+        // Loop through each criterion score for the participant
+        foreach ($criteriaScores as $criteriaId => $score) {
+            // Update or create the score for the participant and criterion
+            Scorecard::updateOrCreate(
+                [
+                    'participant_id' => $participantId,
+                    'criteria_id' => $criteriaId,
+                    'category_id' => $categoryId, // Ensure the category_id is also considered
+                ],
+                ['score' => $score]  // Updating the individual score
+            );
+
+
+            // Accumulate the total score and count the criteria
+            $totalScore += $score;
+            $criteriaCount++;
         }
 
-        session()->flash('success', "Scores for category ID {$categoryId} updated successfully!");
 
-        // Reload categories to reflect updated scores in the table
-        $this->loadCategories();
+        // Calculate the average score for the participant
+        $avgScore = $criteriaCount > 0 ? $totalScore / $criteriaCount : 0;
+
+
+        // Update the avg_score for the participant in the category
+        // We need to make sure we are updating the right participant and category combination
+        Scorecard::where('participant_id', $participantId)
+            ->where('category_id', $categoryId)
+            ->update(['avg_score' => $avgScore]);
     }
+
+
+    // Flash success message
+    session()->flash('success', "Scores for category ID {$categoryId} updated successfully!");
+
+
+    // Reload categories to reflect updated scores in the table
+    $this->loadCategories();
+}
+
 
     public function render()
     {
@@ -107,3 +154,4 @@ class ShowScores extends Component
         ])->layout('layouts.portal');
     }
 }
+

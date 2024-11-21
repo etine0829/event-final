@@ -89,7 +89,7 @@ class ParticipantController extends Controller
         } else {
             return redirect()->back()->with('error', 'Unauthorized action.');
         }
-      }
+    }
       
     public function update(Request $request, Participant $participant)
     {
