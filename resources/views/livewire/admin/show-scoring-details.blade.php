@@ -32,9 +32,9 @@
         </div>
 
         <!-- Centered Content -->
-        <div class="flex justify-center items-center min-h-screen">
-            <div class="container mx-auto p-4 bg-slate-200 ring-offset-neutral-300 rounded-tl-lg rounded-tr-lg rounded-b-lg w-full max-w-4xl mr-4 ml-4">
-                <h2 class="text-3xl text-center font-bold mb-6">{{ $category->category_name }}</h2>
+        <div class="flex justify-center items-center min-h-screen ">
+            <div class=" relative p-[5px] bg-white rounded-lg custom-gradient-ring">
+                <h2 class=" pacifico-font text-3xl text-center font-bold mb-6">{{ $category->category_name }}</h2>
                 <h3 class="text-xl font-semibold mb-4">Participants</h3>
 
                 <!-- Gender Filter Tabs -->
@@ -65,16 +65,17 @@
                 </div>
 
                 <!-- Form for Storing Scores -->
+                 
                 <form action="{{ route('score.store') }}" method="POST" enctype="multipart/form-data" id="scoreForm">
                     @csrf
                     <input type="hidden" name="category_id" value="{{ $category->id }}">
 
-                    <div class="space-y-6">
+                    <div class="space-y-6 ">
                         @foreach ($participants as $index => $participant)
                             @if ($genderFilter == 'all' || $participant->participant_gender == $genderFilter)
                                 <div class="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 border-b-2 border-blue-500 pb-4">
                                     <!-- Participant Image -->
-                                    <div class="w-full md:w-1/4 flex items-center justify-center">
+                                    <div class="w-full md:w-1/4 flex items-center justify-center overflow-hidden">
                                         <img src="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" 
                                             alt="{{ $participant->participant_name }}" 
                                             class="w-32 h-32 rounded-full object-cover border border-gray-300 mb-4">
@@ -82,13 +83,13 @@
 
                                     <!-- Participant Info and Score Inputs -->
                                     <div class="w-full md:w-3/4 pl-4">
-                                        <h4 class="text-lg font-semibold">Participant No. {{ $index + 1 }}: {{ $participant->participant_name }}</h4>
+                                        <h4 class="text-lg">Participant No. {{ $index + 1 }}: <span class="font-semibold "> {{ $participant->participant_name }}</span></h4>
                                         <p class="text-gray-600">Gender: {{ $participant->participant_gender }}</p>
 
-                                        <div class="mt-4 space-y-4">
+                                        <div class="mt-4 space-y-4 ">
                                             @foreach ($criteria as $criterion)
-                                                <div class="flex items-center">
-                                                    <label class="w-1/2"> <span class="font-bold"> {{ $criterion->criteria_name }}</span> {{ $criterion->criteria_score }}%</label> 
+                                                <div class="flex items-center space-x-7">
+                                                    <label class="w-1/2 mr-5"> <span class="font-bold"> {{ $criterion->criteria_name }}</span> {{ $criterion->criteria_score }}%</label> 
                                                     <input 
                                                         type="number" 
                                                         name="scores[{{ $participant->id }}][criteria_scores][{{ $criterion->id }}]" 

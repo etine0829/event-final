@@ -146,3 +146,49 @@ input[type="file"] {
     height: 120px;
     animation: spin 1s linear infinite;
     }
+    .bonheur-font {
+        font-family: 'Bonheur Royale', cursive;
+    }
+    .windsong-font {
+        font-family: 'WindSong', cursive;
+    }
+    .satisfy-font {
+        font-family: 'Satisfy', cursive;
+    }
+    @font-face {
+        font-family: 'Protest Revolution';
+        src: url('/fonts/ProtestRevolution.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    
+    .protest-revolution-font {
+        font-family: 'Protest Revolution', sans-serif;
+    }
+    .pacifico-font {
+        font-family: 'Pacifico', cursive;
+    }
+    .custom-gradient-ring {
+        position: relative;
+        border-radius: 1rem; /* This matches the rounded-lg from Tailwind */
+        background: #e2e8f0;
+        box-shadow: 0 0 0 4px transparent; /* Create space for the gradient ring */
+        background-clip: padding-box;
+        padding: 20px;
+    }
+    
+    .custom-gradient-ring::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        right: -8px;
+        bottom: -8px;
+        border-radius: 1rem; /* Matches the parent form's rounded corners */
+        background: linear-gradient(to right, #ec4899, #f87171, #f59e0b); /* Gradient from pink to yellow */
+        z-index: -1; /* Ensures the gradient stays behind the form */
+    }
+    
+        
+    
+    
