@@ -47,15 +47,18 @@ class ShowJudgesTable extends Component
         return;
     }
 
+    // Check if the judge is already assigned to the selected event
+    if ($judge->event_id == $this->selectedEvent) {
+        return redirect()->route('admin.judge.index')->with('error', 'Judge is already assign to this event   .');
+        return;
+    }
+
     // Update the judge's event_id field with the selected event ID
     $judge->event_id = $this->selectedEvent;
     $judge->save();
 
     // Flash success message
-    session()->flash('success', 'Judge successfully assigned to the event.');
-
-    // Optionally reset the selected judge after assignment
-    $this->reset(['selectedJudge']);
+    return redirect()->route('admin.judge.index')->with('success', 'Judge updated successfully.');
 }
 
 
