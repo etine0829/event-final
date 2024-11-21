@@ -110,20 +110,22 @@ class CriteriaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        
-        $criteria = Criteria::findOrFail($id);
+    public function destroy(Criteria $criteria)
+{
+    if (Auth::user()->hasAnyRole(['admin', 'event_manager'])) {
+        // Check if there are any associated records
+        if ($criteria->criteria()->exists()) {
+            return redirect()->route('admin.criteria.index')->with('error', 'Cannot delete criteria because it has associated data.');
+        }
+
+        // If no associated records, proceed with deletion
         $criteria->delete();
 
-        if (Auth::user()->hasRole('admin'))
-        {
-            return redirect()->route('admin.criteria.index')->with('success', 'Criteria deleted successfully.');
-        }
-        else {
-            return redirect()->route('event_manager.criteria.index')->with('success', 'Criteria deleted successfully.');
-        }
+        return redirect()->route('admin.criteria.index')->with('success', 'criteria deleted successfully.');
     }
+
+    return redirect()->route('admin.criteria.index')->with('error', 'Unauthorized access.');
+}
 
     public function deleteAll(Request $request)
     {       

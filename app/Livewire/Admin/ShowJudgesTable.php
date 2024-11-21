@@ -25,7 +25,7 @@ class ShowJudgesTable extends Component
     public function mount()
     {
         $this->selectedEvent = session('selectedEvent', null);
-        $this->judgeToShow = []; // Initialize as an empty array for simplicity
+        $this->judgeToShow = [];    
         $this->eventToShow = null;
     }
 

@@ -2,7 +2,13 @@
     @include('layouts.judge_head')
 
     <div>
-        <h1 class="text-2xl font-bold mb-4">Editable Scores</h1>
+
+        <div class="mt-16 mr-5 ml-3 mb-3">
+            <a href="{{ route('judge.dashboard') }}" class="inline-flex items-center text-gray-700 hover:text-gray-900">
+                <i class="fas fa-arrow-left mr-2 text-lg"></i> 
+                <span>Back</span>
+            </a>
+        </div>
 
         @forelse ($categories as $category)
             <div class="mb-6 border p-4 rounded shadow">
