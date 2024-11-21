@@ -28,72 +28,63 @@ class ShowScores extends Component
 
 
     public function loadCategories()
-    {
-        $this->categories = []; // Reset categories array
+{
+    $this->categories = []; // Reset categories array
 
+    // Fetch categories for the selected event along with criteria and scorecards
+    $categories = Category::where('event_id', $this->eventId)
+        ->with(['criteria', 'criteria.scorecards.participant'])
+        ->get();
 
-        // Fetch categories for the selected event along with criteria and scorecards
-        $categories = Category::where('event_id', $this->eventId)
-            ->with(['criteria', 'criteria.scorecards.participant'])
-            ->get();
+    foreach ($categories as $category) {
+        $categoryData = [
+            'id' => $category->id,
+            'name' => $category->category_name,
+            'criteria' => [],
+            'participants' => [],
+        ];
 
+        // Fetch criteria
+        foreach ($category->criteria as $criteria) {
+            $categoryData['criteria'][] = [
+                'id' => $criteria->id,
+                'name' => $criteria->criteria_name,
+            ];
+        }
 
-        foreach ($categories as $category) {
-            $categoryData = [
-                'id' => $category->id,
-                'name' => $category->category_name,
-                'criteria' => [],
-                'participants' => [],
+        // Fetch participants and their scores for each criterion
+        $participants = $category->criteria
+            ->flatMap(fn($criteria) => $criteria->scorecards)
+            ->groupBy(fn($scorecard) => $scorecard->participant->id ?? null);
+
+        foreach ($participants as $participantId => $scorecards) {
+            if ($participantId === null) continue;
+
+            $participant = $scorecards->first()->participant;
+
+            $participantData = [
+                'id' => $participant->id,
+                'name' => $participant->participant_name,
+                'scores' => [],
+                'avg_score' => $scorecards->avg('score'),
+                'rank' => $scorecards->first()->rank, // Include rank from the scorecard
             ];
 
-
-            // Fetch criteria
             foreach ($category->criteria as $criteria) {
-                $categoryData['criteria'][] = [
-                    'id' => $criteria->id,
-                    'name' => $criteria->criteria_name,
-                ];
+                $score = $scorecards->firstWhere('criteria_id', $criteria->id)?->score ?? null;
+                $participantData['scores'][$criteria->id] = $score;
+
+                // Initialize scores array for editing
+                $this->scores[$category->id][$participant->id][$criteria->id] = $score;
             }
 
-
-            // Fetch participants and their scores for each criterion
-            $participants = $category->criteria
-                ->flatMap(fn($criteria) => $criteria->scorecards)
-                ->groupBy(fn($scorecard) => $scorecard->participant->id ?? null);
-
-
-            foreach ($participants as $participantId => $scorecards) {
-                if ($participantId === null) continue;
-
-
-                $participant = $scorecards->first()->participant;
-
-
-                $participantData = [
-                    'id' => $participant->id,
-                    'name' => $participant->participant_name,
-                    'scores' => [],
-                    'avg_score' => $scorecards->avg('score'),
-                ];
-
-
-                foreach ($category->criteria as $criteria) {
-                    $score = $scorecards->firstWhere('criteria_id', $criteria->id)?->score ?? null;
-                    $participantData['scores'][$criteria->id] = $score;
-
-
-                    // Initialize scores array for editing
-                    $this->scores[$category->id][$participant->id][$criteria->id] = $score;
-                }
-
-
-                $categoryData['participants'][] = $participantData;
-            }
-
-
-            $this->categories[] = $categoryData;
+            $categoryData['participants'][] = $participantData;
         }
+
+        $this->categories[] = $categoryData;
     }
+}
+
 
     public function updateScores($categoryId)
 {
@@ -135,7 +126,10 @@ class ShowScores extends Component
     $this->updateRanks($categoryId);
 
     // Flash success message
-    session()->flash('success', "Scores for category ID {$categoryId} updated successfully!");
+    session()->flash('sweetalert', [
+        'type' => 'success', 
+        'message' => 'Scores updated successfully!'
+    ]);
 
     // Reload categories to reflect updated scores in the table
     $this->loadCategories();
