@@ -26,23 +26,36 @@ class ShowScoringDetails extends Component
     {
         $this->category = Category::findOrFail($categoryId);
 
-        // Load participants along with their group and event details for the category's event
         $this->participants = Participant::where('event_id', $this->category->event_id)
-                                          ->with(['group', 'event']) // Eager load the group and event relationships
-                                          ->get();
+                                        ->with(['group', 'event'])
+                                        ->get();
 
-        // Load groups for the event associated with the category
-        $this->groups = Group::where('event_id', $this->category->event_id)->get();
-
-        // Load events (if necessary) for the category
-        $this->events = Event::where('id', $this->category->event_id)->get();
-
-        // Load criteria for the specific category and event
         $this->criteria = Criteria::where('event_id', $this->category->event_id)
-                                  ->where('category_id', $categoryId)
-                                  ->get();
+                                ->where('category_id', $categoryId)
+                                ->get();
+
+        // Load existing scores for participants
+        foreach ($this->participants as $participant) {
+            foreach ($this->criteria as $criterion) {
+                $existingScore = Scorecard::where('category_id', $categoryId)
+                                        ->where('participant_id', $participant->id)
+                                        ->where('criteria_id', $criterion->id)
+                                        ->first();
+                $this->scores[$participant->id][$criterion->id] = $existingScore ? $existingScore->score : null;
+            }
+        }
     }
-    
+
+    public function updatedScores($value, $key)
+    {
+        // The key will be like: "participantId.criteriaId"
+        list($participantId, $criteriaId) = explode('.', $key);
+
+        $this->scores[$participantId][$criteriaId] = $value;
+
+        
+    }
+
 
     public function updatedGenderFilter()
     {
@@ -54,6 +67,24 @@ class ShowScoringDetails extends Component
         ->with(['group', 'event']) // Ensure to load group and event relations
         ->get();
     }
+
+        public function saveScores()
+    {
+        foreach ($this->scores as $participantId => $criteriaScores) {
+            foreach ($criteriaScores as $criteriaId => $score) {
+                Scorecard::updateOrCreate(
+                    [
+                        'category_id' => $this->category->id,
+                        'participant_id' => $participantId,
+                        'criteria_id' => $criteriaId,
+                    ],
+                    ['score' => $score]
+                );
+            }
+        }
+        session()->flash('success', 'Scores saved successfully!');
+    }
+
 
     public function render()
     {

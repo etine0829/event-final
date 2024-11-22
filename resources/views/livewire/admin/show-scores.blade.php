@@ -14,45 +14,34 @@
             <div class="mb-6 border p-4 rounded shadow">
                 <h2 class="text-xl font-semibold mb-2">{{ $category['name'] }}</h2>
                 <div class="overflow-x-auto"> <!-- Add this div to make the table scrollable on small screens -->
-                <table class="table-auto border-collapse border border-gray-400 w-full mt-2">
-                <thead>
-                    <tr>
-                        <th class="border border-gray-400 px-4 py-2">Participant Name</th>
-                        @foreach ($category['criteria'] as $criteria)
-                            <th class="border border-gray-400 px-4 py-2">{{ $criteria['name'] }}</th>
-                        @endforeach
-                        <th class="border border-gray-400 px-4 py-2">Average Score</th>
-                        <th class="border border-gray-400 px-4 py-2">Rank</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($category['participants'] as $participant)
-                        <tr>
-                            <td class="border border-gray-400 px-4 py-2">{{ $participant['name'] }}</td>
-                            @foreach ($category['criteria'] as $criteria)
-                                <td class="border border-gray-400 px-4 py-2">
-                                    <input 
-                                        type="number" 
-                                        class="border px-2 py-1 w-full" 
-                                        wire:model.defer="scores.{{ $category['id'] }}.{{ $participant['id'] }}.{{ $criteria['id'] }}"
-                                    />
-                                </td>
+                    <table class="table-auto border-collapse border border-gray-400 w-full mt-2">
+                        <thead>
+                            <tr>
+                                <th class="border border-gray-400 px-4 py-2">Participant Name</th>
+                                @foreach ($category['criteria'] as $criteria)
+                                    <th class="border border-gray-400 px-4 py-2">{{ $criteria['name'] }}</th>
+                                @endforeach
+                                <th class="border border-gray-400 px-4 py-2">Average Score</th>
+                                <th class="border border-gray-400 px-4 py-2">Rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($category['participants'] as $participant)
+                                <tr>
+                                    <td class="border border-gray-400 px-4 py-2">{{ $participant['name'] }}</td>
+                                    @foreach ($category['criteria'] as $criteria)
+                                        <td class="border border-gray-400 px-4 py-2">
+                                            <span>{{ $participant['scores'][$criteria['id']] ?? 'N/A' }}</span>
+                                        </td>
+                                    @endforeach
+                                    <td class="border border-gray-400 px-4 py-2">{{ $participant['avg_score'] }}</td>
+                                    <td class="border border-gray-400 px-4 py-2">{{ $participant['rank'] ?? 'N/A' }}</td>
+                                </tr>
                             @endforeach
-                            <td class="border border-gray-400 px-4 py-2">{{ $participant['avg_score'] }}</td>
-                            <td class="border border-gray-400 px-4 py-2">{{ $participant['rank'] ?? 'N/A' }}</td>
-                            
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
                 </div>
 
-                <button 
-                    class="bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600"
-                    wire:click="updateScores({{ $category['id'] }})"
-                >
-                    Save Changes for {{ $category['name'] }}
-                </button>
             </div>
         @empty
             <p>No categories available for this event.</p>

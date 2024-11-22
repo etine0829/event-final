@@ -1,6 +1,18 @@
 <div class="">
     @include('layouts.judge_head')
 
+    @if (session('success'))
+        <x-sweetalert type="success" :message="session('success')" />
+    @endif
+
+    @if (session('info'))
+        <x-sweetalert type="info" :message="session('info')" />
+    @endif
+
+    @if (session('error'))
+        <x-sweetalert type="error" :message="session('error')" />
+    @endif
+
     <div class="flex items-center space-x-4">
         <div x-cloak class="relative" x-data="{ open: false }">
             <div @click="open = !open" class="cursor-pointer">
@@ -92,14 +104,12 @@
                                                     <label class="w-1/2 mr-5"> <span class="font-bold"> {{ $criterion->criteria_name }}</span> {{ $criterion->criteria_score }}%</label> 
                                                     <input 
                                                         type="number" 
-                                                        name="scores[{{ $participant->id }}][criteria_scores][{{ $criterion->id }}]" 
-                                                        required 
+                                                        wire:model="scores.{{ $participant->id }}.{{ $criterion->id }}" 
                                                         min="0"
                                                         max="{{ $criterion->criteria_score }}"
                                                         class="score-input p-2 border rounded-md"
-                                                        data-max="{{ $criterion->criteria_score }}"
-                                                        oninput="validateMaxValue(this)"
                                                     />
+
                                                     <!-- Error message container for when the value exceeds the max score -->
                                                     <span class="text-red-500 text-sm hidden" data-warning></span>
                                                 </div>
@@ -113,8 +123,8 @@
 
                         <!-- Submit Button -->
                         <div class="text-right mt-4">
-                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md">
-                                Submit Scores
+                            <button type="button" wire:click="saveScores" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md">
+                                Save Scores
                             </button>
                         </div>
                     </div>
@@ -141,3 +151,5 @@
         }
     }
 </script>
+
+
