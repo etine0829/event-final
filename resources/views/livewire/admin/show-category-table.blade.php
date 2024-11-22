@@ -225,7 +225,7 @@
                                             <form id="deleteSelected" action="{{ route('admin.category.destroy', $category->id) }}" method="POST" onsubmit="return confirmDeletion(event)">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="bg-red-500 text-white text-sm px-2 py-1 rounded hover:bg-red-700">
+                                                <button class="bg-red-500 text-white text-sm px-3 py-1.5 rounded hover:bg-red-700">
                                                     <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
                                                 </button>
                                             </form>

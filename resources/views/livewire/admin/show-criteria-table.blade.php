@@ -80,7 +80,7 @@
             <p class="text-black mt-8 text-center uppercase">No data available in <text class="text-red-500">{{$categoryToShow->category_name}} - {{ $categoryToShow->score }} category.</text></p>
             <div class="flex justify-center items-center mt-5">
                 <div x-data="{ open: false }">
-                    <button @click="open = true" class="-mt-1 mb-2 bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
+                    <button @click="open = true" class="mt-1 mb-2 bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                         <!-- <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> {{$categoryToShow->category_id}} - {{$categoryToShow->score}} -->
                         <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Criteria in {{$categoryToShow->category_name}} - {{ $categoryToShow->score }} category
                     </button>
@@ -275,11 +275,11 @@
                                 <td class="text-black border border-gray-400">{{ $criteria->category->category_name}}</td>
                                 <td class="text-black border border-gray-400">{{ $criteria->criteria_name}}</td>
                                 <td class="text-black border border-gray-400">{{ $criteria->criteria_score}}</td>
-                                <td class="text-black border border-gray-400">
+                                <td class="text-black border border-gray-400 px-1 py-1">
                                     <div class="flex justify-center items-center space-x-2">
                                         <div x-data="{ open: false
                                                 }">
-                                            <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-2 py-[5px] rounded hover:bg-blue-700">
+                                            <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                                                 <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
                                             </a>
                                             <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -349,7 +349,7 @@
                                             @endif
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="bg-red-500 text-white text-sm px-2 py-1 rounded hover:bg-red-700" id="hehe">
+                                                <button class="bg-red-500 text-white text-sm px-3 py-1.5 rounded hover:bg-red-700" id="hehe">
                                                     <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
                                                 </button>
                                             </form>

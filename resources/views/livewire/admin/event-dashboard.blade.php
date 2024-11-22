@@ -114,20 +114,21 @@
                         <tr>
                             <td class="text-black border border-gray-400 px-3 py-2 ">{{ $event->event_name }}</td>
                             <td class="text-black border border-gray-400 px-3 py-2">{{ $event->venue}}</td>
-                            <td class="text-black border border-gray-400 px-3 py-2">
+                            <td class="text-black border border-gray-400 px-3 py-1">
                                 @if($event->type_of_scoring == 'points')
                                     By Points
                                 @else
                                     By Ranking
                                 @endif
                             </td>
-                            <td class="text-center text-black border border-gray-400 px-2 py-.5">
+                            <td class="text-center text-black border border-gray-400 px-2 py-.7">
                                 <div class="flex justify-center items-center space-x-2">
                                     <div x-data="{ open: false, 
                                             Id: '{{ $event->id }}', 
                                             event_name: '{{ $event->event_name }}',
                                             venue: '{{ $event->venue }}',
                                             scoring_type: '{{ $event->type_of_scoring }}' }">
+                                        <!-- edit button   -->
                                         <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                                             <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
                                         </a>
@@ -174,7 +175,7 @@
                                                             <x-input-error :messages="$errors->get('type_of_scoring')" class="mt-2" />
                                                         </div>
                                                         <div class="flex mb-4 mt-5 justify-center">
-                                                            <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
+                                                            <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md text-sm">
                                                                 Save
                                                             </button>
                                                         </div>
@@ -186,7 +187,7 @@
                                     <form id="deleteSelected" action="{{ route('admin.event.destroy', $event->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $event->id }}', '{{ $event->event_name }}');">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
+                                        <button class="bg-red-500 text-white text-sm px-3 py-1.5 rounded hover:bg-red-700">
                                             <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
                                         </button>
                                     </form>

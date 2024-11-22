@@ -137,7 +137,7 @@
                         <tr>
                             <td class="text-black border border-gray-400">{{ $user->name}}</td>
                             <td class="text-black border border-gray-400">{{ $user->email}}</td>
-                            <td class="text-black border border-gray-400 px-3 py-2">
+                            <td class="text-black border border-gray-400 px-3 py-3">
                                 @if($user->role == 'admin')
                                     Admin
                                 @elseif($user->role == 'event_manager')
@@ -219,7 +219,7 @@
                                 <form id="deleteSelected" action="{{ route('admin.user.destroy', $user->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $user->id }}', '{{ $user->name }}');">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
+                                    <button class="bg-red-500 text-white text-sm px-3 py-1.5 rounded hover:bg-red-700">
                                         <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
                                     </button>
                                 </form>

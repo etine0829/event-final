@@ -20,6 +20,7 @@ class ShowUserTable extends Component
         $this->resetPage();
     }
 
+
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
