@@ -327,13 +327,15 @@
                                         </div>
 
                                         <!-- Delete Button -->
-                                        <form id="deleteSelected" action="{{ route('admin.participant.destroy', $participant->id) }}" method="POST">
+                                       <!-- Delete Button -->
+                                        <form id="deleteSelected" action="{{ route('admin.participant.destroy', $participant->id) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_name }}');">
                                             @csrf
                                             @method('DELETE')
                                             <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
                                                 <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
                                             </button>
                                         </form>
+
                                         @endif
                                     </div>
 

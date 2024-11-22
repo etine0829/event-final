@@ -30,8 +30,8 @@ class Participant extends Model
         return $this->belongsTo(Group::class, 'group_id');
     }
 
-    public function scorecard()
+    public function scorecards()
     {
-        return $this->belongsTo(Scorecard::class);
+        return $this->hasMany(Scorecard::class);
     }
 }

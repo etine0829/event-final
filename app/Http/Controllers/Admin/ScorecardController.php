@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Admin\Participant;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Scorecard; // Ensure Scorecard model is imported
 use Illuminate\Http\Request;
