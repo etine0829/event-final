@@ -1,100 +1,132 @@
 <?php
 
-
 namespace App\Http\Controllers\Admin;
-
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Scorecard; // Ensure Scorecard model is imported
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-
 
 class ScorecardController extends Controller
 {
-   
+
     public function store(Request $request)
-{
-    // Array to accumulate total scores for each participant
-    $participantScores = [];
-   
-    // Loop through the scores provided in the request
-    foreach ($request->input('scores') as $participantId => $scoreData) {
-        $totalScore = 0;
-        $criteriaCount = 0;
+    {
+        $participantScores = [];
 
+        foreach ($request->input('scores') as $participantId => $scoreData) {
+            $totalScore = 0;
+            $criteriaCount = 0;
 
-        // Loop through each criterion score for the participant
-        foreach ($scoreData['criteria_scores'] as $criteriaId => $score) {
-            // Store the individual score record
-            Scorecard::create([
-                'category_id' => $request->input('category_id'), // pass category ID from the form
-                'criteria_id' => $criteriaId,
+            foreach ($scoreData['criteria_scores'] as $criteriaId => $score) {
+                // Check if the score already exists
+                $existingScore = Scorecard::where('category_id', $request->input('category_id'))
+                    ->where('participant_id', $participantId)
+                    ->where('criteria_id', $criteriaId)
+                    ->first();
+
+                if ($existingScore) {
+                    // Update existing score
+                    $existingScore->update(['score' => $score]);
+                } else {
+                    // Create new score
+                    Scorecard::create([
+                        'category_id' => $request->input('category_id'),
+                        'criteria_id' => $criteriaId,
+                        'participant_id' => $participantId,
+                        'score' => $score,
+                    ]);
+                }
+
+                $totalScore += $score;
+                $criteriaCount++;
+            }
+
+            $avgScore = $criteriaCount > 0 ? $totalScore / $criteriaCount : 0;
+
+            // Update average score
+            $scorecard = Scorecard::where('participant_id', $participantId)
+                ->where('category_id', $request->input('category_id'))
+                ->first();
+
+            if ($scorecard) {
+                $scorecard->avg_score = $avgScore;
+                $scorecard->save();
+            }
+
+            $participantScores[] = [
                 'participant_id' => $participantId,
-                'score' => $score,
-            ]);
-
-
-            // Accumulate total score and count the criteria
-            $totalScore += $score;
-            $criteriaCount++;
+                'avg_score' => $avgScore,
+            ];
         }
 
+        // Rank participants based on avg_score
+        usort($participantScores, function ($a, $b) {
+            return $b['avg_score'] <=> $a['avg_score'];
+        });
 
-        // Calculate the average score
-        $avgScore = $criteriaCount > 0 ? $totalScore / $criteriaCount : 0;
-
-
-        // Store the average score
-        $scorecard = Scorecard::where('participant_id', $participantId)
-            ->where('category_id', $request->input('category_id'))
-            ->first();
-
-
-        // Only update the average score if the record exists
-        if ($scorecard) {
-            $scorecard->avg_score = $avgScore;
-            $scorecard->save();
+        $rank = 1;
+        foreach ($participantScores as $participantScore) {
+            Scorecard::where('participant_id', $participantScore['participant_id'])
+                ->where('category_id', $request->input('category_id'))
+                ->update(['rank' => $rank]);
+            $rank++;
         }
 
-
-        // Add the participant's score to the array for ranking
-        $participantScores[] = [
-            'participant_id' => $participantId,
-            'avg_score' => $avgScore,
-        ];
+        return redirect()->route('judge.dashboard')->with('success', 'Scores saved successfully!');
     }
 
+    public function update(Request $request)
+    {
+        $participantScores = [];
 
-    // Rank participants based on avg_score in descending order
-    usort($participantScores, function ($a, $b) {
-        return $b['avg_score'] <=> $a['avg_score'];  // Sort in descending order of avg_score
-    });
+        foreach ($request->input('scores') as $participantId => $scoreData) {
+            $totalScore = 0;
+            $criteriaCount = 0;
 
+            foreach ($scoreData['criteria_scores'] as $criteriaId => $score) {
+                $existingScore = Scorecard::where('category_id', $request->input('category_id'))
+                    ->where('participant_id', $participantId)
+                    ->where('criteria_id', $criteriaId)
+                    ->first();
 
-    // Assign ranks based on sorted scores
-    $rank = 1;
-    foreach ($participantScores as $participantScore) {
-        // Update the participant's rank in the Scorecard table
-        Scorecard::where('participant_id', $participantScore['participant_id'])
-            ->where('category_id', $request->input('category_id'))
-            ->update(['rank' => $rank]);
+                if ($existingScore) {
+                    // Update score
+                    $existingScore->update(['score' => $score]);
+                }
 
+                $totalScore += $score;
+                $criteriaCount++;
+            }
 
-        // Increment the rank for the next participant
-        $rank++;
+            $avgScore = $criteriaCount > 0 ? $totalScore / $criteriaCount : 0;
+
+            $scorecard = Scorecard::where('participant_id', $participantId)
+                ->where('category_id', $request->input('category_id'))
+                ->first();
+
+            if ($scorecard) {
+                $scorecard->avg_score = $avgScore;
+                $scorecard->save();
+            }
+
+            $participantScores[] = [
+                'participant_id' => $participantId,
+                'avg_score' => $avgScore,
+            ];
+        }
+
+        usort($participantScores, function ($a, $b) {
+            return $b['avg_score'] <=> $a['avg_score'];
+        });
+
+        $rank = 1;
+        foreach ($participantScores as $participantScore) {
+            Scorecard::where('participant_id', $participantScore['participant_id'])
+                ->where('category_id', $request->input('category_id'))
+                ->update(['rank' => $rank]);
+            $rank++;
+        }
+
+        return redirect()->route('judge.dashboard')->with('success', 'Scores updated successfully!');
     }
-
-
-    // Redirect with a success message
-    return redirect()->route('judge.dashboard')->with('success', 'Scores submitted successfully!');
 }
-
-
-   
-
-
-}
-
-
-
