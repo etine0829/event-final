@@ -100,10 +100,13 @@
                                                         data-max="{{ $criterion->criteria_score }}"
                                                         oninput="validateMaxValue(this)"
                                                     />
+                                                    <!-- Error message container for when the value exceeds the max score -->
+                                                    <span class="text-red-500 text-sm hidden" data-warning></span>
                                                 </div>
                                             @endforeach
                                         </div>
-                                    </div>
+                                    </div>  
+
                                 </div>
                             @endif
                         @endforeach
@@ -121,3 +124,20 @@
     @endif
 
 </div>
+
+<script>
+    function validateMaxValue(input) {
+        const maxScore = parseFloat(input.getAttribute('data-max'));
+        const value = parseFloat(input.value);
+        const warningMessage = input.closest('div').querySelector('[data-warning]');
+        
+        if (value > maxScore) {
+            warningMessage.textContent = `Score cannot exceed ${maxScore}.`;
+            warningMessage.classList.remove('hidden');
+            input.classList.add('border-red-500'); // Add red border to indicate error
+        } else {
+            warningMessage.classList.add('hidden');
+            input.classList.remove('border-red-500');
+        }
+    }
+</script>

@@ -261,71 +261,67 @@
                                                         @csrf
                                                         @method('PUT')
 
-                                                        <!-- Form content here -->
-                                                        <form action="{{ route('admin.participant.update', $participant->id) }}" method="POST" enctype="multipart/form-data">
-                                                                @csrf
-                                                                @method('PUT')
+                                                        <!-- Event Selection -->
+                                                        <div class="mb-2">
+                                                            <label for="event_id" class="block text-left text-gray-700 text-md font-bold mb-2">Event</label>
+                                                            <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
+                                                                <option value="">Select Event</option>
+                                                                @foreach($events as $event)
+                                                                    <option value="{{ $event->id }}" {{ $participant->event_id == $event->id ? 'selected' : '' }}>{{ $event->event_name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
+                                                        </div>
 
-                                                                <!-- Event Selection -->
-                                                                <div class="mb-2">
-                                                                    <label for="event_id" class="block text-left text-gray-700 text-md font-bold mb-2">Event</label>
-                                                                    <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
-                                                                        <option value="">Select Event</option>
-                                                                        @foreach($events as $event)
-                                                                            <option value="{{ $event->id }}" {{ $participant->event_id == $event->id ? 'selected' : '' }}>{{ $event->event_name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
-                                                                </div>
+                                                        <!-- Group Selection -->
+                                                        <div class="mb-2">
+                                                            <label for="group_id" class="block text-left text-gray-700 text-md font-bold mb-2">Group</label>
+                                                            <select id="group_id" name="group_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('group_id') is-invalid @enderror">
+                                                                <option value="">Select Group</option>
+                                                                @foreach($groups as $group)
+                                                                    <option value="{{ $group->id }}" {{ $participant->group_id == $group->id ? 'selected' : '' }}>{{ $group->group_name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
+                                                        </div>
 
-                                                                <!-- Group Selection -->
-                                                                <div class=" mb-2">
-                                                                    <label for="group_id" class="block text-left text-gray-700 text-md font-bold mb-2">Group</label>
-                                                                    <select id="group_id" name="group_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('group_id') is-invalid @enderror">
-                                                                        <option value="">Select Group</option>
-                                                                        @foreach($groups as $group)
-                                                                            <option value="{{ $group->id }}" {{ $participant->group_id == $group->id ? 'selected' : '' }}>{{ $group->group_name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
-                                                                </div>
+                                                        <!-- Participant Name -->
+                                                        <div class="mb-2">
+                                                            <label for="participant_name" class="block text-left text-gray-700 text-md font-bold mb-2">Name</label>
+                                                            <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name', $participant->participant_name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
+                                                            <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
+                                                        </div>
 
-                                                                <!-- Participant Name -->
-                                                                <div class="mb-2">
-                                                                    <label for="participant_name" class="block text-left text-gray-700 text-md font-bold mb-2">Name</label>
-                                                                    <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name', $participant->participant_name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
-                                                                    <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
-                                                                </div>
+                                                        <!-- Participant Gender -->
+                                                        <div class="mb-2">
+                                                            <label for="participant_gender" class="block text-left text-gray-700 text-md font-bold mb-2">Gender</label>
+                                                            <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
+                                                                <option value="">Select Gender</option>
+                                                                <option value="male" {{ $participant->participant_gender == 'male' ? 'selected' : '' }}>Male</option>
+                                                                <option value="female" {{ $participant->participant_gender == 'female' ? 'selected' : '' }}>Female</option>
+                                                            </select>
+                                                            <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
+                                                        </div>
 
-                                                                <!-- Participant Gender -->
-                                                                <div class="mb-2">
-                                                                    <label for="participant_gender" class="block text-left text-gray-700 text-md font-bold mb-2">Gender</label>
-                                                                    <select id="participant_gender" name="participant_gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('participant_gender') is-invalid @enderror" required>
-                                                                        <option value="">Select Gender</option>
-                                                                        <option value="male" {{ $participant->participant_gender == 'male' ? 'selected' : '' }}>Male</option>
-                                                                        <option value="female" {{ $participant->participant_gender == 'female' ? 'selected' : '' }}>Female</option>
-                                                                    </select>
-                                                                    <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
-                                                                </div>
+                                                        <!-- Participant Photo -->
+                                                        <div class="mb-2">
+                                                            <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
+                                                            <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
+                                                            <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
+                                                                <!-- Display the current photo or a default image -->
+                                                                <img id="imagePreview" src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" class="rounded-lg w-32 h-auto mb-2">
+                                                                <span class="text-sm text-gray-500">Select Photo</span>
+                                                            </label>
+                                                            <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
+                                                        </div>
 
-                                                                <!-- Participant Photo -->
-                                                                <div class="mb-2">
-                                                                    <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
-                                                                    <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
-                                                                    <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
-                                                                        <img id="imagePreview" src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" class="rounded-lg w-32 h-auto mb-2">
-                                                                        <span class="text-sm text-gray-500">Select Photo</span>
-                                                                    </label>
-                                                                    <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
-                                                                </div>
 
-                                                                <!-- Submit Button -->
-                                                                <div class="flex justify-center mt-4">
-                                                                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
-                                                                </div>
-                                                            </form>
-
+                                                        <!-- Submit Button -->
+                                                        <div class="flex justify-center mt-4">
+                                                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
+                                                        </div>
                                                     </form>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -482,18 +478,19 @@
     }
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     function previewImage(event) {
-    const file = event.target.files[0]; // Get the selected file
-
-    if (file) {
-        const imagePreview = document.getElementById('imagePreview');
-        imagePreview.src = URL.createObjectURL(file); // Display the image
-        imagePreview.onload = () => URL.revokeObjectURL(imagePreview.src); // Clean up memory
+        const reader = new FileReader();
+        reader.onload = function() {
+            const output = document.getElementById('imagePreview');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
     }
-}
 
 </script>
+
 <script>
     
 function handleImageError(image) {

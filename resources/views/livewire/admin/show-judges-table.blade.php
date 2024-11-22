@@ -40,14 +40,12 @@
             </div>
         </div>
         
-        <hr class="border-gray-200 my-4">
-        
         @if($eventToShow)
             <div class="flex justify-between">
                 <p class="text-black mt-2 text-sm mb-4">Selected Event: <text class="uppercase text-red-500">{{ $eventToShow->event_name }}</text></p>
                 
                 <div x-data="{ open: false }">
-                    <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
+                    <button @click="open = true" class="mt-2 bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                         <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Judges
                     </button>
 
@@ -154,7 +152,6 @@
                                                         password: {{ json_encode($judge->password) }},
                                                     }">
                                                         <!-- You can add the edit or action buttons here -->
-
                                                         
                                                     </div>
                                                     <form id="deleteSelected" action="{{ route('admin.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">

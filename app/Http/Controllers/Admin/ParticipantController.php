@@ -92,68 +92,52 @@ class ParticipantController extends Controller
     }
       
     public function update(Request $request, Participant $participant)
+{
+    $validatedData = $request->validate([
+        'group_id' => 'nullable|exists:group,id',
+        'participant_name' => [
+            'required',
+            'string',
+            'max:255',
+            'regex:/^[a-zA-Z\s]+$/',
+        ],
+        'participant_gender' => 'required|in:male,female',
+        'participant_comment' => 'nullable|string|max:255',
+        'participant_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    // Check if there's a new photo uploaded
+    if ($request->hasFile('participant_photo')) {
+        // If a new photo is uploaded, delete the old one if it exists
+        if ($participant->participant_photo && Storage::exists('public/participant_photo/' . $participant->participant_photo)) {
+            Storage::delete('public/participant_photo/' . $participant->participant_photo);
+        }
+
+        // Store the new photo and update the validated data
+        $validatedData['participant_photo'] = $request->file('participant_photo')->store('participant_photo', 'public');
+    } else {
+        // If no new photo, keep the old photo
+        $validatedData['participant_photo'] = $participant->participant_photo;
+    }
+
+    // Update participant data
+    $participant->update($validatedData);
+
+    return redirect()->route('admin.participant.index')->with('success', 'Participant updated successfully.');
+}
+
+public function destroy(Participant $participant)
     {
         if (Auth::user()->hasRole('admin')) {
-    
-            try {
-                // Check if changes exist before validation
-                $hasChanges = false;
-                if ($request->event_id !== $participant->event_id ||
-                    $request->group_id !== $participant->group_id ||
-                    $request->participant_name !== $participant->participant_name ||
-                    $request->participant_gender !== $participant->participant_gender ||
-                    $request->participant_comment !== $participant->participant_comment ||
-                    $request->participant_photo !== $participant->participant_photo
-                    )
-                {
-                    $hasChanges = true;
-                }
-    
-                // If no changes detected, return with info message
-                if (!$hasChanges) {
-                    return redirect()->route('admin.participant.index')->with('info', 'No changes were made.');
-                }
-    
-                // If changes exist, then validate the input
-                $validatedData = $request->validate([
-                    'event_id' => 'required|exists:events,id',
-                    'group_id' => 'nullable|exists:events,id',
-                    'participant_name'  => [
-                        'required',
-                        'string',
-                        'max:255',
-                        'regex:/^[a-zA-Z\s]+$/', // Ensure no numbers or special characters are allowed
-                    ],
-                    'participant_gender' => 'required|in:male,female',
-                    'participant_comment' => 'nullable|string|max:255',
-                    'participant_photo' => 'nullable|string|max:255',
-                ], ['participant_name.regex' => 'The participant name must only contain letters and spaces, and cannot have any numbers or special characters.',]);
-    
-                // Update the participant record
-                $participant->update($validatedData);
-    
-                return redirect()->route('admin.participant.index')->with('success', 'Participant updated successfully.');
-            } catch (ValidationException $e) {
-                $errors = $e->errors();
-                return redirect()->back()->withErrors($errors)->with('error', $errors['participant_id'][0] ?? 'Validation error');
-            }
-        }     
-    }
 
-    public function destroy(string $id)
-    {
-        
-        $participant = Participant::findOrFail($id);
-        $participant->delete();
 
-        if (Auth::user()->hasRole('admin'))
-        {
+            // If no associated records, proceed with deletion
+            $participant->delete();
+
             return redirect()->route('admin.participant.index')->with('success', 'Participant deleted successfully.');
         }
-        else {
-            return redirect()->route('event_manager.participant.index')->with('success', 'Participant deleted successfully.');
-        }
     }
+
 
     public function deleteAll(Request $request)
     {       

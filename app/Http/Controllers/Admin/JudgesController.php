@@ -61,92 +61,65 @@ class JudgesController extends Controller
 }
 
 
-    public function update(Request $request, User $judge)
-    {
-        // if (Auth::user()->hasRole('admin')) {
+public function update(Request $request, User $judge)
+{
+    if (Auth::user()->hasRole('admin')) {
+        try {
+            $validatedData = $request->validate([
+                'event_id' => 'required|exists:events,id',
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('users')->where(function ($query) use ($request, $judge) {
+                        return $query->where('event_id', $request->event_id)
+                                     ->where('id', '<>', $judge->id); // Ignore current judge in uniqueness check
+                    }),
+                ],
+                'email' => 'required|string|email|max:255|unique:users,email,' . $judge->id, // Allow the email to stay unique except for current judge
+                'password' => 'nullable|string|min:8|confirmed', // Password is optional, but should be validated if filled
+            ]);
 
+            $hasChanges = false;
 
-        //     try {
-        //         $validatedData = $request->validate([
-        //             'event_id' => 'required|exists:events,id',
-        //             'name' => 'required|string|max:255',
-        //             'email' => 'required|string|lowercase|email|max:255|unique:users,email,' . $judge->id, // Allow updating the email but keep uniqueness
-        //             'password' => ['nullable', 'confirmed', Rules\Password::defaults()], // Password can be nullable if not changing
-        //         ]);
-
-
-        //         if ($request->filled('password')) {
-        //             // Hash the password if it is updated
-        //             $validatedData['password'] = Hash::make($validatedData['password']);
-        //         } else {
-        //             unset($validatedData['password']); // Remove password from the update if not provided
-        //         }
-
-
-        //         // Check if any data has changed
-        //         if (!$judge->isDirty()) {
-        //             return redirect()->route('admin.judge.index')->with('info', 'No changes were made.');
-        //         }
-
-
-        //         // Update the judge's data
-        //         $judge->update($validatedData);
-
-
-        //         return redirect()->route('admin.judge.index')->with('success', 'Judge updated successfully.');
-        //     } catch (ValidationException $e) {
-        //         return redirect()->back()->withErrors($e->errors())->with('error', 'Validation error');
-        //     }
-        // }
-
-
-        if (Auth::user()->hasRole('admin')) {
-
-
-            try {
-                $validatedData = $request->validate([
-                    'event_id' => 'required|exists:events,id',
-                    'name' => [
-                        'required',
-                        'string',
-                        'max:255',
-                        Rule::unique('users')->where(function ($query) use ($request, $judge) {
-                            return $query->where('event_id', $request->event_id)
-                                        ->where('id', '<>', $judge->id);
-                        }),
-                    ],
-                    'email' => 'required|string|max:255',
-                   
-                   
-                ]);
-               
-                $hasChanges = false;
-                if ($request->event_id !== $judge->event_id ||
-                    $request->name !== $judge->name ||
-                    $request->email !== $judge->email ||
-                    $request->password !== $judge->password
-                     )
-                {
-                    $hasChanges = true;
-                }
-
-
-                if (!$hasChanges) {
-                    return redirect()->route('admin.judge.index')->with('info', 'No changes were made.');
-                }
-
-
-                // Update the category record
-                $judge->update($validatedData);
-
-
-                return redirect()->route('admin.judge.index')->with('success', 'Judge updated successfully.');
-            } catch (ValidationException $e) {
-                $errors = $e->errors();
-                return redirect()->back()->withErrors($errors)->with('error', $errors['id'][0] ?? 'Validation error');
+            // Check if any fields have changed
+            if ($request->event_id !== $judge->event_id ||
+                $request->name !== $judge->name ||
+                $request->email !== $judge->email) {
+                $hasChanges = true;
             }
+
+            // If password is filled, it should be hashed and included
+            if ($request->filled('password')) {
+                $hasChanges = true;
+                $validatedData['password'] = Hash::make($request->password);
+            } else {
+                // Ensure password field is excluded if not updated
+                unset($validatedData['password']);
+            }
+
+            // If no changes, return with an info message
+            if (!$hasChanges) {
+                return redirect()->route('admin.judge.index')->with('info', 'No changes were made.');
+            }
+
+            // Update the judge with validated data
+            $judge->update($validatedData);
+
+            return redirect()->route('admin.judge.index')->with('success', 'Judge updated successfully.');
+        } catch (ValidationException $e) {
+            // Handle validation errors
+            $errors = $e->errors();
+            \Log::error('Validation error during judge update:', $errors); // Log the full error for debugging
+            return redirect()->back()->withErrors($errors)->with('error', 'Validation error occurred.');
+        } catch (\Exception $e) {
+            // Log any other exception that occurs
+            \Log::error('Error during judge update:', ['error' => $e->getMessage()]);
+            return redirect()->route('admin.judge.index')->with('error', 'An unexpected error occurred.');
         }
     }
+}
+
 
 
     public function destroy(User $judge)
