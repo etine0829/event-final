@@ -68,22 +68,43 @@ class ShowScoringDetails extends Component
         ->get();
     }
 
-        public function saveScores()
-    {
-        foreach ($this->scores as $participantId => $criteriaScores) {
-            foreach ($criteriaScores as $criteriaId => $score) {
-                Scorecard::updateOrCreate(
-                    [
-                        'category_id' => $this->category->id,
-                        'participant_id' => $participantId,
-                        'criteria_id' => $criteriaId,
-                    ],
-                    ['score' => $score]
-                );
+    public function saveScores()
+{
+    $validationErrors = [];
+
+    foreach ($this->scores as $participantId => $criteriaScores) {
+        foreach ($criteriaScores as $criteriaId => $score) {
+            $criterion = $this->criteria->firstWhere('id', $criteriaId);
+
+            if (is_null($score) || $score === '') {
+                $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId cannot be empty.";
+            } elseif ($score > $criterion->criteria_score) {
+                $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId exceeds the maximum of {$criterion->criteria_score}.";
             }
         }
-        session()->flash('success', 'Scores saved successfully!');
     }
+
+    if (!empty($validationErrors)) {
+        session()->flash('error', implode(' ', $validationErrors));
+        return;
+    }
+
+    // Save scores if validation passes
+    foreach ($this->scores as $participantId => $criteriaScores) {
+        foreach ($criteriaScores as $criteriaId => $score) {
+            Scorecard::updateOrCreate(
+                [
+                    'category_id' => $this->category->id,
+                    'participant_id' => $participantId,
+                    'criteria_id' => $criteriaId,
+                ],
+                ['score' => $score]
+            );
+        }
+    }
+
+    session()->flash('success', 'Scores saved successfully!');
+}
 
 
     public function render()

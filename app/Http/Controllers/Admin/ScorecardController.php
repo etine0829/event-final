@@ -65,6 +65,8 @@ class ScorecardController extends Controller
             return $b['avg_score'] <=> $a['avg_score'];
         });
 
+        dd($participantScores);
+        
         $rank = 1;
         foreach ($participantScores as $participantScore) {
             Scorecard::where('participant_id', $participantScore['participant_id'])
