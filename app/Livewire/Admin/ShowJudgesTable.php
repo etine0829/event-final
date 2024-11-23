@@ -91,9 +91,16 @@ public function render()
     // Fetch all events
     $events = Event::all();
 
+    $judgeCounts = User::select('event_id', \DB::raw('count(*) as judge_count'))
+                                  ->groupBy('event_id')
+                                  ->get()
+                                  ->keyBy('event_id');
+
+
     return view('livewire.admin.show-judges-table', [
         'judges' => $judges,
         'events' => $events,
+        'judgeCounts' => $judgeCounts,
         'judgeToShow' => $this->judgeToShow, // Pass the updated judges list
     ]);
 }

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use \App\Models\Admin\Event; 
 use \App\Models\Admin\Group; 
+use \App\Models\Admin\Scorecard; 
+use \App\Models\Admin\Participant; 
 
 class Participant extends Model
 {
@@ -32,6 +34,6 @@ class Participant extends Model
 
     public function scorecards()
     {
-        return $this->hasMany(Scorecard::class);
+        return $this->belongsTo(Scorecard::class);
     }
 }

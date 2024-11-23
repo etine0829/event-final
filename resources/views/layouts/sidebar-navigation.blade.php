@@ -86,7 +86,7 @@
                                         &nbsp;<i class="fa-solid fa-flag fa-sm text-gray-200 mr-2"></i>
 
 
-                                        Group
+                                       Assign Group
                                     </a>
                                 </li>
 
@@ -106,7 +106,7 @@
                         <li>
                             <a href="{{ route('admin.judge.index')}}" class="w-[500px] flex items-center h-11 pl-4 pr-6 text-sm hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 over:bg-blue-800 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-yellow-500 hover:text-white 
                             {{ request()->routeIs('admin.judge.index') ? 'border-l-yellow-500 bg-[#172029] text-white' : 'hover:bg-blue-800 dark:hover:bg-slate-700 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-yellow-500 hover:text-white' }}">
-                                &nbsp;<i class="fa-solid fa-user-circle fa-sm text-gray-200 mr-2"></i> View Judges
+                                &nbsp;<i class="fa-solid fa-user-circle fa-sm text-gray-200 mr-2"></i> Assign Judge
                             </a>
                         </li>
                     </ul>
