@@ -22,7 +22,6 @@
                                     <th class="border border-gray-400 px-4 py-2">{{ $criteria['name'] }}</th>
                                 @endforeach
                                 <th class="border border-gray-400 px-4 py-2">Average Score</th>
-                                <th class="border border-gray-400 px-4 py-2">Rank</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -34,8 +33,7 @@
                                             <span>{{ $participant['scores'][$criteria['id']] ?? 'N/A' }}</span>
                                         </td>
                                     @endforeach
-                                    <td class="border border-gray-400 px-4 py-2">{{ $participant['avg_score'] }}</td>
-                                    <td class="border border-gray-400 px-4 py-2">{{ $participant['rank'] ?? 'N/A' }}</td>
+                                    <td class="border border-gray-400 px-4 py-2">{{ $participant['avg_score'] }}</td>                              
                                 </tr>
                             @endforeach
                         </tbody>
@@ -46,11 +44,5 @@
         @empty
             <p>No categories available for this event.</p>
         @endforelse
-
-        @if (session()->has('success'))
-            <div class="bg-green-500 text-white p-3 rounded mt-4">
-                {{ session('success') }}
-            </div>
-        @endif
     </div>
 </div>

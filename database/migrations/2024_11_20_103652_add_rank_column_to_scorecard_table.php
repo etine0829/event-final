@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('scorecard', function (Blueprint $table) {
             $table->string('avg_score')->nullable()->after('score');
-            $table->integer('rank')->nullable()->after('avg_score');
         });
     }
 

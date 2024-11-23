@@ -92,4 +92,3 @@ class ShowScores extends Component
         ])->layout('layouts.portal');
     }
 }
-

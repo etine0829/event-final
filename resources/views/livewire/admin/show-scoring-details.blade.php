@@ -1,18 +1,6 @@
 <div>
     @include('layouts.judge_head')
 
-    @if (session('success'))
-        <x-sweetalert type="success" :message="session('success')" />
-    @endif
-
-    @if (session('info'))
-        <x-sweetalert type="info" :message="session('info')" />
-    @endif
-
-    @if (session('error'))
-        <x-sweetalert type="error" :message="session('error')" />
-    @endif
-
     <div class="flex items-center space-x-4">
         <div x-data="{ open: false }" class="relative">
             <div @click="open = !open" class="cursor-pointer">
@@ -107,20 +95,29 @@
                 </div>
             </div>
         </div>
+            <!-- Success Message -->
+            @if (session()->has('success'))
+                <div class="bg-green-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
+                    <i class="fa-solid fa-check-circle text-xl"></i>
+                    <span class="font-semibold">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            <!-- Error Message -->
+            @if (session()->has('error'))
+                <div class="bg-red-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
+                    <i class="fa-solid fa-exclamation-circle text-xl"></i>
+                    <span class="font-semibold">{{ session('error') }}</span>
+                </div>
+            @endif
+
+            <!-- Info Message -->
+            @if (session()->has('info'))
+                <div class="bg-blue-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
+                    <i class="fa-solid fa-info-circle text-xl"></i>
+                    <span class="font-semibold">{{ session('info') }}</span>
+                </div>
+            @endif
+
     @endif
 </div>
-
-<script>
-    document.querySelectorAll('.score-input').forEach(function(input) {
-        input.addEventListener('input', function() {
-            const maxValue = parseInt(input.getAttribute('data-max'));
-            const value = parseInt(input.value);
-            
-            if (value > maxValue) {
-                input.classList.add('border-red-500');
-            } else {
-                input.classList.remove('border-red-500');
-            }
-        });
-    });
-</script>
