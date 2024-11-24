@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\JudgesController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ResultController;
 use App\Livewire\Admin\ShowScoringDetails;
 use App\Http\Controllers\Admin\ScorecardController;;
 use App\Livewire\Admin\ShowScores;
@@ -102,7 +103,14 @@ Route::middleware(['auth'])->group(function () {
 
         // Route to handle the judge assignment
         Route::post('assign-judge', [JudgesController::class, 'assignJudgeToEvent'])->name('assign-judge');
-      
+        
+        Route::resource('result', ResultController::class)->names([
+            'index' => 'result.index',
+            'create' => 'result.create',
+            'store' => 'result.store',
+            'edit' => 'result.edit',
+            'update' => 'result.update'   
+        ]);
     });
 
 });

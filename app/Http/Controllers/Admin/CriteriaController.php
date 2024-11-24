@@ -114,7 +114,7 @@ class CriteriaController extends Controller
 {
     if (Auth::user()->hasAnyRole(['admin', 'event_manager'])) {
         // Check if there are any associated records
-        if ($criteria->criteria()->exists()) {
+        if ($criteria->exists()) {
             return redirect()->route('admin.criteria.index')->with('error', 'Cannot delete criteria because it has associated data.');
         }
 

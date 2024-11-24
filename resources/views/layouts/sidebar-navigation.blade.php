@@ -120,6 +120,16 @@
                 </li>
                 
                 <li>
+                    <a href="{{ route('admin.result.index') }}" class="relative flex flex-row items-center h-11 focus:outline-none  hover:bg-blue-800 dark:hover:bg-slate-700 text-white hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-yellow-500 hover:text-white pr-6 
+                    {{ request()->routeIs('admin.result.index') ? ' border-l-yellow-500 bg-[#172029] text-white' : 'hover:bg-blue-800 dark:hover:bg-slate-700 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-yellow-500 hover:text-white' }}">
+                        <span class="inline-flex justify-center items-center ml-4">
+                        <i class="fa-solid fa-layer-group fa-sm text-gray-200"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate text-gray-200">Result</span>
+                    </a>
+                </li>
+
+                <li>
                     <form id="logout" method="POST" action="{{ route('logout') }}" onsubmit="return confirmLogout(event)">
                         @csrf
 

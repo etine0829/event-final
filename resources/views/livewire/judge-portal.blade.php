@@ -31,13 +31,14 @@
     </div>
     <!-- My Score Button -->
     <div class="mt-8">
-        @if ($event)
-            <a href="{{ route('scores.show', ['eventId' => $event->id]) }}">
-                <button 
-                    class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
-                    Scorecard
-                </button>
-            </a>
-        @endif
+    @if ($events->isNotEmpty())
+        @php $event = $events->first(); @endphp
+        <a href="{{ route('scores.show', ['eventId' => $event->id]) }}">
+            <button 
+                class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
+                Scorecard
+            </button>
+        </a>
+    @endif
     </div>
 </div>
