@@ -16,12 +16,15 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('criteria_id');
             $table->unsignedBigInteger('participant_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('score');
+            $table->string('avg_score')->nullable();
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('category')->onDelete('restrict');
             $table->foreign('criteria_id')->references('id')->on('criteria')->onDelete('restrict');
             $table->foreign('participant_id')->references('id')->on('participant')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
         });
     }
 

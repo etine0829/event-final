@@ -38,6 +38,7 @@ class UserRoutePageName extends Component
                 'admin.participant.index' => __('Admin - Manage Participant'),
                 'admin.judge.index' => __('Admin - Add Judges'),
                 'admin.user.index' => __('Admin - Add User'),
+                'admin.result.index' => __('Admin - Result'),
                 
                 'admin.student.index' => __('Admin - Manage Student'),
                 'admin.course.index' => __('Admin - Manage Courses'),

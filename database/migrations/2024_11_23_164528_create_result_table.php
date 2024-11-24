@@ -13,17 +13,21 @@ return new class extends Migration
     {
         Schema::create('result', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('event_id');
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('criteria_id');
             $table->unsignedBigInteger('participant_id');
-            $table->string('deduction');
+            $table->unsignedBigInteger('user_id');
+            $table->string('deduction')->nullable();
             $table->string('total');
             $table->integer('rank');
             $table->timestamps();
 
+            $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');
             $table->foreign('category_id')->references('id')->on('category')->onDelete('restrict');
             $table->foreign('criteria_id')->references('id')->on('criteria')->onDelete('restrict');
             $table->foreign('participant_id')->references('id')->on('participant')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
         });
     }
 

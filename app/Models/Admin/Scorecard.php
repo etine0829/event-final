@@ -15,6 +15,7 @@ class Scorecard extends Model
         'category_id',
         'criteria_id',
         'participant_id',
+        'user_id',
         'score',
         'avg_score', 
     ];
