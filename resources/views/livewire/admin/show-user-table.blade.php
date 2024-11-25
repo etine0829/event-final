@@ -58,6 +58,7 @@
                                                 <option value="event_manager">Event Manager</option>
                                                 <option value="staff">Staff</option>
                                                 <option value="judge">Judge</option>
+                                                <option value="judge_chairman">Chairman of the Judge</option>
                                         </select>
                                         <x-input-error :messages="$errors->get('role')" class="mt-2" />
                                 </div>
@@ -146,6 +147,8 @@
                                     Staff
                                 @elseif($user->role == 'judge')
                                     Judge
+                                @elseif($user->role == 'judge_chairman')
+                                    Chairman of the Judge
                                 @else
                                     No Role
                                 @endif
@@ -185,6 +188,7 @@
                                                             <input type="text" name="email" id="email" x-model="email" value="{{ $user->email }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') is-invalid @enderror" required>
                                                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                                                         </div>
+                                                        
                                                         <div class="mb-2">
                                                             <label for="role" class="block text-gray-700 text-md font-bold mb-2 text-left">Roles: </label>
                                                             <select id="role" name="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('role') is-invalid @enderror" required>
@@ -193,13 +197,16 @@
                                                                         Event Manager
                                                                     @elseif ($user->role == 'staff')
                                                                         Staff
-                                                                    @else
+                                                                    @elseif ($user->role == 'judge')
                                                                         Judge
+                                                                    @else
+                                                                        Chairman of the Judge
                                                                     @endif
                                                                 </option>
                                                                 <option value="event_manager">Event Manager</option>
                                                                 <option value="staff">Staff</option>
                                                                 <option value="judge">Judge</option>
+                                                                <option value="judge_chairman">Chairman of the Judge</option>
                                                             </select>
                                                             <x-input-error :messages="$errors->get('role')" class="mt-2" />
                                                         </div>

@@ -10,6 +10,8 @@ use App\Models\Admin\Participant;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
 
 
 class ParticipantController extends Controller
@@ -98,27 +100,34 @@ public function update(Request $request, Participant $participant)
 
     // Check if there's a new photo uploaded
     if ($request->hasFile('participant_photo')) {
-        // If a new photo is uploaded, delete the old one if it exists
+        // Delete old photo if exists
         if ($participant->participant_photo && Storage::exists('public/participant_photo/' . $participant->participant_photo)) {
             Storage::delete('public/participant_photo/' . $participant->participant_photo);
         }
-
-        // Store the new photo and update the validated data
+    
+        // Save the new photo
         $fileNameWithExt = $request->file('participant_photo')->getClientOriginalName();
         $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
         $extension = $request->file('participant_photo')->getClientOriginalExtension();
         $fileNameToStore = $filename . '_' . time() . '.' . $extension;
-
-        // Save the new photo to 'public/participant_photo' and store the path in $fileNameToStore
+    
         $path = $request->file('participant_photo')->storeAs('public/participant_photo', $fileNameToStore);
         $validatedData['participant_photo'] = $fileNameToStore;
     } else {
-        // If no new photo, keep the old photo
+        // Keep old photo if no new one is uploaded
         $validatedData['participant_photo'] = $participant->participant_photo;
     }
+    
 
     // Update participant data
-    $participant->update($validatedData);
+    try {
+        $participant->update($validatedData);
+        return redirect()->route('admin.participant.index')
+            ->with('success', 'Participant updated successfully.');
+    } catch (\Exception $e) {
+        Log::error('Failed to update participant: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Failed to update participant.');
+    }
 
     return redirect()->route('admin.participant.index')->with('success', 'Participant updated successfully.');
 }

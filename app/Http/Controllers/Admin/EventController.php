@@ -53,7 +53,7 @@ class EventController extends Controller
 
 
             return redirect()->route('event_manager.event.index')
-                ->with('success', 'School created successfully.');
+                ->with('success', 'Event created successfully.');
         
         }
 
@@ -76,7 +76,7 @@ class EventController extends Controller
                 'event_name' => 'required|string|max:255',
                 // 'event_date' => 'required|date_format:Y-m-d\TH:i',
                 'venue' => 'required|string|max:255',
-                'type_of_scoring' => 'required|in:points,ranking',
+                'type_of_scoring' => 'required|in:points,ranking(H-L),ranking(L-H)',
             ]);
 
             // $event->update($validated);
@@ -104,7 +104,7 @@ class EventController extends Controller
                 'event_name' => 'required|string|max:255',
                 // 'event_date' => 'required|date_format:Y-m-d\TH:i',
                 'venue' => 'required|string|max:255',
-                'type_of_scoring' => 'required|in:points,ranking',
+                'type_of_scoring' => 'required|in:points,ranking(H-L),ranking(L-H)',
             ]);
 
             // $event->update($validated);

@@ -28,6 +28,8 @@
                     <option value="judge">Judge</option>
                     <option value="event_manager">Event Manager</option>
                     <option value="staff">Staff</option>
+                    
+                    
                    
                 </select>
 

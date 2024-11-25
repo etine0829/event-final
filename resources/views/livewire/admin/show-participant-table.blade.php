@@ -305,13 +305,15 @@
 
                                                         <!-- Participant Photo -->
                                                         <div class="mb-2">
-                                                            <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
-                                                            <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
-                                                            <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
+                                                            <div class="cursor-pointer flex flex-col items-center">
                                                                 <!-- Display the current photo or a default image -->
-                                                                <img id="imagePreview" src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" class="rounded-lg w-32 h-auto mb-2">
-                                                                <span class="text-sm text-gray-500">Select Photo</span>
-                                                            </label>
+                                                                <img 
+                                                                    id="imagePreview" 
+                                                                    src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" 
+                                                                    class="rounded-full w-32 h-32 mb-2 object-cover"
+                                                                >
+                                                            </div>
+                                                            <input type="file" name="participant_photo" id="participant_photo" accept="image/*">
                                                             <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                                         </div>
 
@@ -549,5 +551,31 @@ function handleImageError(image) {
                 reader.readAsDataURL(file);
             }
         });
+    });
+</script>
+
+<script>
+    document.getElementById('participant_photo').addEventListener('change', function() {
+        const file = this.files[0];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+            alert('The photo exceeds the maximum size of 2MB.');
+            this.value = ''; // Reset the input
+        }
+    });
+</script>
+<script>
+    document.getElementById('participant_photo').addEventListener('change', function(event) {
+        const file = event.target.files[0]; // Get the selected file
+        if (file && file.type.startsWith('image/')) { // Validate that it's an image
+            const reader = new FileReader(); // Create a FileReader object
+            reader.onload = function(e) {
+                // Update the image preview src
+                document.getElementById('imagePreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file); // Read the file as a Data URL
+        } else {
+            alert('Please select a valid image file.');
+        }
     });
 </script>

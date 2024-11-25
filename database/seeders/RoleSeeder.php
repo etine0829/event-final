@@ -18,5 +18,6 @@ class RoleSeeder extends Seeder
         Role::create(['name'=>'event_manager']);
         Role::create(['name'=>'staff']);
         Role::create(['name'=>'judge']);
+        Role::create(['name'=>'judge_chairman']);
     }
 }
