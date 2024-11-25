@@ -102,10 +102,12 @@ class ShowScoringDetails extends Component
             }
         }
 
+        
         if (!empty($validationErrors)) {
-            session()->flash('error', implode(' ', $validationErrors));
+            session()->flash('validationErrors', $validationErrors); // Store as an array
             return;
         }
+        
 
         $judgeId = Auth::id();
 

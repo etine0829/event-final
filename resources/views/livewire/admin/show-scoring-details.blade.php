@@ -54,7 +54,7 @@
                     @foreach ($participants as $index => $participant)
                         @if ($genderFilter === 'all' || $participant->participant_gender === $genderFilter)
                             <div class="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 border-b-2 border-blue-500 pb-4">
-                                <!-- Participant Image -->
+                                <0!-- Participant Image -->
                                 <div class="w-full md:w-1/4 flex items-center justify-center">
                                     <img src="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" 
                                          alt="{{ $participant->participant_name }}" 
@@ -68,18 +68,24 @@
 
                                     <div class="mt-4 space-y-4">
                                         @foreach ($criteria as $criterion)
-                                            <div class="flex items-center">
-                                                <label class="w-1/2 font-bold">{{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)</label>
+                                            <div class="flex items-center justify-between">
+                                                <!-- Label for the Criterion -->
+                                                <label class="font-bold w-full">
+                                                    {{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)
+                                                </label>
+                                                <!-- Input Box for the Score -->
                                                 <input 
                                                     type="number" 
                                                     wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
                                                     min="0" 
                                                     max="{{ $criterion->criteria_score }}" 
-                                                    class="score-input p-2 mr-0 border rounded-md @error('scores.' . $participant->id . '.' . $criterion->id) border-red-500 @enderror"
+                                                    class="score-input p-2 ml-2 border rounded-md @error('scores.' . $participant->id . '.' . $criterion->id) border-red-500 @enderror"
                                                     data-max="{{ $criterion->criteria_score }}"
-                                                    id="score-{{ $participant->id }}-{{ $criterion->id }}"
+                                                    id="score-{{ $participant->id }}-{{ $criterion->id }}" 
+                                                    style="text-align: right;"
                                                 />
                                             </div>
+
                                         @endforeach
                                     </div>
                                 </div>
@@ -123,11 +129,28 @@
             @endif
 
             <!-- Error Message -->
-            @if (session()->has('error'))
-                <div class="bg-red-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
-                    <i class="fa-solid fa-exclamation-circle text-xl"></i>
-                    <span class="font-semibold">{{ session('error') }}</span>
+            @if (session()->has('error') || !empty(session('validationErrors')))
+                <div 
+                    class=" text-white p-4 rounded-lg shadow-lg fixed inset-0 z-50 flex items-center justify-center"
+                    role="alert"
+                    x-data="{ show: true }"
+                    x-show="show"
+                    x-transition>
+                    <div class="w-full max-w-lg sm:w-3/4 lg:w-1/2 p-4 bg-red-600 rounded-lg shadow-md">
+                        <div class="flex justify-between items-center">
+                            <strong class="font-semibold">Validation Errors</strong>
+                            <button @click="show = false" class="text-white hover:text-red-900 focus:outline-none">
+                                &times;
+                            </button>
+                        </div>
+                        <ul class="list-disc list-inside mt-2">
+                            @foreach (session('validationErrors', []) as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
+
             @endif
 
             <!-- Info Message -->
