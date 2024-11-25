@@ -324,10 +324,11 @@
                                                         <!-- Participant Photo -->
                                                         <div class="mb-2">
                                                             <div class="cursor-pointer flex flex-col items-center">
+                                                           
                                                                 <!-- Display the current photo or a default image -->
-                                                                <img
-                                                                    id="imagePreview"
-                                                                    src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}"
+                                                                <img 
+                                                                    id="imagePreview" 
+                                                                    src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" 
                                                                     class="rounded-full w-32 h-32 mb-2 object-cover"
                                                                 >
                                                             </div>

@@ -98,13 +98,18 @@
                     </div>
                     <!-- Save Button -->
                     <div class="text-center mt-4 ">
-                        <button wire:click="saveScores" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md">
-                            Save Scores
-                        </button>
+                        @if (collect($scores)->flatten()->filter(function ($value) {
+                            return !is_null($value) && $value !== '';
+                        })->isEmpty())
+                            <button wire:click="saveScores" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md">
+                                Submit Scores
+                            </button>
+                        @else
+                            <button wire:click="saveScores" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
+                                Update Scores
+                            </button>
+                        @endif
                     </div>
-                    
-                    
-
 
                 </div>
             </div>

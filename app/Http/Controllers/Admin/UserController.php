@@ -29,9 +29,10 @@ class UserController extends Controller
                 'picture' => 'nullable|string|max:255', // Allow picture to be optional
                 'email' => 'required|string|email|max:255|unique:users,email', // Removed unnecessary 'lowercase'
                 'password' => 'required|string|min:8|confirmed', // Enforce password confirmation
-                'role' => 'required|string|in:event_manager,judge,staff',
+                'role' => 'required|string|in:event_manager,judge,judge_chairman,staff',
                 
             ]);
+
 
             try {
                 // Hash the password before saving
@@ -43,6 +44,7 @@ class UserController extends Controller
                     'picture' => $validatedData['picture'] ?? null, // Handle null picture gracefully
                     'email' => $validatedData['email'],
                     'password' => $validatedData['password'],
+                    'role' => $validatedData['role'],
                    
                 ]);
 
@@ -145,7 +147,8 @@ class UserController extends Controller
                         'max:255',
                     ],
                     'email' => 'required|string|max:255',
-                    'role' => 'required|in:event_manager,staff,judge', 
+                    'role' => 'required|string|in:event_manager,judge,judge_chairman,staff',
+ 
                 ]);
                 
                 $hasChanges = false;

@@ -63,6 +63,7 @@
                                         @foreach($judges as $judge)
                                             <option value="{{ $judge->id }}">{{ $judge->name }}</option>
                                         @endforeach
+                                        
                                     </select>
                                 </div>
 

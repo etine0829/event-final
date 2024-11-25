@@ -114,6 +114,7 @@ public function update(Request $request, Participant $participant)
     // Check if there's a new photo uploaded
     if ($request->hasFile('participant_photo')) {
         // Delete old photo if exists
+        // Delete old photo if exists
         if ($participant->participant_photo && Storage::exists('public/participant_photo/' . $participant->participant_photo)) {
             Storage::delete('public/participant_photo/' . $participant->participant_photo);
         }
@@ -127,6 +128,7 @@ public function update(Request $request, Participant $participant)
         $path = $request->file('participant_photo')->storeAs('public/participant_photo', $fileNameToStore);
         $validatedData['participant_photo'] = $fileNameToStore;
     } else {
+        // Keep old photo if no new one is uploaded
         // Keep old photo if no new one is uploaded
         $validatedData['participant_photo'] = $participant->participant_photo;
     }

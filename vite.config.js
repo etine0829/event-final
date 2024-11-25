@@ -16,7 +16,7 @@ export default defineConfig({
         port: 5173, // Ensure the port matches your Vite server configuration
         hmr: {
             // host: "localhost", 
-            host: "192.168.100.194", // Adjust HMR host if necessary //
+            host: "192.168.100.101", // Adjust HMR host if necessary //
         },
         // cors: {
         //     // origin: "*",

@@ -52,7 +52,8 @@
                                         <select id="type_of_scoring" name="type_of_scoring" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('type_of_scoring') is-invalid @enderror" required>
                                                 <option value="">Select Option</option>
                                                 <option value="points">By Points</option>
-                                                <option value="ranking">By Ranking </option>
+                                                <option value="ranking(H-L)">By Ranking (Highest-Lowest)</option>
+                                                <option value="ranking(L-H)">By Ranking (Lowest-Highest)</option>
                                         </select>
                                         <x-input-error :messages="$errors->get('type_of_scoring')" class="mt-2" />
                                 </div> 
@@ -67,9 +68,19 @@
                     </div>
                 </div>
             </div>
-       
+        <div class="flex items-center mb-4 justify-end">
+            <div class="flex w-full sm:w-auto mt-2 sm:mt-0 sm:ml-2">
+                <input wire:model.live="search" type="text" class="border text-black border-gray-300 rounded-md p-2 w-full" placeholder="Search..." autofocus>
+            </div>
+        </div>
+
         @if($search && $events->isEmpty())
             <p class="text-black mt-8 text-center">No events found for matching "{{ $search }}"</p>
+            <div class="flex justify-center mt-2">
+                @if($search)
+                    <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
+                @endif
+            </div>
         @elseif(!$search && $events->isEmpty())
             <p class="text-black mt-8 text-center">No data available in table</p>
         @else
@@ -122,10 +133,12 @@
                             <td class="text-black border border-gray-400 px-3 py-2 ">{{ $event->event_name }}</td>
                             <td class="text-black border border-gray-400 px-3 py-2">{{ $event->venue}}</td>
                             <td class="text-black border border-gray-400 px-3 py-1">
-                                @if($event->type_of_scoring == 'points')
-                                    By Points
+                                @if($event->type_of_scoring == 'ranking(H-L)')
+                                    By Ranking Highest-Lowest
+                                @elseif($event->type_of_scoring == 'ranking(L-H)')
+                                    By Ranking Lowest-Highest
                                 @else
-                                    By Ranking
+                                    By Points
                                 @endif
                             </td>
                             <td class="text-center text-black border border-gray-400 px-2 py-.7">
@@ -167,16 +180,28 @@
                                                         <div class="mb-2">
                                                             <label for="type_of_scoring" class="block text-gray-700 text-md font-bold mb-2 text-left">Scoring Type: </label>
                                                             <select id="type_of_scoring" name="type_of_scoring" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('scoring_type') is-invalid @enderror" required>
-                                                            @if($event->type_of_scoring === 'points')  
+                                                                @if($event->type_of_scoring === 'ranking(H-L)')  
                                                                     <option value="{{ $event->type_of_scoring }}">
-                                                                        @if($event->type_of_scoring == 'points')
-                                                                            By Points
+                                                                        @if($event->type_of_scoring == 'ranking(H-L)')
+                                                                            By Ranking Highest - Lowest
                                                                         @endif
                                                                     </option>
-                                                                    <option value="ranking">By Ranking</option>
-                                                                @else
-                                                                    <option value="{{ $event->type_of_scoring }}">By Ranking</option>
+                                                                    <option value="ranking(L-H)">By Ranking Lowest - Highest</option>
                                                                     <option value="points">By Points</option>
+
+                                                                @elseif($event->type_of_scoring === 'ranking(L-H)')  
+                                                                    <option value="{{ $event->type_of_scoring }}">
+                                                                        @if($event->type_of_scoring == 'ranking(L-H)')
+                                                                            By Ranking Lowest - Highest 
+                                                                        @endif
+                                                                    </option>
+                                                                    <option value="ranking(H-L)">By Ranking Highest - Lowest</option>
+                                                                    <option value="points">By Points</option>
+
+                                                                @else
+                                                                    <option value="{{ $event->type_of_scoring }}">By Points</option>
+                                                                    <option value="ranking(H-L)">By Ranking Highest - Lowest</option>
+                                                                    <option value="ranking(L-H)">By Ranking Lowest - Highest</option>
                                                                 @endif
                                                             </select>
                                                             <x-input-error :messages="$errors->get('type_of_scoring')" class="mt-2" />
@@ -245,111 +270,5 @@
     }
 
     </script>
-
-
-@elseif (Auth::user()->hasRole('admin_staff')) 
-
-
-        @if (session('success'))
-            <x-sweetalert type="success" :message="session('success')" />
-        @endif
-
-        @if (session('info'))
-            <x-sweetalert type="info" :message="session('info')" />
-        @endif
-
-        @if (session('error'))
-            <x-sweetalert type="error" :message="session('error')" />
-        @endif
-        <div class="flex justify-between mb-4 sm:-mt-4">
-            <div class="font-bold text-md tracking-tight text-black  mt-2 uppercase">Staff / Manage School Year</div>
-            <div x-data="{ open: false }">
-                <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
-                    <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add School
-                </button>
-                <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div @click.away="open = true" class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
-                        <div class="flex justify-between items-center pb-3">
-                            <p class="text-xl font-bold">Add School</p>
-                            <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
-                        </div>
-                        <div class="mb-4">
-                            <form action="" method="POST" class="">
-                                @csrf
-                                <div class="mb-4">
-                                    <label for="abbreviation" class="block text-gray-700 text-md font-bold mb-2">Abbreviation:</label>
-                                    <input type="text" name="abbreviation" id="abbreviation" value="{{ old('abbreviation') }}"  class="shadow appearance-none  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_name') is-invalid @enderror" required autofocus>
-                                    <x-input-error :messages="$errors->get('abbreviation')" class="mt-2" />
-                                </div>
-                                <div class="mb-4">
-                                    <label for="school_name" class="block text-gray-700 text-md font-bold mb-2">School Name</label>
-                                    <input type="text" name="school_name" id="school_name" value="{{ old('school_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('department_description') is-invalid @enderror" required>
-                                    <x-input-error :messages="$errors->get('school_name')" class="mt-2" />
-                                </div>
-                                <div class="flex mb-4 mt-5 justify-center">
-                                    <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
-                                        Save
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <hr class="border-gray-200 my-4">
-        <div class="flex items-center mb-4 justify-end">
-            <div class="flex w-full sm:w-auto mt-2 sm:mt-0 sm:ml-2">
-                <input wire:model.live="search" type="text" class="border text-black border-gray-300 rounded-md p-2 w-full" placeholder="Search..." autofocus>
-            </div>
-        </div>  
-
-
-    <script>
-
-        function confirmDeleteAll(event) {
-            event.preventDefault(); // Prevent form submission initially
-
-            Swal.fire({
-                title: 'Are you sure to delete all records?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete all!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // If confirmed, submit the form programmatically
-                    document.getElementById('deleteAll').submit();
-                }
-            });
-        }
-
-        function ConfirmDeleteSelected(event, schoolID, schoolName) {
-        event.preventDefault(); // Prevent form submission initially
-
-        Swal.fire({
-            title: `Are you sure you want to delete the school ${schoolName}?`,
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.getElementById('deleteSelected');
-                // Replace the placeholder with the actual school ID
-                form.action = `{{ route('staff.school.destroy', ':schoolId') }}`.replace(':schoolId', schoolID);
-                form.submit();
-            }
-        });
-
-        return false; 
-    }
-
-    </script>
-
    
 @endif
