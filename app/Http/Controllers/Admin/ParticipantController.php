@@ -1,7 +1,11 @@
 <?php
 
 
+
+
 namespace App\Http\Controllers\Admin;
+
+
 
 
 use Illuminate\Http\Request;
@@ -13,6 +17,12 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+
+
+
+
+
+
 
 
 
@@ -48,6 +58,8 @@ class ParticipantController extends Controller
         }
 
 
+
+
         // Check if the participant already exists for this event
         $existingParticipant = Participant::where('event_id', $request->input('event_id'))
             ->where('group_id', $request->input('group_id'))
@@ -55,9 +67,13 @@ class ParticipantController extends Controller
             ->first();
 
 
+
+
         if ($existingParticipant) {
             return redirect()->back()->with('error', 'This participant is already registered in the selected group and event.');
         }
+
+
 
 
         $validatedData = $request->validate([
@@ -70,6 +86,8 @@ class ParticipantController extends Controller
         ]);
 
 
+
+
         // Handle the file upload
         if ($request->hasFile('participant_photo')) {
             $fileNameWithExt = $request->file('participant_photo')->getClientOriginalName();
@@ -78,12 +96,16 @@ class ParticipantController extends Controller
             $fileNameToStore = $filename . '_' . time() . '.' . $extension;
 
 
+
+
             // Save the file to 'public/participant_photo' and store the path in $fileNameToStore
             $path = $request->file('participant_photo')->storeAs('public/participant_photo', $fileNameToStore);
             $validatedData['participant_photo'] = $fileNameToStore;
         } else {
             $validatedData['participant_photo'] = 'user.png'; // Default image
         }
+
+
 
 
         try {
@@ -100,6 +122,8 @@ class ParticipantController extends Controller
 }
 
 
+
+
 public function update(Request $request, Participant $participant)
 {
     $validatedData = $request->validate([
@@ -109,6 +133,8 @@ public function update(Request $request, Participant $participant)
         'participant_comment' => 'nullable|string|max:255',
         'participant_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
+
+
 
 
     // Check if there's a new photo uploaded
@@ -135,6 +161,8 @@ public function update(Request $request, Participant $participant)
    
 
 
+
+
     // Update participant data
     try {
         $participant->update($validatedData);
@@ -146,8 +174,14 @@ public function update(Request $request, Participant $participant)
     }
 
 
+
+
     return redirect()->route('admin.participant.index')->with('success', 'Participant updated successfully.');
 }
+
+
+
+
 
 
 
@@ -162,8 +196,12 @@ public function destroy(Participant $participant)
         }
 
 
+
+
         // Proceed with deletion if no associated records
         $participant->delete();
+
+
 
 
         return redirect()->route('admin.participant.index')
@@ -171,10 +209,14 @@ public function destroy(Participant $participant)
     }
 
 
+
+
     // Optional: Handle unauthorized access
     return redirect()->route('admin.participant.index')
         ->with('error', 'You do not have permission to perform this action.');
 }
+
+
 
 
     public function deleteAll(Request $request)
@@ -188,6 +230,8 @@ public function destroy(Participant $participant)
             });
 
 
+
+
             return redirect()->route('admin.participant.index')->with('success', 'All participants deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete participants: ' . $e->getMessage());
@@ -195,8 +239,14 @@ public function destroy(Participant $participant)
     }
 
 
+
+
  
   }
  
  
+
+
+
+
 

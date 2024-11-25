@@ -8,9 +8,13 @@
     @endif
 
 
+
+
     @if (session('info'))
         <x-sweetalert type="info" :message="session('info')" />
     @endif
+
+
 
 
     @if (session('error'))
@@ -23,6 +27,8 @@
         <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Event Manager / Manage Participant</div>
     @endif
     </div>
+
+
 
 
    
@@ -67,10 +73,14 @@
         <hr class="border-gray-200 my-4">
 
 
+
+
         @if(!$eventToShow)
             <p class="text-black text-sm mt-11 mb-4 uppercase text-center">No selected Event</p>
         @endif
        
+
+
 
 
     @if($eventToShow)
@@ -100,6 +110,8 @@
                                     </div>
 
 
+
+
                                     <div class="mb-2">
                                         <label for="group_id" class="block text-gray-700 text-md font-bold mb-2">Group</label>
                                         <select id="group_id" name="group_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('group_id') is-invalid @enderror">
@@ -121,11 +133,17 @@
 
 
 
+
+
+
+
                                     <div class="mb-2">
                                         <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
                                         <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
                                         <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
                                     </div>
+
+
 
 
                                     <div class="mb-2">
@@ -137,6 +155,8 @@
                                         </select>
                                         <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                     </div>
+
+
 
 
                                     <div class="mb-2">
@@ -166,6 +186,8 @@
         @endif
 
 
+
+
         @if($search && $participants->isEmpty())
         <p class="text-black mt-8 text-center">No Group found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
         <div class="flex justify-center mt-2">
@@ -180,6 +202,8 @@
                 {{ $eventToShow->event_name}}
             @endif</text></p>
         @else
+
+
 
 
         @if($eventToShow)
@@ -212,6 +236,8 @@
                                         @endif
                                     </button>
                                 </th>
+
+
 
 
                                 <th class="border border-gray-400 px-3 py-2">
@@ -275,6 +301,8 @@
                                                         @method('PUT')
 
 
+
+
                                                         <!-- Event Selection -->
                                                         <div class="mb-2">
                                                             <label for="event_id" class="block text-left text-gray-700 text-md font-bold mb-2">Event</label>
@@ -286,6 +314,8 @@
                                                             </select>
                                                             <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                                         </div>
+
+
 
 
                                                         <!-- Group Selection -->
@@ -301,12 +331,16 @@
                                                         </div>
 
 
+
+
                                                         <!-- Participant Name -->
                                                         <div class="mb-2">
                                                             <label for="participant_name" class="block text-left text-gray-700 text-md font-bold mb-2">Name</label>
                                                             <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name', $participant->participant_name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
                                                             <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
                                                         </div>
+
+
 
 
                                                         <!-- Participant Gender -->
@@ -321,20 +355,26 @@
                                                         </div>
 
 
+
+
                                                         <!-- Participant Photo -->
                                                         <div class="mb-2">
                                                             <div class="cursor-pointer flex flex-col items-center">
                                                            
                                                                 <!-- Display the current photo or a default image -->
-                                                                <img 
-                                                                    id="imagePreview" 
-                                                                    src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" 
+                                                                <img
+                                                                    id="imagePreview"
+                                                                    src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}"
                                                                     class="rounded-full w-32 h-32 mb-2 object-cover"
                                                                 >
                                                             </div>
                                                             <input type="file" name="participant_photo" id="participant_photo" accept="image/*">
                                                             <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                                         </div>
+
+
+
+
 
 
 
@@ -346,9 +386,13 @@
                                                     </form>
 
 
+
+
                                                 </div>
                                             </div>
                                         </div>
+
+
 
 
                                         <!-- Delete Button -->
@@ -362,8 +406,12 @@
                                         </form>
 
 
+
+
                                         @endif
                                     </div>
+
+
 
 
                                     </td>
@@ -404,11 +452,17 @@
     </div>
 
 
+
+
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 
 
+
+
 <script>
+
+
 
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -420,7 +474,11 @@
     });
 
 
+
+
 </script>
+
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
@@ -454,9 +512,15 @@
 
 
 
+
+
+
+
 <script>
     function confirmDeleteAll(event) {
         event.preventDefault(); // Prevent form submission initially
+
+
 
 
         Swal.fire({
@@ -491,8 +555,12 @@
     }
 
 
+
+
     function ConfirmDeleteSelected(event, rowId, participantName) {
         event.preventDefault(); // Prevent form submission initially
+
+
 
 
         Swal.fire({
@@ -514,10 +582,14 @@
         });
 
 
+
+
         return false;
     }
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 
 
 <script>
@@ -531,7 +603,11 @@
     }
 
 
+
+
 </script>
+
+
 
 
 <script>
@@ -546,10 +622,14 @@ function handleImageError(image) {
 </script>
 
 
+
+
 <script>
          function readURL(input) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
+
+
 
 
                 reader.onload = function (e) {
@@ -558,13 +638,19 @@ function handleImageError(image) {
                 };
 
 
+
+
                 reader.readAsDataURL(input.files[0]);
             }
         }
 </script>
 
 
+
+
 <!-- this will handle the photo large size -->
+
+
 
 
 <script>
@@ -575,8 +661,12 @@ function handleImageError(image) {
         const maxSize = 2 * 1024 * 1024; // 2MB in bytes
 
 
+
+
         photoInput.addEventListener('change', function () {
             const file = photoInput.files[0];
+
+
 
 
             // Reset the error message and enable button by default
@@ -584,10 +674,14 @@ function handleImageError(image) {
             saveButton.disabled = false;
 
 
+
+
             if (file && file.size > maxSize) {
                 photoError.textContent = 'The photo exceeds the maximum size of 2MB.';
                 saveButton.disabled = true; // Disable the Save button
             }
+
+
 
 
             // Show a preview of the image
@@ -601,6 +695,8 @@ function handleImageError(image) {
         });
     });
 </script>
+
+
 
 
 <script>
@@ -628,4 +724,8 @@ function handleImageError(image) {
         }
     });
 </script>
+
+
+
+
 
