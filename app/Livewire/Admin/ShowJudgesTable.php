@@ -22,6 +22,11 @@ class ShowJudgesTable extends Component
 
     protected $listeners = ['updateCategory'];
 
+    public function updatedSelectedEvent()
+{
+    $this->updateCategory();
+}
+
     public function mount()
     {
         $this->selectedEvent = session('selectedEvent', null);
@@ -68,6 +73,19 @@ class ShowJudgesTable extends Component
         return redirect()->route('admin.judge.index')->with('success', 'Judge updated successfully.');
     }
 
+    public function updateCategory()
+    {
+        if ($this->selectedEvent) {
+            $this->judgeToShow = User::where('event_id', $this->selectedEvent)
+                ->whereHas('roles', function ($query) {
+                    $query->whereIn('name', ['judge', 'judge_chairman']);
+                })
+                ->get();
+        } else {
+            $this->judgeToShow = [];
+        }
+    }
+
     public function render()
     {
         $query = User::with('event')
@@ -81,10 +99,10 @@ class ShowJudgesTable extends Component
         if ($this->selectedEvent) {
             $this->eventToShow = Event::find($this->selectedEvent);
             $this->judgeToShow = User::where('event_id', $this->selectedEvent)
-                                     ->whereHas('roles', function ($query) {
-                                         $query->whereIn('name', ['judge', 'judge_chairman']);
-                                     })
-                                     ->get();
+                ->whereHas('roles', function ($query) {
+                    $query->whereIn('name', ['judge', 'judge_chairman']);
+                })
+                ->get();
         } else {
             $this->eventToShow = null;
             $this->judgeToShow = [];
@@ -121,12 +139,4 @@ class ShowJudgesTable extends Component
         });
     }
 
-    public function updateCategory()
-    {
-        if ($this->selectedEvent) {
-            $this->judgeToShow = User::where('event_id', $this->selectedEvent)->get();
-        } else {
-            $this->judgeToShow = [];
-        }
-    }
 }

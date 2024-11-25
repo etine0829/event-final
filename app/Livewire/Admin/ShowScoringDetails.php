@@ -87,60 +87,65 @@ class ShowScoringDetails extends Component
     }
 
     public function saveScores()
-    {
-        $validationErrors = [];
+{
+    $validationErrors = [];
 
-        foreach ($this->scores as $participantId => $criteriaScores) {
-            foreach ($criteriaScores as $criteriaId => $score) {
-                $criterion = $this->criteria->firstWhere('id', $criteriaId);
+    foreach ($this->scores as $participantId => $criteriaScores) {
+        foreach ($criteriaScores as $criteriaId => $score) {
+            $criterion = $this->criteria->firstWhere('id', $criteriaId);
 
-                if (is_null($score) || $score === '') {
-                    $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId cannot be empty.";
-                } elseif ($score > $criterion->criteria_score) {
-                    $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId exceeds the maximum of {$criterion->criteria_score}.";
-                }
+            if (is_null($score) || $score === '') {
+                $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId cannot be empty.";
+            } elseif ($score > $criterion->criteria_score) {
+                $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId exceeds the maximum of {$criterion->criteria_score}.";
             }
         }
-
-        if (!empty($validationErrors)) {
-            session()->flash('error', implode(' ', $validationErrors));
-            return;
-        }
-
-        $judgeId = Auth::id();
-
-        // Save scores and calculate the average score
-        foreach ($this->scores as $participantId => $criteriaScores) {
-            $totalScore = 0;
-            $criteriaCount = 0;
-
-            foreach ($criteriaScores as $criteriaId => $score) {
-                // Save individual criteria scores
-                Scorecard::updateOrCreate(
-                    [
-                        'category_id' => $this->category->id,
-                        'participant_id' => $participantId,
-                        'criteria_id' => $criteriaId,
-                        'user_id' => $judgeId,
-                    ],
-                    ['score' => $score]
-                );
-
-                $totalScore += $score;
-                $criteriaCount++;
-            }
-
-            // Calculate and store the average score
-            $avgScore = $criteriaCount > 0 ? $totalScore / $criteriaCount : 0;
-
-            Scorecard::where('category_id', $this->category->id)
-                     ->where('participant_id', $participantId)
-                     ->where('user_id', $judgeId)
-                     ->update(['avg_score' => $avgScore]);
-        }
-
-        session()->flash('success', 'Scores saved and average scores updated successfully!');
     }
+
+    if (!empty($validationErrors)) {
+        session()->flash('error', implode(' ', $validationErrors));
+        return;
+    }
+
+    $judgeId = Auth::id();
+    $categoryScore = $this->category->score; // Base category score
+
+    \Log::info('Category Score: ' . $categoryScore);
+
+    foreach ($this->scores as $participantId => $criteriaScores) {
+        $totalScore = 0;
+
+        foreach ($criteriaScores as $criteriaId => $score) {
+            // Save individual criteria scores
+            Scorecard::updateOrCreate(
+                [
+                    'category_id' => $this->category->id,
+                    'participant_id' => $participantId,
+                    'criteria_id' => $criteriaId,
+                    'user_id' => $judgeId,
+                ],
+                ['score' => $score]
+            );
+
+            $totalScore += $score;
+        }
+
+        // Calculate the average score using the formula
+        $avgScore = ($totalScore * $categoryScore) / 100;
+
+        // Ensure avg_score is formatted as a string
+        $formattedAvgScore = number_format($avgScore, 2, '.', '');
+
+        // Update the average score in the Scorecard table
+        Scorecard::where('category_id', $this->category->id)
+                 ->where('participant_id', $participantId)
+                 ->where('user_id', $judgeId)
+                 ->update(['avg_score' => $formattedAvgScore]);
+    }
+
+    session()->flash('success', 'Scores saved and average scores updated successfully!');
+}
+
 
     public function render()
     {

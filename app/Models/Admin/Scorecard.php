@@ -14,12 +14,12 @@ class Scorecard extends Model
     protected $table = "scorecard";
 
     protected $fillable = [
-        'category_id',
-        'criteria_id',
-        'participant_id',
-        'user_id',
-        'score',
-        'avg_score', 
+            'category_id',
+            'criteria_id',
+            'participant_id',
+            'user_id',
+            'score',
+            'avg_score', 
     ];
 
     public function category()
