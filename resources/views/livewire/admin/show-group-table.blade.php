@@ -67,7 +67,7 @@
                     <div @click.away="open = true" class="w-[30%] max-h-[90%]  bg-white p-6 rounded-lg shadow-lg  mx-auto overflow-y-auto">
                         <div class="flex justify-between items-center pb-3">
                             <p class="text-xl font-bold">Add Group</p>
-                            <button @click="open = fals e" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
+                            <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4">
                             <form action="{{ route('admin.group.store') }}" method="POST" class="">

@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Http\Controllers\Admin;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -10,6 +12,11 @@ use App\Models\Admin\Participant;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+
+
+
 
 
 class ParticipantController extends Controller
@@ -26,7 +33,7 @@ class ParticipantController extends Controller
      public function create()
      {
          //
-        
+       
      }
  
      /**
@@ -40,15 +47,18 @@ class ParticipantController extends Controller
             return redirect()->back()->withErrors(['participant_name' => 'The participant name must only contain letters and spaces, and cannot have any numbers or special characters.']);
         }
 
+
         // Check if the participant already exists for this event
         $existingParticipant = Participant::where('event_id', $request->input('event_id'))
             ->where('group_id', $request->input('group_id'))
             ->where('participant_name', $request->input('participant_name'))
             ->first();
 
+
         if ($existingParticipant) {
             return redirect()->back()->with('error', 'This participant is already registered in the selected group and event.');
         }
+
 
         $validatedData = $request->validate([
             'event_id' => 'required|exists:events,id',
@@ -59,6 +69,7 @@ class ParticipantController extends Controller
             'participant_comment' => 'nullable|string|max:255',
         ]);
 
+
         // Handle the file upload
         if ($request->hasFile('participant_photo')) {
             $fileNameWithExt = $request->file('participant_photo')->getClientOriginalName();
@@ -66,12 +77,14 @@ class ParticipantController extends Controller
             $extension = $request->file('participant_photo')->getClientOriginalExtension();
             $fileNameToStore = $filename . '_' . time() . '.' . $extension;
 
+
             // Save the file to 'public/participant_photo' and store the path in $fileNameToStore
             $path = $request->file('participant_photo')->storeAs('public/participant_photo', $fileNameToStore);
             $validatedData['participant_photo'] = $fileNameToStore;
         } else {
             $validatedData['participant_photo'] = 'user.png'; // Default image
         }
+
 
         try {
             Participant::create($validatedData);
@@ -86,6 +99,7 @@ class ParticipantController extends Controller
     }
 }
 
+
 public function update(Request $request, Participant $participant)
 {
     $validatedData = $request->validate([
@@ -96,32 +110,44 @@ public function update(Request $request, Participant $participant)
         'participant_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
+
     // Check if there's a new photo uploaded
     if ($request->hasFile('participant_photo')) {
-        // If a new photo is uploaded, delete the old one if it exists
+        // Delete old photo if exists
         if ($participant->participant_photo && Storage::exists('public/participant_photo/' . $participant->participant_photo)) {
             Storage::delete('public/participant_photo/' . $participant->participant_photo);
         }
-
-        // Store the new photo and update the validated data
+   
+        // Save the new photo
         $fileNameWithExt = $request->file('participant_photo')->getClientOriginalName();
         $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
         $extension = $request->file('participant_photo')->getClientOriginalExtension();
         $fileNameToStore = $filename . '_' . time() . '.' . $extension;
-
-        // Save the new photo to 'public/participant_photo' and store the path in $fileNameToStore
+   
         $path = $request->file('participant_photo')->storeAs('public/participant_photo', $fileNameToStore);
         $validatedData['participant_photo'] = $fileNameToStore;
     } else {
-        // If no new photo, keep the old photo
+        // Keep old photo if no new one is uploaded
         $validatedData['participant_photo'] = $participant->participant_photo;
     }
+   
+
 
     // Update participant data
-    $participant->update($validatedData);
+    try {
+        $participant->update($validatedData);
+        return redirect()->route('admin.participant.index')
+            ->with('success', 'Participant updated successfully.');
+    } catch (\Exception $e) {
+        Log::error('Failed to update participant: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Failed to update participant.');
+    }
+
 
     return redirect()->route('admin.participant.index')->with('success', 'Participant updated successfully.');
 }
+
+
 
 
 public function destroy(Participant $participant)
@@ -133,17 +159,21 @@ public function destroy(Participant $participant)
                 ->with('error', 'Participant cannot be deleted because they have associated records.');
         }
 
+
         // Proceed with deletion if no associated records
         $participant->delete();
+
 
         return redirect()->route('admin.participant.index')
             ->with('success', 'Participant deleted successfully.');
     }
 
+
     // Optional: Handle unauthorized access
     return redirect()->route('admin.participant.index')
         ->with('error', 'You do not have permission to perform this action.');
 }
+
 
     public function deleteAll(Request $request)
     {
@@ -155,13 +185,16 @@ public function destroy(Participant $participant)
                 });
             });
 
+
             return redirect()->route('admin.participant.index')->with('success', 'All participants deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete participants: ' . $e->getMessage());
         }
     }
 
+
  
   }
  
  
+

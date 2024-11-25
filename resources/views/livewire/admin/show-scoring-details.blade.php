@@ -40,7 +40,8 @@
                     <div class="inline-flex justify-center rounded-md shadow-sm">
                         @foreach (['all' => 'All', 'male' => 'Male', 'female' => 'Female'] as $filter => $label)
                             <button 
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border focus:outline-none hover:bg-gray-200 {{ $genderFilter === $filter ? 'bg-blue-500 text-white' : '' }}"
+                                class="px-4 py-2  text-sm font-medium border rounded-lg focus:outline-none  
+                                    {{ $genderFilter === $filter ? 'bg-black text-white' : 'bg-gray-100 text-black hover:bg-black hover:text-white' }}"
                                 wire:click="$set('genderFilter', '{{ $filter }}')">
                                 {{ $label }}
                             </button>
@@ -57,7 +58,7 @@
                                 <div class="w-full md:w-1/4 flex items-center justify-center">
                                     <img src="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" 
                                          alt="{{ $participant->participant_name }}" 
-                                         class="w-32 h-32 rounded-full object-cover border border-gray-300 mb-4">
+                                         class="w-32 h-32 rounded-lg object-cover border border-gray-300 mb-4">
                                 </div>
 
                                 <!-- Participant Info and Scores -->
@@ -74,7 +75,7 @@
                                                     wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
                                                     min="0" 
                                                     max="{{ $criterion->criteria_score }}" 
-                                                    class="score-input p-2 border rounded-md @error('scores.' . $participant->id . '.' . $criterion->id) border-red-500 @enderror"
+                                                    class="score-input p-2 mr-0 border rounded-md @error('scores.' . $participant->id . '.' . $criterion->id) border-red-500 @enderror"
                                                     data-max="{{ $criterion->criteria_score }}"
                                                     id="score-{{ $participant->id }}-{{ $criterion->id }}"
                                                 />
@@ -85,13 +86,26 @@
                             </div>
                         @endif
                     @endforeach
-
+                    <div x-data="{ showButton: false }" @scroll.window="showButton = (window.scrollY > 100)" class="fixed bottom-8 right-8">
+                        <button 
+                            x-show="showButton" 
+                            @click="window.scrollTo({ top: 0, behavior: 'smooth' })" 
+                            class="bg-gradient-to-r from-red-500 to-orange-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-500"
+                            style="display: none;"
+                        >
+                            <i class="fa-sharp fa-solid fa-arrow-up"></i> Back to top <!-- Upward arrow symbol -->
+                        </button>
+                    </div>
                     <!-- Save Button -->
-                    <div class="text-right mt-4">
+                    <div class="text-center mt-4 ">
                         <button wire:click="saveScores" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md">
                             Save Scores
                         </button>
                     </div>
+                    
+                    
+
+
                 </div>
             </div>
         </div>

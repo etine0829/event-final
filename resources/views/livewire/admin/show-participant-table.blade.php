@@ -7,9 +7,11 @@
         <x-sweetalert type="success" :message="session('success')" />
     @endif
 
+
     @if (session('info'))
         <x-sweetalert type="info" :message="session('info')" />
     @endif
+
 
     @if (session('error'))
         <x-sweetalert type="error" :message="session('error')" />
@@ -22,7 +24,8 @@
     @endif
     </div>
 
-    
+
+   
     <div class="flex justify-between mb-4 sm:-mt-4">
             <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase"></div>
         </div>
@@ -38,7 +41,7 @@
                         <option value="{{ $event->id }}">{{ $event->event_name }}</option>
                     @endforeach
                 </select>
-                
+               
                 @if($eventToShow)
                     <!-- <form id="deleteAll" action="{{ route('admin.group.deleteAll') }}" method="POST" onsubmit="return confirmDeleteAll(event);" class="flex ml-4">
                     @csrf
@@ -49,13 +52,13 @@
                     </button>
                 </form> -->
                 @else
-                    
+                   
                 @endif
             </div>
             <!-- Search Input -->
             <div class="w-full flex justify-end mt-4 md:mt-0 md:ml-4">
-                @if(empty($selectedEvent)) 
-                    
+                @if(empty($selectedEvent))
+                   
                 @else
                     <input wire:model.live="search" type="text" class="text-sm border text-black border-gray-300 rounded-md px-3 py-1.5 w-64" placeholder="Search..." autofocus>
                 @endif
@@ -63,10 +66,12 @@
         </div>
         <hr class="border-gray-200 my-4">
 
+
         @if(!$eventToShow)
             <p class="text-black text-sm mt-11 mb-4 uppercase text-center">No selected Event</p>
         @endif
-        
+       
+
 
     @if($eventToShow)
     <div class="flex justify-between">
@@ -94,16 +99,17 @@
                                         <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                     </div>
 
+
                                     <div class="mb-2">
                                         <label for="group_id" class="block text-gray-700 text-md font-bold mb-2">Group</label>
                                         <select id="group_id" name="group_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('group_id') is-invalid @enderror">
-                                            
+                                           
                                             <!-- Placeholder option -->
                                             <option value="">Select Group</option>
-                                            
+                                           
                                             <!-- Dynamically set the selected option -->
                                             @foreach($groups as $group)
-                                                <option value="{{ $group->id }}" 
+                                                <option value="{{ $group->id }}"
                                                     @if(isset($groupToShow) && $group->id == $groupToShow->id) selected @endif>
                                                     {{ $group->group_name }}
                                                 </option>
@@ -113,11 +119,14 @@
                                     </div>
 
 
+
+
                                     <div class="mb-2">
                                         <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
                                         <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
                                         <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
                                     </div>
+
 
                                     <div class="mb-2">
                                         <label for="participant_gender" class="block text-gray-700 text-md font-bold mb-2">Gender</label>
@@ -129,6 +138,7 @@
                                         <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                     </div>
 
+
                                     <div class="mb-2">
                                         <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
                                         <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
@@ -139,7 +149,7 @@
                                         </label>
                                         <span id="photoError" class="text-red-500 text-sm"></span>
                                     </div>
-                                    
+                                   
                                     <!-- Save Button -->
                                     <div class="flex mb-4 mt-10 justify-center">
                                         <button type="submit" id="saveButton" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
@@ -155,6 +165,7 @@
         @else
         @endif
 
+
         @if($search && $participants->isEmpty())
         <p class="text-black mt-8 text-center">No Group found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
         <div class="flex justify-center mt-2">
@@ -163,15 +174,16 @@
             @endif
         </div>
         @elseif(!$search && $participants->isEmpty())
-            
+           
             <p class="text-black mt-8 text-center uppercase">No data available in event<text class="text-red-500">
                 @if($eventToShow)
                 {{ $eventToShow->event_name}}
             @endif</text></p>
         @else
 
+
         @if($eventToShow)
-                
+               
                 <div class="overflow-x-auto">
                     <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
                         <thead class="bg-gray-200 text-black">
@@ -187,7 +199,7 @@
                                             @endif
                                         @endif
                                     </button>
-                                </th> 
+                                </th>
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('participant_name')" class="w-full h-full flex items-center justify-center">
                                         Name
@@ -200,6 +212,7 @@
                                         @endif
                                     </button>
                                 </th>
+
 
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('participant_gender')" class="w-full h-full flex items-center justify-center">
@@ -230,7 +243,7 @@
                         </thead>
                         <tbody >
                             @foreach ($participants as $participant)
-                                <tr class="hover:bg-gray-100" wire:key="participant-{{ $participant->id }}">         
+                                <tr class="hover:bg-gray-100" wire:key="participant-{{ $participant->id }}">        
                                     <td class="text-black border border-gray-400">{{ $participant->group?->group_name ?? 'N/A' }}</td>          
                                     <td class="text-black border border-gray-400">{{ $participant->participant_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>
@@ -238,13 +251,13 @@
                                     <td class="text-black border border-gray-400 px-1 py-1">
                                     <div class="flex justify-center items-center space-x-2 flex-nowrap">
                                         @if($eventToShow && $participant)
-                                        <div x-data="{ open: false, 
+                                        <div x-data="{ open: false,
                                                 id: {{ json_encode($participant->id) }},
                                                 event: {{ json_encode($participant->event_id) }},
                                                 group: {{ json_encode($participant->group_id) }},
                                                 participant_name: {{ json_encode($participant->participant_name) }},
                                                 participant_gender: {{ json_encode($participant->participant_gender) }},
-                                                participant_photo: {{ json_encode($participant->participant_photo) }} 
+                                                participant_photo: {{ json_encode($participant->participant_photo) }}
                                             }">
                                             <!-- Edit Button -->
                                             <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
@@ -261,6 +274,7 @@
                                                         @csrf
                                                         @method('PUT')
 
+
                                                         <!-- Event Selection -->
                                                         <div class="mb-2">
                                                             <label for="event_id" class="block text-left text-gray-700 text-md font-bold mb-2">Event</label>
@@ -272,6 +286,7 @@
                                                             </select>
                                                             <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                                         </div>
+
 
                                                         <!-- Group Selection -->
                                                         <div class="mb-2">
@@ -285,12 +300,14 @@
                                                             <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
                                                         </div>
 
+
                                                         <!-- Participant Name -->
                                                         <div class="mb-2">
                                                             <label for="participant_name" class="block text-left text-gray-700 text-md font-bold mb-2">Name</label>
                                                             <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name', $participant->participant_name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
                                                             <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
                                                         </div>
+
 
                                                         <!-- Participant Gender -->
                                                         <div class="mb-2">
@@ -303,17 +320,22 @@
                                                             <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                                         </div>
 
+
                                                         <!-- Participant Photo -->
                                                         <div class="mb-2">
-                                                            <label for="participant_photo" class="block text-gray-700 text-md font-bold mb-2">Photo</label>
-                                                            <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
-                                                            <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
+                                                            <div class="cursor-pointer flex flex-col items-center">
                                                                 <!-- Display the current photo or a default image -->
-                                                                <img id="imagePreview" src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}" class="rounded-lg w-32 h-auto mb-2">
-                                                                <span class="text-sm text-gray-500">Select Photo</span>
-                                                            </label>
+                                                                <img
+                                                                    id="imagePreview"
+                                                                    src="{{ $participant->participant_photo ? asset('storage/participant_photo/' . $participant->participant_photo) : asset('assets/img/user.png') }}"
+                                                                    class="rounded-full w-32 h-32 mb-2 object-cover"
+                                                                >
+                                                            </div>
+                                                            <input type="file" name="participant_photo" id="participant_photo" accept="image/*">
                                                             <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                                         </div>
+
+
 
 
                                                         <!-- Submit Button -->
@@ -322,9 +344,11 @@
                                                         </div>
                                                     </form>
 
+
                                                 </div>
                                             </div>
                                         </div>
+
 
                                         <!-- Delete Button -->
                                        <!-- Delete Button -->
@@ -336,8 +360,10 @@
                                             </button>
                                         </form>
 
+
                                         @endif
                                     </div>
+
 
                                     </td>
                                 </tr>
@@ -350,14 +376,14 @@
                                 <div class="flex justify-between">
                                     <div class="uppercase text-black mt-2 text-sm mb-4">
                                         @if($search)
-                                            {{ $participants->total() }} Search results 
+                                            {{ $participants->total() }} Search results
                                         @endif                                    
                                     </div>
                                     <div class="justify-end">
                                         <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of group: <text class="ml-2">{{ $groupCounts[$eventToShow->id]->group_count ?? 0 }}</text></p>
-                                        
+                                       
                                     </div>
-                                </div> 
+                                </div>
                             </td>
                             <td>
                                 {{ $participants->links() }}
@@ -371,15 +397,18 @@
                     @endif
                 </div>
             @else
-                
+               
             @endif
         @endif
     </div>
 
+
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 
+
 <script>
+
 
     document.addEventListener('DOMContentLoaded', function() {
         tippy('[data-tippy-content]', {
@@ -389,7 +418,9 @@
         });
     });
 
+
 </script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
 <script>
@@ -420,14 +451,17 @@
 </script>
 
 
+
+
 <script>
     function confirmDeleteAll(event) {
         event.preventDefault(); // Prevent form submission initially
 
+
         Swal.fire({
             title: 'Select Participant to Delete All Records',
             html: `
-            
+           
                 <select id="group_id_select" class="cursor-pointer hover:border-red-500 swal2-select">
                     <option value="">Select group</option>
                      @foreach($participants as $group)
@@ -455,8 +489,10 @@
         });
     }
 
+
     function ConfirmDeleteSelected(event, rowId, participantName) {
         event.preventDefault(); // Prevent form submission initially
+
 
         Swal.fire({
             title: `Are you sure you want to delete the participant ${participantName} ?`,
@@ -476,10 +512,12 @@
             }
         });
 
-        return false; 
+
+        return false;
     }
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 <script>
     function previewImage(event) {
@@ -491,35 +529,42 @@
         reader.readAsDataURL(event.target.files[0]);
     }
 
+
 </script>
 
+
 <script>
-    
+   
 function handleImageError(image) {
     // Set the default image
     image.src = "{{ asset('assets/img/user.png') }}";
-    
+   
     // Display the error message
     document.getElementById('errorMessage').style.display = 'block';
 }
 </script>
+
 
 <script>
          function readURL(input) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
 
+
                 reader.onload = function (e) {
                     $('#blah')
                         .attr('src', e.target.result);
                 };
+
 
                 reader.readAsDataURL(input.files[0]);
             }
         }
 </script>
 
+
 <!-- this will handle the photo large size -->
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -528,17 +573,21 @@ function handleImageError(image) {
         const photoError = document.getElementById('photoError');
         const maxSize = 2 * 1024 * 1024; // 2MB in bytes
 
+
         photoInput.addEventListener('change', function () {
             const file = photoInput.files[0];
+
 
             // Reset the error message and enable button by default
             photoError.textContent = '';
             saveButton.disabled = false;
 
+
             if (file && file.size > maxSize) {
                 photoError.textContent = 'The photo exceeds the maximum size of 2MB.';
                 saveButton.disabled = true; // Disable the Save button
             }
+
 
             // Show a preview of the image
             if (file) {
@@ -551,3 +600,31 @@ function handleImageError(image) {
         });
     });
 </script>
+
+
+<script>
+    document.getElementById('participant_photo').addEventListener('change', function() {
+        const file = this.files[0];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+            alert('The photo exceeds the maximum size of 2MB.');
+            this.value = ''; // Reset the input
+        }
+    });
+</script>
+<script>
+    document.getElementById('participant_photo').addEventListener('change', function(event) {
+        const file = event.target.files[0]; // Get the selected file
+        if (file && file.type.startsWith('image/')) { // Validate that it's an image
+            const reader = new FileReader(); // Create a FileReader object
+            reader.onload = function(e) {
+                // Update the image preview src
+                document.getElementById('imagePreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file); // Read the file as a Data URL
+        } else {
+            alert('Please select a valid image file.');
+        }
+    });
+</script>
+

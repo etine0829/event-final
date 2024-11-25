@@ -148,7 +148,6 @@ public function updateEmployeesByDepartment()
             ->orWhere('participant_photo', 'like', '%' . $this->search . '%')        
             ->orWhere('participant_name', 'like', '%' . $this->search . '%')
             ->orWhere('participant_gender', 'like', '%' . $this->search . '%')
-            ->orWhere('participant_comment', 'like', '%' . $this->search . '%')
                 ->orWhereHas('group', function (Builder $query) {
                 $query->where('group_name', 'like', '%' . $this->search . '%');
             });
