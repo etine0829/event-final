@@ -195,7 +195,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/category/{categoryId}', ShowScoringDetails::class)->name('category.details');
-    Route::post('/scorecard/store', [ScorecardController::class, 'store'])->name('score.store');
+    // Route::post('/scorecard/store', [ScorecardController::class, 'store'])->name('score.store');
    
 
     // Route for updating scores
