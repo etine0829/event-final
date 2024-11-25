@@ -207,7 +207,6 @@
                                                                         <div class="mb-4" id="scoreContainer">
                                                                             <label for="score" class="block text-gray-700 text-md font-bold mb-2 text-left">Score</label>
                                                                             <input type="number" name="score" id="score" x-model="score" value="{{ $category->score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('score') is-invalid @enderror" required>
-                                                                            <x-input-error :messages="$errors->get('score')" class="mt-2" />
                                                                         </div>
                                                                     @endif
 

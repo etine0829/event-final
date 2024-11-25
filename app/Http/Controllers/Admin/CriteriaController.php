@@ -33,36 +33,44 @@ class CriteriaController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        // Validate input data
-        $request->validate([
-            'event_id' => 'required|exists:events,id',
-            'category_id' => 'required|exists:category,id',
-            'criteria_name' => 'required|string|max:255',
-            'criteria_score' => 'nullable|string|max:255',
-        ]);
+{
+    // Validate input data
+    $validatedData = $request->validate([
+        'event_id' => 'required|exists:events,id',
+        'category_id' => 'required|exists:category,id',
+        'criteria_name' => 'required|string|max:255',
+        'criteria_score' => 'nullable|numeric|max:100', // Ensure score is numeric and <= 100
+    ]);
 
-        // Check if a criteria with the same criteria_name already exists
-        $existingCriteriaByNameAndCategory = Criteria::where('criteria_name', $request->input('criteria_name'))
-        ->where('category_id',$request->input('category_id'))
+    // Calculate the total score for the given category
+    $totalScore = Criteria::where('category_id', $request->input('category_id'))->sum('criteria_score');
+    $newScore = $request->input('criteria_score') ?? 0;
+
+    if (($totalScore + $newScore) > 100) {
+        return redirect()->route('admin.criteria.index')
+            ->with('error', 'The total criteria scores for this category cannot exceed 100.');
+    }
+
+    // Check if a criteria with the same name already exists
+    $existingCriteriaByNameAndCategory = Criteria::where('criteria_name', $request->input('criteria_name'))
+        ->where('category_id', $request->input('category_id'))
         ->first();
 
-        if (!$existingCriteriaByNameAndCategory) {
-            $criteria = new Criteria();
-            $criteria->event_id = $request->input('event_id');
-            $criteria->category_id = $request->input('category_id');
-            $criteria->criteria_name = $request->input('criteria_name');
-            $criteria->criteria_score = $request->input('criteria_score');
-            $criteria->save();
+    if (!$existingCriteriaByNameAndCategory) {
+        $criteria = new Criteria();
+        $criteria->event_id = $request->input('event_id');
+        $criteria->category_id = $request->input('category_id');
+        $criteria->criteria_name = $request->input('criteria_name');
+        $criteria->criteria_score = $newScore;
+        $criteria->save();
 
-            return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.criteria.index' : 'event_manager.criteria.index')
-                ->with('success', 'Criteria created successfully.');
-        } else {
-            $errorMessage = 'Criteria name ' . $request->input('criteria_name') . ' is already taken for this category.';
-            return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.criteria.index' : 'event_manager.criteria.index')
-                ->with('error', $errorMessage . ' Try again.');
-        }
+        return redirect()->route('admin.criteria.index')
+            ->with('success', 'Criteria created successfully.');
+    } else {
+        return redirect()->route('admin.criteria.index')
+            ->with('error', 'Criteria name is already taken for this category. Try again.');
     }
+}
 
     /**
      * Show the form for editing the specified resource.
@@ -76,36 +84,50 @@ class CriteriaController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-    {
-        // Validate input data
-        $request->validate([
-            'event_id' => 'required|exists:events,id',
-            'category_id' => 'required|exists:category,id',
-            'criteria_name' => 'required|string|max:255',
-            'criteria_score' => 'nullable|string|max:255',
-        ]);
+{
+    // Validate input data
+    $validatedData = $request->validate([
+        'event_id' => 'required|exists:events,id',
+        'category_id' => 'required|exists:category,id',
+        'criteria_name' => 'required|string|max:255',
+        'criteria_score' => 'nullable|numeric|max:100', // Ensure score is numeric and <= 100
+    ]);
 
-        // Find the existing criteria record
-        $criteria = Criteria::findOrFail($id);
+    // Find the existing criteria record
+    $criteria = Criteria::findOrFail($id);
 
-        // Check if a criteria with the same criteria_name already exists
-        $existingCriteriaByName = Criteria::where('criteria_name', $request->input('criteria_name'))->where('id', '!=', $id)->first();
+    // Calculate the total score for the category, excluding the current criteria
+    $currentScore = $criteria->criteria_score ?? 0; // The current score of the criteria
+    $newScore = $request->input('criteria_score') ?? 0;
+    $totalScore = Criteria::where('category_id', $request->input('category_id'))
+        ->where('id', '!=', $id) // Exclude the current criteria being updated
+        ->sum('criteria_score');
 
-        if (!$existingCriteriaByName) {
-            $criteria->event_id = $request->input('event_id');
-            $criteria->category_id = $request->input('category_id');
-            $criteria->criteria_name = $request->input('criteria_name');
-            $criteria->criteria_score = $request->input('criteria_score');
-            $criteria->save();
-
-            return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.criteria.index' : 'event_manager.criteria.index')
-                ->with('success', 'Criteria updated successfully.');
-        } else {
-            $errorMessage = 'Criteria name ' . $request->input('criteria_name') . ' is already taken.';
-            return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.criteria.index' : 'event_manager.criteria.index')
-                ->with('error', $errorMessage . ' Try again.');
-        }
+    if (($totalScore + $newScore) > 100) {
+        return redirect()->route('admin.criteria.index')
+            ->with('error', 'The total criteria scores for this category cannot exceed 100.');
     }
+
+    // Check if a criteria with the same name already exists
+    $existingCriteriaByName = Criteria::where('criteria_name', $request->input('criteria_name'))
+        ->where('id', '!=', $id)
+        ->first();
+
+    if (!$existingCriteriaByName) {
+        $criteria->event_id = $request->input('event_id');
+        $criteria->category_id = $request->input('category_id');
+        $criteria->criteria_name = $request->input('criteria_name');
+        $criteria->criteria_score = $newScore;
+        $criteria->save();
+
+        return redirect()->route('admin.criteria.index')
+            ->with('success', 'Criteria updated successfully.');
+    } else {
+        return redirect()->route('admin.criteria.index')
+            ->with('error', 'Criteria name is already taken. Try again.');
+    }
+}
+
 
     /**
      * Remove the specified resource from storage.

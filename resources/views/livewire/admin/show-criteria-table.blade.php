@@ -7,9 +7,11 @@
         <x-sweetalert type="success" :message="session('success')" />
     @endif
 
+
     @if (session('info'))
         <x-sweetalert type="info" :message="session('info')" />
     @endif
+
 
     @if (session('error'))
         <x-sweetalert type="error" :message="session('error')" />
@@ -21,6 +23,7 @@
         <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Event Manager / Manage Criteria</div>
     @endif
     </div>
+
 
         <div class="flex flex-column overflow-x-auto -mb-5">
             <div class="col-span-3 p-4">
@@ -38,6 +41,7 @@
                     <!-- <p class="text-black  text-sm ml-4">Selected event: <span class="text-red-500 ml-2">{{ $eventToShow->event_name }}</span></p> -->
                 @endif
             </div>
+
 
         <div class="col-span-1 p-4">
             @if(!empty($selectedEvent))
@@ -61,6 +65,7 @@
                 @endif
             </div>
 
+
     </div>
     <hr class="border-gray-200 my-4">
     @if(!$eventToShow)
@@ -71,6 +76,7 @@
                 <p class="text-black text-sm mt-11 mb-4 uppercase text-center">No selected Category</p>
             @endif
         @endif
+
 
     @if($categoryToShow)
         @if($search && $criterion->isEmpty())
@@ -99,6 +105,7 @@
                                     <x-caps-lock-detector />
                                     @csrf
 
+
                                     <div class="mb-2">
                                         <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event:</label>
                                         <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
@@ -108,6 +115,7 @@
                                         <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                     </div>
 
+
                                     <div class="mb-2">
                                         <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">Category:</label>
                                         <select id="category_id" name="category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror" required>
@@ -116,11 +124,13 @@
                                         </select>
                                         <x-input-error :messages="$errors->get('id')" class="mt-2" />
 
+
                                     <div class="mb-2">
                                         <label for="criteria_name" class="block text-gray-700 text-md font-bold mb-2">Criteria Name</label>
                                         <input type="text" name="criteria_name" id="criteria_name" value="{{ old('criteria_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_name') is-invalid @enderror" required>
                                         <x-input-error :messages="$errors->get('criteria_name')" class="mt-2" />
                                     </div>
+
 
                                     @if($type_of_scoring === 'points')
                                         <div class="mb-2">
@@ -129,7 +139,7 @@
                                             <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
                                         </div>
                                     @endif
-                                    
+                                   
                                     </div>
                                     <div class="flex mb-4 mt-10 justify-center">
                                         <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
@@ -165,9 +175,10 @@
                                 @else
                                     <form action="{{ route('event_manager.criteria.store') }}" method="POST" class="" enctype="multipart/form-data">
                                 @endif
-                                        
+                                       
                                         <x-caps-lock-detector />
-                                        @csrf 
+                                        @csrf
+
 
                                         <div class="mb-2">
                                             <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
@@ -178,6 +189,7 @@
                                             <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                         </div>
 
+
                                         <div class="mb-2">
                                             <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">Category</label>
                                             <select id="category_id" name="category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror" required>
@@ -186,20 +198,21 @@
                                             </select>
                                             <x-input-error :messages="$errors->get('id')" class="mt-2" />
 
+
                                         <div class="mb-2">
                                             <label for="criteria_name" class="block text-gray-700 text-md font-bold mb-2">Criteria Name</label>
                                             <input type="text" name="criteria_name" id="criteria_name" value="{{ old('criteria_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_name') is-invalid @enderror" required>
                                             <x-input-error :messages="$errors->get('criteria_name')" class="mt-2" />
                                         </div>
 
+
                                         @if($type_of_scoring === 'points')
                                             <div class="mb-2">
                                                 <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
                                                 <input type="number" name="criteria_score" id="criteria_score" value="{{ old('criteria_score') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
-                                                <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
                                             </div>
                                         @endif
-                                      
+                                     
                                         </div>
                                         <div class="flex mb-4 mt-10 justify-center">
                                             <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
@@ -215,7 +228,7 @@
             </div>
             <div class="flex justify-between mt-1 mb-2">
                 <div class="mt-2 text-sm font-bold uppercase">
-                    Criteria List in <text class="text-red-500">{{$categoryToShow->category_name}}</text> 
+                    Criteria List in <text class="text-red-500">{{$categoryToShow->category_name}}</text>
                 </div>
                 <div>
                     <input wire:model.live="search" type="text" class="text-sm border text-black border-gray-300 rounded-md px-3 py-1.5 w-full md:w-64" placeholder="Search..." autofocus>
@@ -227,7 +240,7 @@
                         <!-- <tr >
                             <th colspan="9" class="border-none bg-white border border-gray-400 px-3 py-2 uppercase"></th>
                         </tr> -->
-                        <tr>               
+                        <tr>              
                             <th class="border border-gray-400 px-3 py-2">
                                 <button wire:click="sortBy('category_id')" class="w-full h-full flex items-center justify-center">
                                     Category
@@ -240,6 +253,7 @@
                                     @endif
                                 </button>
                             </th>
+
 
                             <th class="border border-gray-400 px-3 py-2">
                                 <button wire:click="sortBy('criteria_name')" class="w-full h-full flex items-center justify-center">
@@ -265,7 +279,7 @@
                                     @endif
                                 </button>
                             </th>
-                            
+                           
                             <th class="border border-gray-400 px-3 py-2">Action</th>
                         </tr>
                     </thead>
@@ -294,10 +308,11 @@
                                                     @else
                                                         <form action="{{ route('event_manager.criteria.update', $criteria->id) }}" method="POST" class="" enctype="multipart/form-data">
                                                     @endif
-                                                        
+                                                       
                                                             <x-caps-lock-detector />
                                                             @csrf
                                                             @method('PUT')
+
 
                                                             <div class="mb-2">
                                                                 <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
@@ -308,6 +323,7 @@
                                                                 <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                                             </div>
 
+
                                                             <div class="mb-2">
                                                                 <label for="category_id" class="block text-gray-700 text-md font-bold mb-2">Category:</label>
                                                                 <select id="category_id" name="category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('category_id') is-invalid @enderror" required>
@@ -317,20 +333,21 @@
                                                                 <x-input-error :messages="$errors->get('id')" class="mt-2" />
                                                             </div>
 
+
                                                             <div class="mb-2">
                                                                 <label for="criteria_name" class="block text-gray-700 text-md font-bold mb-2">Criteria Name</label>
                                                                 <input type="text" name="criteria_name" id="criteria_name" value="{{ $criteria->criteria_name }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_name') is-invalid @enderror" required>
                                                                 <x-input-error :messages="$errors->get('criteria_name')" class="mt-2" />
                                                             </div>
 
+
                                                             @if($type_of_scoring === 'points')
                                                                 <div class="mb-2">
                                                                     <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
                                                                     <input type="number" name="criteria_score" id="criteria_score" value="{{ $criteria->criteria_score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
-                                                                    <x-input-error :messages="$errors->get('criteria_score')" class="mt-2" />
                                                                 </div>
                                                             @endif
-                                                            
+                                                           
                                                             <div class="flex mb-4 mt-10 justify-center">
                                                                 <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                                                     Save
@@ -366,7 +383,7 @@
                             <div class="flex justify-between">
                                 <div class="uppercase text-black mt-2 text-sm mb-4">
                                     @if($search)
-                                        {{ $criterion->total() }} Search results 
+                                        {{ $criterion->total() }} Search results
                                     @endif                                    
                                 </div>
                                 <div class="justify-end">
@@ -375,22 +392,25 @@
                                         <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
                                     @endif
                                 </div>
-                            </div> 
+                            </div>
                         </td>
                     </tr>
                 @endif
             </div>
-            
+           
             <text  class="font-bold uppercase">{{ $criterion->links() }}</text>
         @endif
  
-        
+       
     @endif  
    
 </div>
 
 
+
+
 <script>
+
 
     document.addEventListener('DOMContentLoaded', function() {
         tippy('[data-tippy-content]', {
@@ -399,6 +419,7 @@
             placement: 'right-end', // Optional: Adjust tooltip placement
         });
     });
+
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
@@ -430,14 +451,17 @@
 </script>
 
 
+
+
 <script>
     function confirmDeleteAll(event) {
         event.preventDefault(); // Prevent form submission initially
 
+
         Swal.fire({
             title: 'Select Employee to Delete All Records',
             html: `
-            
+           
                 <select id="category_id_select" class="cursor-pointer hover:border-red-500 swal2-select">
                     <option value="">Select category</option>
                      @foreach($categories as $category)
@@ -465,8 +489,10 @@
         });
     }
 
+
     function ConfirmDeleteSelected(event, rowId, criteriaName) {
         event.preventDefault(); // Prevent form submission initially
+
 
         Swal.fire({
             title: `Are you sure you want to delete the criteria ${criteriaName} ?`,
@@ -486,7 +512,8 @@
             }
         });
 
-        return false; 
+
+        return false;
     }
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -505,24 +532,31 @@
 function handleImageError(image) {
     // Set the default image
     image.src = "{{ asset('assets/img/user.png') }}";
-    
+   
     // Display the error message
     document.getElementById('errorMessage').style.display = 'block';
 }
 </script>
+
 
 <script>
          function readURL(input) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
 
+
                 reader.onload = function (e) {
                     $('#blah')
                         .attr('src', e.target.result);
                 };
 
+
                 reader.readAsDataURL(input.files[0]);
             }
         }
 </script>
-<!--  -->
+
+
+
+
+
