@@ -54,7 +54,7 @@
                     @foreach ($participants as $index => $participant)
                         @if ($genderFilter === 'all' || $participant->participant_gender === $genderFilter)
                             <div class="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 border-b-2 border-blue-500 pb-4">
-                                <0!-- Participant Image -->
+                                <!-- Participant Image -->
                                 <div class="w-full md:w-1/4 flex items-center justify-center">
                                     <img src="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" 
                                          alt="{{ $participant->participant_name }}" 
