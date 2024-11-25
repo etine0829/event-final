@@ -31,106 +31,85 @@ class CategoryController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{   
+{
     if (Auth::user()->hasRole('admin')) {
-
-        // // Log the incoming request data for debugging
-        // \Log::info('Category Store Request Data:', $request->all());
-
         $validatedData = $request->validate([
             'event_id' => 'required|exists:events,id',
             'category_name' => 'required|string|max:255',
-            'score' => 'nullable|string|max:255',
+            'score' => 'nullable|numeric|max:100', // Individual score validation
         ]);
 
-        // Check if a criteria with the same criteria_name already exists
+        // Check if the total score exceeds 100
+        $totalScore = Category::where('event_id', $request->input('event_id'))->sum('score');
+        $newScore = $request->input('score') ?? 0;
+
+        if (($totalScore + $newScore) > 100) {
+            return redirect()->route('admin.category.index')
+                ->with('error', 'The total category scores for this event cannot exceed 100.');
+        }
+
+        // Check if a category with the same name already exists
         $existingCategoryName = Category::where('category_name', $request->input('category_name'))
-        ->where('event_id',$request->input('event_id'))
-        ->first();
+            ->where('event_id', $request->input('event_id'))
+            ->first();
 
         if (!$existingCategoryName) {
             $category = new Category();
-            $category->event_id = $request->input('event_id');;
+            $category->event_id = $request->input('event_id');
             $category->category_name = $request->input('category_name');
             $category->score = $request->input('score');
             $category->save();
 
-            return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.category.index' : 'event_manager.category.index')
-                ->with('success', 'Category created successfully.');
-        } else {
-            $errorMessage = 'Category name ' . $request->input('category_name') . ' is already taken for this category.';
-            return redirect()->route(Auth::user()->hasRole('admin') ? 'admin.category.index' : 'event_manager.category.index')
-                ->with('error', $errorMessage . ' Try again.');
-        }
-    }
-    else if (Auth::user()->hasRole('event_manager')) {
-
-        // // Log the incoming request data for debugging
-        // \Log::info('Category Store Request Data:', $request->all());
-
-        $validatedData = $request->validate([
-            'event_id' => 'required|exists:events,id',
-            'category_name' => 'required|string|max:255',
-            'score' => 'nullable|string|max:255',
-        ]);
-
-        // Attempt to create the Category record
-        try {
-            Category::create($validatedData);
             return redirect()->route('admin.category.index')
                 ->with('success', 'Category created successfully.');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.category.index')->with('error', 'Failed to create category: ' . $e->getMessage());
+        } else {
+            return redirect()->route('admin.category.index')
+                ->with('error', 'Category name is already taken for this event. Try again.');
         }
     }
+
+    return redirect()->route('admin.category.index')->with('error', 'Unauthorized access.');
 }
 
-    public function update(Request $request, Category $category)
-    {
-        
-        if (Auth::user()->hasRole('admin')) {
+public function update(Request $request, Category $category)
+{
+    if (Auth::user()->hasRole('admin')) {
+        $validatedData = $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'category_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('category')->where(function ($query) use ($request, $category) {
+                    return $query->where('event_id', $request->event_id)
+                                 ->where('id', '<>', $category->id);
+                }),
+            ],
+            'score' => 'nullable|numeric|max:100', // Individual score validation
+        ]);
 
-            try {
-                $validatedData = $request->validate([
-                    'event_id' => 'required|exists:events,id',
-                    'category_name' => [
-                        'required',
-                        'string',
-                        'max:255',
-                        Rule::unique('category')->where(function ($query) use ($request, $category) {
-                            return $query->where('event_id', $request->event_id)
-                                        ->where('id', '<>', $category->id);
-                        }),
-                    ],
-                    'score' => 'nullable|string|max:255',
-                    
-                ]);
-                
-                 // Check if any changes were made
-            $hasChanges = $request->event_id !== $category->event_id ||
-            $request->category_name !== $category->category_name ||
-            $request->score !== $category->score;
+        // Check if the total score exceeds 100 after the update
+        $currentScore = $category->score ?? 0; // The current score of the category
+        $newScore = $request->input('score') ?? 0;
+        $totalScore = Category::where('event_id', $request->input('event_id'))
+            ->where('id', '<>', $category->id) // Exclude the current category being updated
+            ->sum('score');
 
-                if (!$hasChanges) {
-                return redirect()->route('admin.category.index')->with('info', 'No changes were made.');
-                }
+        if (($totalScore + $newScore) > 100) {
+            return redirect()->route('admin.category.index')
+                ->with('error', 'The total category scores for this event cannot exceed 100.');
+        }
 
-                // Update the category record
-                $category->update($validatedData);
+        // Update the category record
+        $category->update($validatedData);
 
-                return redirect()->route('admin.category.index')->with('success', 'Category updated successfully.');
-                } catch (ValidationException $e) {
-                // Return all validation errors to the user
-                return redirect()->back()->withErrors($e->errors())->with('error', 'Validation error occurred.');
-                } catch (\Exception $e) {
-                // Catch any other errors
-                return redirect()->route('admin.category.index')->with('error', 'An error occurred: ' . $e->getMessage());
-                }
-                }
-
-                // Handle unauthorized access
-                return redirect()->route('admin.category.index')->with('error', 'Unauthorized action.');
+        return redirect()->route('admin.category.index')
+            ->with('success', 'Category updated successfully.');
     }
+
+    return redirect()->route('admin.category.index')->with('error', 'Unauthorized action.');
+}
+
 
     public function destroy(Category $category)
 {
