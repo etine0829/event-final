@@ -20,6 +20,10 @@ class EventDashboard extends Component
         $this->resetPage();
     }
 
+    public function updatingSelectedEvent()
+    {
+        $this->resetPage();      
+    }
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -34,15 +38,13 @@ class EventDashboard extends Component
     public function render()
     {
         
-        $events = Event::query()
-            ->where(function ($query) {
-                $query->where('id', 'like', '%' . $this->search . '%')
-                    ->orWhere('event_name', 'like', '%' . $this->search . '%')
+        $events = Event::where('event_name', 'like', '%' . $this->search . '%')
                     ->orWhere('venue', 'like', '%' . $this->search . '%')
-                    ->orWhere('type_of_scoring', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+                    ->orWhere('type_of_scoring', 'like', '%' . $this->search . '%')
+                    ->orderBy($this->sortField, $this->sortDirection)
+                    ->paginate(10);
+
+     
 
         
         return view('livewire.admin.event-dashboard', [

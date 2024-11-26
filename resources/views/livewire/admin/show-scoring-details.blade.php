@@ -40,7 +40,7 @@
                     <div class="inline-flex justify-center rounded-md shadow-sm">
                         @foreach (['all' => 'All', 'male' => 'Male', 'female' => 'Female'] as $filter => $label)
                             <button 
-                                class="px-4 py-2  text-sm font-medium border rounded-lg focus:outline-none  
+                                class="px-4 py-2 text-sm font-medium border rounded-lg focus:outline-none  
                                     {{ $genderFilter === $filter ? 'bg-black text-white' : 'bg-gray-100 text-black hover:bg-black hover:text-white' }}"
                                 wire:click="$set('genderFilter', '{{ $filter }}')">
                                 {{ $label }}
@@ -57,8 +57,8 @@
                                 <!-- Participant Image -->
                                 <div class="w-full md:w-1/4 flex items-center justify-center">
                                     <img src="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" 
-                                         alt="{{ $participant->participant_name }}" 
-                                         class="w-32 h-32 rounded-lg object-cover border border-gray-300 mb-4">
+                                        alt="{{ $participant->participant_name }}" 
+                                        class="w-32 h-32 rounded-lg object-cover border border-gray-300 mb-4">
                                 </div>
 
                                 <!-- Participant Info and Scores -->
@@ -79,67 +79,71 @@
                                                     wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
                                                     min="0" 
                                                     max="{{ $criterion->criteria_score }}" 
-                                                    class="score-input p-2 ml-2 border rounded-md @error('scores.' . $participant->id . '.' . $criterion->id) border-red-500 @enderror"
+                                                    class="score-input p-2 ml-2 border rounded-md 
+                                                        @if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                                return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                        })) 
+                                                                border-red-500 
+                                                        @endif"
                                                     data-max="{{ $criterion->criteria_score }}"
                                                     id="score-{{ $participant->id }}-{{ $criterion->id }}" 
+                                                    pattern="^(?!0\d)\d+$"
                                                     style="text-align: right;"
+                                                    title="@if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                            return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                        }))
+                                                            {{ collect(session('validationErrors'))->first(function ($error) use ($participant, $criterion) {
+                                                                    return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            }) }}
+                                                        @endif"
                                                 />
-                                            </div>
 
+                                            </div>
                                         @endforeach
                                     </div>
                                 </div>
                             </div>
                         @endif
                     @endforeach
+
                     <div x-data="{ showButton: false }" @scroll.window="showButton = (window.scrollY > 100)" class="fixed bottom-8 right-8">
                         <button 
                             x-show="showButton" 
                             @click="window.scrollTo({ top: 0, behavior: 'smooth' })" 
                             class="bg-gradient-to-r from-red-500 to-orange-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-500"
-                            style="display: none;"
-                        >
+                            style="display: none;">
                             <i class="fa-sharp fa-solid fa-arrow-up"></i> Back to top <!-- Upward arrow symbol -->
                         </button>
                     </div>
+
                     <!-- Save Button -->
-                    <div class="text-center mt-4 ">
-                        @if (collect($scores)->flatten()->filter(function ($value) {
-                            return !is_null($value) && $value !== '';
-                        })->isEmpty())
-                            <button wire:click="saveScores" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md">
-                                Submit Scores
-                            </button>
-                        @else
-                            <button wire:click="saveScores" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
+                    <div class="mt-4 text-center">
+                        <!-- Display the button for submitting or updating scores -->
+                        <button wire:click="saveScores" 
+                                class="btn mt-4 
+                                    @if ($isValidated) bg-blue-500 hover:bg-blue-600 @else bg-green-500 hover:bg-green-600 @endif 
+                                    text-white font-semibold py-2 px-4 rounded-md">
+                            <!-- Dynamically change button text based on validation status -->
+                            @if ($isValidated)
                                 Update Scores
-                            </button>
-                        @endif
+                            @else
+                                Submit Scores
+                            @endif
+                        </button>
                     </div>
 
                 </div>
             </div>
         </div>
-            <!-- Success Message -->
-            @if (session()->has('success'))
-                <div class="bg-green-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
-                    <i class="fa-solid fa-check-circle text-xl"></i>
-                    <span class="font-semibold">{{ session('success') }}</span>
-                </div>
-            @endif
 
-            <!-- Error Message -->
-            @if (session()->has('error') || !empty(session('validationErrors')))
-                <div 
-                    class=" text-white p-4 rounded-lg shadow-lg fixed inset-0 z-50 flex items-center justify-center"
-                    role="alert"
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition>
+        <div class="text-center mt-4">
+            <!-- Display validation errors if they exist -->
+            @if (session()->has('validationErrors'))
+                <div x-data="{ showErrors: true }" x-show="showErrors" class="text-white p-4 rounded-lg shadow-lg fixed inset-0 z-50 flex items-center justify-center" role="alert">
                     <div class="w-full max-w-lg sm:w-3/4 lg:w-1/2 p-4 bg-red-600 rounded-lg shadow-md">
                         <div class="flex justify-between items-center">
                             <strong class="font-semibold">Validation Errors</strong>
-                            <button @click="show = false" class="text-white hover:text-red-900 focus:outline-none">
+                            <button @click="showErrors = false" class="text-white hover:text-red-900 focus:outline-none">
                                 &times;
                             </button>
                         </div>
@@ -150,7 +154,20 @@
                         </ul>
                     </div>
                 </div>
+            @endif
 
+            <!-- Display success message if no errors occurred -->
+            @if (session()->has('success'))
+                <div class="fixed inset-0 flex items-center justify-center z-50">
+                    <div 
+                        x-data="{ show: true }" 
+                        x-show="show" 
+                        x-init="setTimeout(() => show = false, 3000)" 
+                        class="bg-green-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2">
+                        <i class="fa-solid fa-check-circle text-xl"></i>
+                        <span class="font-semibold">{{ session('success') }}</span>
+                    </div>
+                </div>
             @endif
 
             <!-- Info Message -->
@@ -161,5 +178,28 @@
                 </div>
             @endif
 
-    @endif
+            @if (session()->has('validationErrors'))
+                <div x-data="{ showErrors: true }" x-show="showErrors" class="text-white p-4 rounded-lg shadow-lg fixed inset-0 z-50 flex items-center justify-center" role="alert">
+                    <div class="w-full max-w-lg sm:w-3/4 lg:w-1/2 p-4 bg-red-600 rounded-lg shadow-md">
+                        <div class="flex justify-between items-center">
+                            <strong class="font-semibold">Validation Errors</strong>
+                            <button @click="showErrors = false" class="text-white hover:text-red-900 focus:outline-none">
+                                &times;
+                            </button>
+                        </div>
+                        <ul class="list-disc list-inside mt-2">
+                            @foreach (session('validationErrors', []) as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
+        </div>
+
+
+
+        @endif
+
 </div>

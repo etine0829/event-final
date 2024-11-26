@@ -20,15 +20,6 @@ use Illuminate\Support\Facades\Storage;
 
 
 
-
-
-
-
-
-
-
-
-
 class ParticipantController extends Controller
 {
      //
