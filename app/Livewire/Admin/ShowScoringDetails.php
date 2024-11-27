@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\Admin\Category;
 use App\Models\Admin\Participant;
 use App\Models\Admin\Criteria;
+use App\Models\Admin\Group;
+use App\Models\Admin\Event;
 use App\Models\Admin\Scorecard;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,6 +16,8 @@ class ShowScoringDetails extends Component
     public $category;
     public $participants = [];
     public $criteria = [];
+    public $groups = [];
+    public $events = [];
     public $genderFilter = 'all'; // Default filter
     public $scores = [];
     public $isValidated = false;
@@ -21,26 +25,41 @@ class ShowScoringDetails extends Component
     public function mount($categoryId)
     {
         $this->category = Category::findOrFail($categoryId);
-        $this->loadParticipants();
-        $this->loadCriteria();
-        $this->loadScores();
-    }
 
-    private function loadParticipants()
-    {
+        // Fetch participants
         $this->participants = Participant::where('event_id', $this->category->event_id)
                                          ->with(['group', 'event'])
                                          ->get();
-    }
 
-    private function loadCriteria()
-    {
+        // Fetch criteria
         $this->criteria = Criteria::where('event_id', $this->category->event_id)
-                                  ->where('category_id', $this->category->id)
+                                  ->where('category_id', $categoryId)
                                   ->get();
+
+        // Fetch scores for the logged-in judge
+        $loggedInJudgeId = Auth::id();
+
+        foreach ($this->participants as $participant) {
+            foreach ($this->criteria as $criterion) {
+                $existingScore = Scorecard::where('category_id', $categoryId)
+                                          ->where('participant_id', $participant->id)
+                                          ->where('criteria_id', $criterion->id)
+                                          ->where('user_id', $loggedInJudgeId) // Filter by judge
+                                          ->first();
+
+                // Populate the scores array
+                $this->scores[$participant->id][$criterion->id] = $existingScore ? $existingScore->score : null;
+            }
+        }
+        //initializa scores if stored in session
+        if (session()->has('scores')) {
+            $this->scores = session('scores');
+        }
+        //this will check validation status exist in the session
+        $this->isValidated = session()->has('isValidated') ? session('isValidated') : false;
     }
 
-    private function loadScores()
+    public function updatedScores($value, $key)
     {
         // The key will be like: "participantId.criteriaId"
         list($participantId, $criteriaId) = explode('.', $key);
@@ -79,43 +98,31 @@ class ShowScoringDetails extends Component
             }
         }
     }
-
-    public function updatedScores($value, $key)
-    {
-        list($participantId, $criteriaId) = explode('.', $key);
-        $this->scores[$participantId][$criteriaId] = $value;
-    }
-
-    public function updatedGenderFilter()
-    {
-        $this->loadParticipants();
-        $this->loadScores();
-    }
-
     public function saveScores()
-    {   
+    {
         // Store the current scores in the session so that they persist after a page reload
         session()->put('scores', $this->scores);
+
         // First, run the validation
         $this->validateScores();
-    
+
         // If validation fails, don't proceed and just show the validation errors
         if (session()->has('validationErrors')) {
-           // Save the validation failure status to session
+            // Save the validation failure status to session
             session()->put('isValidated', false);
             $this->isValidated = false;  // Update the local variable
             return;  // Early return if validation fails
         }
-    
+
         // If validation passes, proceed with saving scores
         $judgeId = Auth::id();
         $categoryScore = $this->category->score; // Base category score
-    
+
         \Log::info('Category Score: ' . $categoryScore);
-    
+
         foreach ($this->scores as $participantId => $criteriaScores) {
             $totalScore = 0;
-    
+
             foreach ($criteriaScores as $criteriaId => $score) {
                 // Save individual criteria scores
                 Scorecard::updateOrCreate(
@@ -127,29 +134,30 @@ class ShowScoringDetails extends Component
                     ],
                     ['score' => $score]
                 );
-    
+
                 $totalScore += $score;
             }
-    
+
             // Calculate the average score using the formula
             $avgScore = ($totalScore * $categoryScore) / 100;
-    
+
             // Ensure avg_score is formatted as a string
             $formattedAvgScore = number_format($avgScore, 2, '.', '');
-    
+
             // Update the average score in the Scorecard table
             Scorecard::where('category_id', $this->category->id)
                     ->where('participant_id', $participantId)
                     ->where('user_id', $judgeId)
                     ->update(['avg_score' => $formattedAvgScore]);
         }
-    
+
         // If no validation errors occurred, flash success message
         session()->flash('success', 'Scores saved and average scores updated successfully!');
         // Mark as validated after successful submission
         session()->put('isValidated', true);  // Save validation success to session
         $this->isValidated = true;  // Update local variable
-        // Determine if this is a new submission or an update
+
+        // Flash message based on whether it's a new submission or an update
         $isNewSubmission = !$this->isValidated; // If not validated before, it's a new submission
         if ($isNewSubmission) {
             session()->flash('success', 'Scores submitted successfully!');
@@ -157,192 +165,75 @@ class ShowScoringDetails extends Component
             session()->flash('success', 'Scores updated successfully!');
         }
     }
+
     
     private function validateScores()
     {
         $validationErrors = [];
-    
+        $rankingScores = []; // This will hold the used ranking values for each criterion
+        $hasRankingError = false;
+
         foreach ($this->scores as $participantId => $criteriaScores) {
             foreach ($criteriaScores as $criteriaId => $score) {
                 $criterion = $this->criteria->firstWhere('id', $criteriaId);
-    
+
+                // General validations that apply to both ranking and points
+                // Check for empty score
                 if (is_null($score) || $score === '') {
                     $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId cannot be empty.";
-                } elseif ($score > $criterion->criteria_score) {
-                    $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId exceeds the maximum of {$criterion->criteria_score}.";
-                }   elseif ((int)$score === 0 || preg_match('/^0\d/', (string)$score)) {
+                }
+                // Check if the score starts with 0 or is 0
+                elseif ((int)$score === 0 || preg_match('/^0\d/', (string)$score)) {
                     $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId cannot be 0 or start with 0.";
+                }
+
+                // Points-based validation
+                if ($this->category->event->type_of_scoring === 'points') {
+                    // Check for score exceeding the maximum allowed score
+                    if ($score > $criterion->criteria_score) {
+                        $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId exceeds the maximum of {$criterion->criteria_score}.";
+                    }
+                }
+
+                // Ranking-based validation
+                elseif ($this->category->event->type_of_scoring === 'ranking(H-L)' || $this->category->event->type_of_scoring === 'ranking(L-H)') {
+                    // Ensure ranking is within the valid range
+                    $maxRank = $this->participants->count();
+                    if ($score < 1 || $score > $maxRank) {
+                        $validationErrors[] = "Ranking for Participant ID $participantId and Criteria ID $criteriaId must be between 1 and $maxRank.";
+                    }
+
+                    // Check for duplicate rankings for this criterion
+                    if (isset($rankingScores[$criteriaId])) {
+                        if (in_array((int)$score, $rankingScores[$criteriaId])) {
+                            $validationErrors[] = "Duplicate ranking score for Participant ID $participantId and Criteria ID $criteriaId. Each ranking must be unique.";
+                        } else {
+                            // Add the ranking score to the list for this criterion
+                            $rankingScores[$criteriaId][] = (int)$score;
+                        }
+                    } else {
+                        // Initialize the rankingScores array for this criterion if it doesn't exist
+                        $rankingScores[$criteriaId] = [(int)$score];
+                    }
                 }
             }
         }
-    
+
+        // If there are any validation errors, store them in the session
         if (!empty($validationErrors)) {
-            // Store the validation errors to flash
             session()->flash('validationErrors', $validationErrors);
             session()->put('isValidated', false);  // Store validation failure to session
             $this->isValidated = false;
         }
+
+        // If there are ranking errors but we want to submit and record, proceed with saving the scores
+        if ($hasRankingError) {
+            // Mark as "submitted" even with ranking errors
+            session()->flash('warning', 'Some ranking errors were found, but the scores have been submitted.');
+        }
     }
+
     
-    {
-        $validationErrors = $this->validateScores();
-
-        if (!empty($validationErrors)) {
-            session()->flash('error', implode(' ', $validationErrors));
-            return;
-        }
-
-        $this->saveScorecardData();
-        session()->flash('success', 'Scores saved and average scores updated successfully!');
-    }
-
-    private function validateScores()
-    {
-        $validationErrors = [];
-        $scoringType = $this->category->event->type_of_scoring;
-
-        if ($scoringType === 'points') {
-            $validationErrors = $this->validatePointsScores();
-        } elseif (in_array($scoringType, ['ranking(H-L)', 'ranking(L-H)'])) {
-            $validationErrors = $this->validateRankingScores($scoringType);
-        } else {
-            $validationErrors[] = "Invalid scoring type.";
-        }
-
-        return $validationErrors;
-    }
-
-    private function validatePointsScores()
-    {
-        $validationErrors = [];
-
-        foreach ($this->scores as $participantId => $criteriaScores) {
-            foreach ($criteriaScores as $criteriaId => $score) {
-                $criterion = $this->criteria->firstWhere('id', $criteriaId);
-
-                if (is_null($score) || $score === '') {
-                    $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId must not be empty.";
-                } elseif ($score > $criterion->criteria_score) {
-                    $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId exceeds the maximum of {$criterion->criteria_score}.";
-                }
-            }
-        }
-
-        return $validationErrors;
-    }
-
-    private function validateRankingScores($scoringType)
-    {
-        $validationErrors = [];
-        $numParticipants = $this->participants->count();
-
-        foreach ($this->scores as $participantId => $criteriaScores) {
-            foreach ($criteriaScores as $criteriaId => $rank) {
-                if (is_null($rank) || $rank === '') {
-                    $validationErrors[] = "Rank for Participant ID $participantId and Criteria ID $criteriaId must not be empty.";
-                } elseif ($rank < 1 || $rank > $numParticipants) {
-                    $validationErrors[] = "Rank for Participant ID $participantId and Criteria ID $criteriaId must be between 1 and $numParticipants for ranking.";
-                }
-            }
-        }
-
-        if (in_array($scoringType, ['ranking(H-L)', 'ranking(L-H)'])) {
-            $validationErrors = array_merge($validationErrors, $this->validateUniqueRanks());
-        }
-
-        if ($scoringType === 'ranking(L-H)') {
-            $validationErrors = array_merge($validationErrors, $this->validateLowToHighRanking());
-        }
-
-        return $validationErrors;
-    }
-
-    private function validateUniqueRanks()
-    {
-        $validationErrors = [];
-
-        foreach ($this->criteria as $criterion) {
-            $ranks = [];
-            foreach ($this->scores as $participantId => $criteriaScores) {
-                if (isset($criteriaScores[$criterion->id])) {
-                    $ranks[] = $criteriaScores[$criterion->id];
-                }
-            }
-
-            if (count($ranks) !== count(array_unique($ranks))) {
-                $validationErrors[] = "Ranks for criterion ID {$criterion->id} must be unique (no duplicates).";
-            }
-        }
-
-        return $validationErrors;
-    }
-
-    private function validateLowToHighRanking()
-    {
-        $validationErrors = [];
-
-        foreach ($this->criteria as $criterion) {
-            $ranks = [];
-            foreach ($this->scores as $participantId => $criteriaScores) {
-                if (isset($criteriaScores[$criterion->id])) {
-                    $ranks[] = $criteriaScores[$criterion->id];
-                }
-            }
-
-            $sortedRanks = collect($ranks)->sort()->values()->all();
-
-        }
-
-        return $validationErrors;
-    }
-
-    private function saveScorecardData()
-{
-    $judgeId = Auth::id();
-    $categoryScore = $this->category->score; // Category-specific score weight
-    $eventId = $this->category->event_id;
-    $scoringType = $this->category->event->type_of_scoring;
-
-    foreach ($this->scores as $participantId => $criteriaScores) {
-        $totalScore = 0;
-        $criteriaCount = count($criteriaScores); // Number of criteria for average calculation
-
-        foreach ($criteriaScores as $criteriaId => $score) {
-            // Update or create scorecard entry for the participant and criterion
-            Scorecard::updateOrCreate(
-                [
-                    'category_id' => $this->category->id,
-                    'participant_id' => $participantId,
-                    'criteria_id' => $criteriaId,
-                    'user_id' => $judgeId,
-                    'event_id' => $eventId,
-                ],
-                ['score' => $score]
-            );
-
-            $totalScore += $score; // Add the score for each criterion to total score
-        }
-
-        if ($scoringType === 'points') {
-            // Calculate average score for points-based scoring (using category weight)
-            $avgScore = ($totalScore * $categoryScore) / 100;
-        } elseif (in_array($scoringType, ['ranking(H-L)', 'ranking(L-H)'])) {
-            // Calculate average score for ranking-based scoring (sum of scores divided by number of criteria)
-            $avgScore = $totalScore / $criteriaCount;
-        } else {
-            $avgScore = 0; // Default fallback
-        }
-
-        // Format the average score to two decimal places
-        $formattedAvgScore = number_format($avgScore, 2, '.', '');
-
-        // Update the average score for the participant
-        Scorecard::where('category_id', $this->category->id)
-                 ->where('participant_id', $participantId)
-                 ->where('user_id', $judgeId)
-                 ->update(['avg_score' => $formattedAvgScore]);
-    }
-}
 
 
     public function render()

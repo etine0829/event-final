@@ -30,9 +30,7 @@
                     @else
                         <!-- Otherwise, show the score percentage -->
                         @foreach($category->criteria as $criterion)
-                            <p class="text-lg text-gray-500">
-                                {{ $criterion['criteria_name'] }} - {{ $criterion['criteria_score'] }}%
-                            </p>
+                            
                         @endforeach
                     @endif
                     

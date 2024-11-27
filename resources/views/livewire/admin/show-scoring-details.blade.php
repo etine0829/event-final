@@ -49,17 +49,6 @@
                     </div>
                 </div>
 
-                <!-- Error Messages List -->
-                @if ($errors->any())
-                    <div class="mb-6">
-                        <ul class="list-disc pl-5 text-red-600">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
                 <!-- Scores Form -->
                 <div class="space-y-6">
                     @foreach ($participants as $index => $participant)
@@ -81,103 +70,164 @@
                                         @foreach ($criteria as $criterion)
                                             <div class="flex items-center justify-between">
                                                 <!-- Label for the Criterion -->
-                                                @if ($category->event->type_of_scoring === 'points')
-                                                    <!-- For Points Scoring -->
-                                                    <label class="font-bold w-full">
+                                                <label class="font-bold w-full">
                                                     {{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)
                                                 </label>
-                                                <!-- Input Box for the Score -->
-                                                    <div class="relative w-1/2">
-                                                        <input 
-                                                            type="number" 
-                                                            wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
-                                                            min="0" 
-                                                            max="{{ $criterion->criteria_score }}" 
-                                                            class="score-input p-2 ml-2 border rounded-md 
-                                                        @if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
-                                                                return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
-                                                        })) 
-                                                                border-red-500 
-                                                        @endif"
-                                                            id="score-{{ $participant->id }}-{{ $criterion->id }}"
-                                                        />
-                                                        <!-- Error Icon -->
 
-                                                    </div>
-                                                @elseif ($category->event->type_of_scoring === 'ranking(H-L)' || $category->event->type_of_scoring === 'ranking(L-H)')
-                                                    <!-- For Ranking Scoring -->
-                                                    <label class="w-1/2 font-bold">{{ $criterion->criteria_name }}</label>
-                                                    <div class="relative w-1/2">
-                                                        <input 
-                                                            type="number" 
-                                                            wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
-                                                            min="1" 
-                                                            max="{{ $participants->count() }}" 
-                                                            class="score-input p-2 mr-0 border rounded-md @error('scores.' . $participant->id . '.' . $criterion->id) border-red-500 @enderror"
-                                                            id="score-{{ $participant->id }}-{{ $criterion->id }}" 
-                                                    pattern="^(?!0\d)\d+$"
-                                                    style="text-align: right;"
-                                                    title="@if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
-                                                            return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
-                                                        }))
+                                                <!-- Check for Scoring Type -->
+                                                @if ($category->event->type_of_scoring === 'points')
+                                                    <!-- For Points Scoring -->
+                                                    <input 
+                                                        type="number" 
+                                                        wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
+                                                        min="0" 
+                                                        max="{{ $criterion->criteria_score }}" 
+                                                        class="score-input p-2 ml-2 border rounded-md 
+                                                            @if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                                    return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            })) 
+                                                                border-red-500 
+                                                            @endif"
+                                                        data-max="{{ $criterion->criteria_score }}"
+                                                        id="score-{{ $participant->id }}-{{ $criterion->id }}" 
+                                                        pattern="^(?!0\d)\d+$"
+                                                        style="text-align: right;"
+                                                        title="@if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                                return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            }))
                                                             {{ collect(session('validationErrors'))->first(function ($error) use ($participant, $criterion) {
                                                                     return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
                                                             }) }}
                                                         @endif"
-                                                        />
-
-                                                      
-                                                    </div>
-
+                                                    />
+                                                @elseif ($category->event->type_of_scoring === 'ranking(H-L)' || $category->event->type_of_scoring === 'ranking(L-H)')
+                                                    <!-- For Ranking Scoring -->
+                                                    <input
+                                                        type="number"
+                                                        wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}"
+                                                        min="1"
+                                                        max="{{ $participants->count() }}"
+                                                        class="score-input p-2 ml-2 border rounded-md 
+                                                            @if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                                    return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            })) 
+                                                                border-red-500 
+                                                            @endif"
+                                                        data-max="{{ $participants->count() }}"
+                                                        id="ranking-{{ $participant->id }}-{{ $criterion->id }}"
+                                                        style="text-align: right;"
+                                                        title="@if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                                return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            }))
+                                                            {{ collect(session('validationErrors'))->first(function ($error) use ($participant, $criterion) {
+                                                                    return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            }) }}
+                                                        @endif"
+                                                    />
                                                 @endif
                                             </div>
                                         @endforeach
                                     </div>
+
                                 </div>
                             </div>
                         @endif
                     @endforeach
 
+                    <div x-data="{ showButton: false }" @scroll.window="showButton = (window.scrollY > 100)" class="fixed bottom-8 right-8">
+                        <button 
+                            x-show="showButton" 
+                            @click="window.scrollTo({ top: 0, behavior: 'smooth' })" 
+                            class="bg-gradient-to-r from-red-500 to-orange-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-500"
+                            style="display: none;">
+                            <i class="fa-sharp fa-solid fa-arrow-up"></i> Back to top <!-- Upward arrow symbol -->
+                        </button>
+                    </div>
+
                     <!-- Save Button -->
-                    <div class="text-center mt-4">
-                        @if (collect($scores)->flatten()->filter(function ($value) {
-                            return !is_null($value) && $value !== '';
-                        })->isEmpty())
-                            <button wire:click="saveScores" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md">
-                                Submit Scores
-                            </button>
-                        @else
-                            <button wire:click="saveScores" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
+                    <div class="mt-4 text-center">
+                        <!-- Display the button for submitting or updating scores -->
+                        <button wire:click="saveScores" 
+                                class="btn mt-4 
+                                    @if ($isValidated) bg-blue-500 hover:bg-blue-600 @else bg-green-500 hover:bg-green-600 @endif 
+                                    text-white font-semibold py-2 px-4 rounded-md">
+                            <!-- Dynamically change button text based on validation status -->
+                            @if ($isValidated)
                                 Update Scores
                             @else
                                 Submit Scores
                             @endif
                         </button>
                     </div>
+
                 </div>
             </div>
         </div>
 
-        <!-- Success, Error, Info Messages -->
-        @if (session()->has('success'))
-            <div class="bg-green-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
-                <i class="fa-solid fa-check-circle text-xl"></i>
-                <span class="font-semibold">{{ session('success') }}</span>
-            </div>
+        <div class="text-center mt-4">
+            <!-- Display validation errors if they exist -->
+            @if (session()->has('validationErrors'))
+                <div x-data="{ showErrors: true }" x-show="showErrors" class="text-white p-4 rounded-lg shadow-lg fixed inset-0 z-50 flex items-center justify-center" role="alert">
+                    <div class="w-full max-w-lg sm:w-3/4 lg:w-1/2 p-4 bg-red-600 rounded-lg shadow-md">
+                        <div class="flex justify-between items-center">
+                            <strong class="font-semibold">Validation Errors</strong>
+                            <button @click="showErrors = false" class="text-white hover:text-red-900 focus:outline-none">
+                                &times;
+                            </button>
+                        </div>
+                        <ul class="list-disc list-inside mt-2">
+                            @foreach (session('validationErrors', []) as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Display success message if no errors occurred -->
+            @if (session()->has('success'))
+                <div class="fixed inset-0 flex items-center justify-center z-50">
+                    <div 
+                        x-data="{ show: true }" 
+                        x-show="show" 
+                        x-init="setTimeout(() => show = false, 3000)" 
+                        class="bg-green-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2">
+                        <i class="fa-solid fa-check-circle text-xl"></i>
+                        <span class="font-semibold">{{ session('success') }}</span>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Info Message -->
+            @if (session()->has('info'))
+                <div class="bg-blue-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
+                    <i class="fa-solid fa-info-circle text-xl"></i>
+                    <span class="font-semibold">{{ session('info') }}</span>
+                </div>
+            @endif
+
+            @if (session()->has('validationErrors'))
+                <div x-data="{ showErrors: true }" x-show="showErrors" class="text-white p-4 rounded-lg shadow-lg fixed inset-0 z-50 flex items-center justify-center" role="alert">
+                    <div class="w-full max-w-lg sm:w-3/4 lg:w-1/2 p-4 bg-red-600 rounded-lg shadow-md">
+                        <div class="flex justify-between items-center">
+                            <strong class="font-semibold">Validation Errors</strong>
+                            <button @click="showErrors = false" class="text-white hover:text-red-900 focus:outline-none">
+                                &times;
+                            </button>
+                        </div>
+                        <ul class="list-disc list-inside mt-2">
+                            @foreach (session('validationErrors', []) as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
+        </div>
+-
+
+
         @endif
 
-        @if (session()->has('error'))
-            <div class="bg-red-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
-                <i class="fa-solid fa-exclamation-circle text-xl"></i>
-                <span class="font-semibold">{{ session('error') }}</span>
-            </div>
-        @endif
-
-        @if (session()->has('info'))
-            <div class="bg-blue-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
-                <i class="fa-solid fa-info-circle text-xl"></i>
-                <span class="font-semibold">{{ session('info') }}</span>
-            </div>
-        @endif
-    @endif
 </div>
