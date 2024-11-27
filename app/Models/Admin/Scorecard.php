@@ -5,7 +5,8 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use \App\Models\Admin\Scorecard; 
-use \App\Models\Admin\Participant; 
+use \App\Models\Admin\Participant;
+use \App\Models\User; 
 
 class Scorecard extends Model
 {
@@ -14,6 +15,7 @@ class Scorecard extends Model
     protected $table = "scorecard";
 
     protected $fillable = [
+            'event_id',
             'category_id',
             'criteria_id',
             'participant_id',
@@ -33,5 +35,9 @@ class Scorecard extends Model
     public function participant()
     {
         return $this->belongsTo(Participant::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class); // Assuming each scorecard belongs to one user
     }
 }

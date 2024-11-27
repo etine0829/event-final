@@ -74,56 +74,75 @@ class ShowJudgesTable extends Component
     }
 
     public function updateCategory()
-    {
-        if ($this->selectedEvent) {
-            $this->judgeToShow = User::where('event_id', $this->selectedEvent)
-                ->whereHas('roles', function ($query) {
-                    $query->whereIn('name', ['judge', 'judge_chairman']);
-                })
-                ->get();
-        } else {
-            $this->judgeToShow = [];
-        }
-    }
-
-    public function render()
-    {
-        $query = User::with('event')
-            ->whereNull('event_id')
+{
+    if ($this->selectedEvent) {
+        // Show judges assigned to the selected event
+        $this->judgeToShow = User::where('event_id', $this->selectedEvent)
             ->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['judge', 'judge_chairman']);
-            });
-
-        $query = $this->applySearchFilters($query);
-
-        if ($this->selectedEvent) {
-            $this->eventToShow = Event::find($this->selectedEvent);
-            $this->judgeToShow = User::where('event_id', $this->selectedEvent)
-                ->whereHas('roles', function ($query) {
-                    $query->whereIn('name', ['judge', 'judge_chairman']);
-                })
-                ->get();
-        } else {
-            $this->eventToShow = null;
-            $this->judgeToShow = [];
-        }
-
-        $judges = $query->orderBy($this->sortField, $this->sortDirection)->paginate(25);
-
-        $events = Event::all();
-
-        $judgeCounts = User::select('event_id', \DB::raw('count(*) as judge_count'))
-                           ->groupBy('event_id')
-                           ->get()
-                           ->keyBy('event_id');
-
-        return view('livewire.admin.show-judges-table', [
-            'judges' => $judges,
-            'events' => $events,
-            'judgeCounts' => $judgeCounts,
-            'judgeToShow' => $this->judgeToShow,
-        ]);
+            })
+            ->get();
+    } else {
+        // Show judges without an event assigned (event_id is null)
+        $this->judgeToShow = User::whereNull('event_id')
+            ->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['judge', 'judge_chairman']);
+            })
+            ->get();
     }
+}
+
+public function render()
+{
+    // If an event is selected, show judges assigned to that event
+    if ($this->selectedEvent) {
+        $this->eventToShow = Event::find($this->selectedEvent);
+
+        // Show judges assigned to the selected event
+        $this->judgeToShow = User::where('event_id', $this->selectedEvent)
+            ->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['judge', 'judge_chairman']);
+            })
+            ->get();
+    } else {
+        // If no event is selected, show judges without event assignment
+        $this->eventToShow = null;
+        $this->judgeToShow = User::whereNull('event_id')
+            ->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['judge', 'judge_chairman']);
+            })
+            ->get();
+    }
+
+    // Query for judges with no event assignment (event_id is null)
+    $query = User::with('event')
+        ->whereNull('event_id')
+        ->whereHas('roles', function ($query) {
+            $query->whereIn('name', ['judge', 'judge_chairman']);
+        });
+
+    // Apply search filters
+    $query = $this->applySearchFilters($query);
+
+    // Pagination for the query
+    $judges = $query->orderBy($this->sortField, $this->sortDirection)->paginate(25);
+
+    // Fetch all events for the dropdown selection
+    $events = Event::all();
+
+    // Count judges per event for display
+    $judgeCounts = User::select('event_id', \DB::raw('count(*) as judge_count'))
+        ->groupBy('event_id')
+        ->get()
+        ->keyBy('event_id');
+
+    return view('livewire.admin.show-judges-table', [
+        'judges' => $judges,
+        'events' => $events,
+        'judgeCounts' => $judgeCounts,
+        'judgeToShow' => $this->judgeToShow,
+    ]);
+}
 
     protected function applySearchFilters($query)
     {

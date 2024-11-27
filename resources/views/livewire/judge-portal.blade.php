@@ -21,24 +21,37 @@
                     <h2 class="text-2xl font-bold text-gray-700 mb-2">
                         {{ $category->category_name }}
                     </h2>
-                    <p class="text-lg text-gray-500">
-                        {{ $category->score }}%
-                    </p>
+
+                    <!-- Conditional Rendering based on Scoring Type -->
+                    @if($scoringType === 'ranking(H-L)')
+
+                    @elseif($scoringType === 'ranking(L-H)')
+
+                    @else
+                        <!-- Otherwise, show the score percentage -->
+                        @foreach($category->criteria as $criterion)
+                            <p class="text-lg text-gray-500">
+                                {{ $criterion['criteria_name'] }} - {{ $criterion['criteria_score'] }}%
+                            </p>
+                        @endforeach
+                    @endif
+                    
                     <span class="text-blue-600 hover:text-blue-800">(Click to open)</span>
                 </div>
             @endforeach
         </div>
     </div>
+
     <!-- My Score Button -->
     <div class="mt-8">
-    @if ($events->isNotEmpty())
-        @php $event = $events->first(); @endphp
-        <a href="{{ route('scores.show', ['eventId' => $event->id]) }}">
-            <button 
-                class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
-                Scorecard
-            </button>
-        </a>
-    @endif
+        @if ($events->isNotEmpty())
+            @php $event = $events->first(); @endphp
+            <a href="{{ route('scores.show', ['eventId' => $event->id]) }}">
+                <button 
+                    class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
+                    Scorecard
+                </button>
+            </a>
+        @endif
     </div>
 </div>

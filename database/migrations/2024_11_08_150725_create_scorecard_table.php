@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('scorecard', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('event_id');
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('criteria_id');
             $table->unsignedBigInteger('participant_id');
@@ -20,7 +21,8 @@ return new class extends Migration
             $table->string('score');
             $table->string('avg_score')->nullable();
             $table->timestamps();
-
+            
+            $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');
             $table->foreign('category_id')->references('id')->on('category')->onDelete('restrict');
             $table->foreign('criteria_id')->references('id')->on('criteria')->onDelete('restrict');
             $table->foreign('participant_id')->references('id')->on('participant')->onDelete('restrict');
