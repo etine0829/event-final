@@ -12,7 +12,6 @@ use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\JudgesController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ResultController;
-use App\Livewire\Admin\ShowScoringDetails;
 use App\Http\Controllers\Admin\ScorecardController;;
 use App\Livewire\Admin\ShowScores;
 
@@ -194,13 +193,27 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'indexJudge'])->name('dashboard');
     });
 
-    Route::get('/category/{categoryId}', ShowScoringDetails::class)->name('category.details');
-    // Route::post('/scorecard/store', [ScorecardController::class, 'store'])->name('score.store');
+
+    Route::post('/scorecard/store', [ScorecardController::class, 'store'])->name('score.store');
    
 
     // Route for updating scores
     Route::post('/scorecard/update', [ScorecardController::class, 'update'])->name('score.update');
+    Route::get('/scores/{eventId}', ShowScores::class)->name('scores.show');
 
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::middleware(['role:judge_chairman'])->prefix('judge_chairman')->name('judge_chairman.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'indexJudge'])->name('dashboard');
+    });
+
+
+    Route::post('/scorecard/store', [ScorecardController::class, 'store'])->name('score.store');
+   
+
+    // Route for updating scores
+    Route::post('/scorecard/update', [ScorecardController::class, 'update'])->name('score.update');
     Route::get('/scores/{eventId}', ShowScores::class)->name('scores.show');
 
 });

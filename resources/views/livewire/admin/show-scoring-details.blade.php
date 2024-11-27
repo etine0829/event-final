@@ -49,6 +49,17 @@
                     </div>
                 </div>
 
+                <!-- Error Messages List -->
+                @if ($errors->any())
+                    <div class="mb-6">
+                        <ul class="list-disc pl-5 text-red-600">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <!-- Scores Form -->
                 <div class="space-y-6">
                     @foreach ($participants as $index => $participant)
@@ -69,16 +80,37 @@
                                     <div class="mt-4 space-y-4">
                                         @foreach ($criteria as $criterion)
                                             <div class="flex items-center">
-                                                <label class="w-1/2 font-bold">{{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)</label>
-                                                <input 
-                                                    type="number" 
-                                                    wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
-                                                    min="0" 
-                                                    max="{{ $criterion->criteria_score }}" 
-                                                    class="score-input p-2 mr-0 border rounded-md @error('scores.' . $participant->id . '.' . $criterion->id) border-red-500 @enderror"
-                                                    data-max="{{ $criterion->criteria_score }}"
-                                                    id="score-{{ $participant->id }}-{{ $criterion->id }}"
-                                                />
+                                                @if ($category->event->type_of_scoring === 'points')
+                                                    <!-- For Points Scoring -->
+                                                    <label class="w-1/2 font-bold">{{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)</label>
+                                                    <div class="relative w-1/2">
+                                                        <input 
+                                                            type="number" 
+                                                            wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
+                                                            min="0" 
+                                                            max="{{ $criterion->criteria_score }}" 
+                                                            class="score-input p-2 mr-0 border rounded-md @error('scores.' . $participant->id . '.' . $criterion->id) border-red-500 @enderror"
+                                                            id="score-{{ $participant->id }}-{{ $criterion->id }}"
+                                                        />
+                                                        <!-- Error Icon -->
+
+                                                    </div>
+                                                @elseif ($category->event->type_of_scoring === 'ranking(H-L)' || $category->event->type_of_scoring === 'ranking(L-H)')
+                                                    <!-- For Ranking Scoring -->
+                                                    <label class="w-1/2 font-bold">{{ $criterion->criteria_name }}</label>
+                                                    <div class="relative w-1/2">
+                                                        <input 
+                                                            type="number" 
+                                                            wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
+                                                            min="1" 
+                                                            max="{{ $participants->count() }}" 
+                                                            class="score-input p-2 mr-0 border rounded-md @error('scores.' . $participant->id . '.' . $criterion->id) border-red-500 @enderror"
+                                                            id="score-{{ $participant->id }}-{{ $criterion->id }}"
+                                                        />
+                                                      
+                                                    </div>
+
+                                                @endif
                                             </div>
                                         @endforeach
                                     </div>
@@ -86,18 +118,9 @@
                             </div>
                         @endif
                     @endforeach
-                    <div x-data="{ showButton: false }" @scroll.window="showButton = (window.scrollY > 100)" class="fixed bottom-8 right-8">
-                        <button 
-                            x-show="showButton" 
-                            @click="window.scrollTo({ top: 0, behavior: 'smooth' })" 
-                            class="bg-gradient-to-r from-red-500 to-orange-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-500"
-                            style="display: none;"
-                        >
-                            <i class="fa-sharp fa-solid fa-arrow-up"></i> Back to top <!-- Upward arrow symbol -->
-                        </button>
-                    </div>
+
                     <!-- Save Button -->
-                    <div class="text-center mt-4 ">
+                    <div class="text-center mt-4">
                         @if (collect($scores)->flatten()->filter(function ($value) {
                             return !is_null($value) && $value !== '';
                         })->isEmpty())
@@ -110,33 +133,30 @@
                             </button>
                         @endif
                     </div>
-
                 </div>
             </div>
         </div>
-            <!-- Success Message -->
-            @if (session()->has('success'))
-                <div class="bg-green-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
-                    <i class="fa-solid fa-check-circle text-xl"></i>
-                    <span class="font-semibold">{{ session('success') }}</span>
-                </div>
-            @endif
 
-            <!-- Error Message -->
-            @if (session()->has('error'))
-                <div class="bg-red-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
-                    <i class="fa-solid fa-exclamation-circle text-xl"></i>
-                    <span class="font-semibold">{{ session('error') }}</span>
-                </div>
-            @endif
+        <!-- Success, Error, Info Messages -->
+        @if (session()->has('success'))
+            <div class="bg-green-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
+                <i class="fa-solid fa-check-circle text-xl"></i>
+                <span class="font-semibold">{{ session('success') }}</span>
+            </div>
+        @endif
 
-            <!-- Info Message -->
-            @if (session()->has('info'))
-                <div class="bg-blue-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
-                    <i class="fa-solid fa-info-circle text-xl"></i>
-                    <span class="font-semibold">{{ session('info') }}</span>
-                </div>
-            @endif
+        @if (session()->has('error'))
+            <div class="bg-red-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
+                <i class="fa-solid fa-exclamation-circle text-xl"></i>
+                <span class="font-semibold">{{ session('error') }}</span>
+            </div>
+        @endif
 
+        @if (session()->has('info'))
+            <div class="bg-blue-500 text-white p-4 rounded-lg shadow-md flex items-center space-x-2 mt-4">
+                <i class="fa-solid fa-info-circle text-xl"></i>
+                <span class="font-semibold">{{ session('info') }}</span>
+            </div>
+        @endif
     @endif
 </div>
