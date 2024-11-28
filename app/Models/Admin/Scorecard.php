@@ -21,12 +21,17 @@ class Scorecard extends Model
             'participant_id',
             'user_id',
             'score',
+            'total_score',
             'avg_score', 
     ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+    public function event()
+    {
+    return $this->belongsTo(Event::class);
     }
     public function criteria()
     {
@@ -40,4 +45,8 @@ class Scorecard extends Model
     {
         return $this->belongsTo(User::class); // Assuming each scorecard belongs to one user
     }
+    public function scorecards()
+{
+    return $this->hasMany(Scorecard::class);
+}
 }

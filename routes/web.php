@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ResultController;
 use App\Http\Controllers\Admin\ScorecardController;;
 use App\Livewire\Admin\ShowScores;
+use App\Livewire\Admin\ShowScoringDetails;
 
 Route::get('/', function () {
     return view('auth.login');

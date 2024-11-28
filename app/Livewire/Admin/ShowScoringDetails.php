@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Livewire\Admin;
+
 
 use Livewire\Component;
 use App\Models\Admin\Category;
@@ -10,6 +12,7 @@ use App\Models\Admin\Group;
 use App\Models\Admin\Event;
 use App\Models\Admin\Scorecard;
 use Illuminate\Support\Facades\Auth;
+
 
 class ShowScoringDetails extends Component
 {
@@ -22,22 +25,27 @@ class ShowScoringDetails extends Component
     public $scores = [];
     public $isValidated = false;
 
+
     public function mount($categoryId)
     {
         $this->category = Category::findOrFail($categoryId);
+
 
         // Fetch participants
         $this->participants = Participant::where('event_id', $this->category->event_id)
                                          ->with(['group', 'event'])
                                          ->get();
 
+
         // Fetch criteria
         $this->criteria = Criteria::where('event_id', $this->category->event_id)
                                   ->where('category_id', $categoryId)
                                   ->get();
 
+
         // Fetch scores for the logged-in judge
         $loggedInJudgeId = Auth::id();
+
 
         foreach ($this->participants as $participant) {
             foreach ($this->criteria as $criterion) {
@@ -46,6 +54,7 @@ class ShowScoringDetails extends Component
                                           ->where('criteria_id', $criterion->id)
                                           ->where('user_id', $loggedInJudgeId) // Filter by judge
                                           ->first();
+
 
                 // Populate the scores array
                 $this->scores[$participant->id][$criterion->id] = $existingScore ? $existingScore->score : null;
@@ -59,19 +68,24 @@ class ShowScoringDetails extends Component
         $this->isValidated = session()->has('isValidated') ? session('isValidated') : false;
     }
 
+
     public function updatedScores($value, $key)
     {
         // The key will be like: "participantId.criteriaId"
         list($participantId, $criteriaId) = explode('.', $key);
 
+
         // Update the score in the array
         $this->scores[$participantId][$criteriaId] = $value;
 
+
         session()->put('scores', $this->scores);
+
 
          // After updating, mark as not validated if errors exist
          $this->isValidated = false;  // Reset the validation state
     }
+
 
     public function updatedGenderFilter()
     {
@@ -83,8 +97,10 @@ class ShowScoringDetails extends Component
         ->with(['group', 'event'])
         ->get();
 
+
         // Reload scores to match the filtered participants
         $loggedInJudgeId = Auth::id();
+
 
         foreach ($this->participants as $participant) {
             foreach ($this->criteria as $criterion) {
@@ -93,6 +109,7 @@ class ShowScoringDetails extends Component
                                           ->where('criteria_id', $criterion->id)
                                           ->where('user_id', $loggedInJudgeId) // Filter by judge
                                           ->first();
+
 
                 $this->scores[$participant->id][$criterion->id] = $existingScore ? $existingScore->score : null;
             }
@@ -103,8 +120,10 @@ class ShowScoringDetails extends Component
         // Store the current scores in the session so that they persist after a page reload
         session()->put('scores', $this->scores);
 
+
         // First, run the validation
         $this->validateScores();
+
 
         // If validation fails, don't proceed and just show the validation errors
         if (session()->has('validationErrors')) {
@@ -114,14 +133,18 @@ class ShowScoringDetails extends Component
             return;  // Early return if validation fails
         }
 
+
         // If validation passes, proceed with saving scores
         $judgeId = Auth::id();
         $categoryScore = $this->category->score; // Base category score
 
+
         \Log::info('Category Score: ' . $categoryScore);
+
 
         foreach ($this->scores as $participantId => $criteriaScores) {
             $totalScore = 0;
+
 
             foreach ($criteriaScores as $criteriaId => $score) {
                 // Save individual criteria scores
@@ -131,18 +154,23 @@ class ShowScoringDetails extends Component
                         'participant_id' => $participantId,
                         'criteria_id' => $criteriaId,
                         'user_id' => $judgeId,
+                        'event_id' => $this->category->event_id,
                     ],
                     ['score' => $score]
                 );
 
+
                 $totalScore += $score;
             }
+
 
             // Calculate the average score using the formula
             $avgScore = ($totalScore * $categoryScore) / 100;
 
+
             // Ensure avg_score is formatted as a string
             $formattedAvgScore = number_format($avgScore, 2, '.', '');
+
 
             // Update the average score in the Scorecard table
             Scorecard::where('category_id', $this->category->id)
@@ -151,11 +179,13 @@ class ShowScoringDetails extends Component
                     ->update(['avg_score' => $formattedAvgScore]);
         }
 
+
         // If no validation errors occurred, flash success message
         session()->flash('success', 'Scores saved and average scores updated successfully!');
         // Mark as validated after successful submission
         session()->put('isValidated', true);  // Save validation success to session
         $this->isValidated = true;  // Update local variable
+
 
         // Flash message based on whether it's a new submission or an update
         $isNewSubmission = !$this->isValidated; // If not validated before, it's a new submission
@@ -166,16 +196,19 @@ class ShowScoringDetails extends Component
         }
     }
 
-    
+
+   
     private function validateScores()
     {
         $validationErrors = [];
         $rankingScores = []; // This will hold the used ranking values for each criterion
         $hasRankingError = false;
 
+
         foreach ($this->scores as $participantId => $criteriaScores) {
             foreach ($criteriaScores as $criteriaId => $score) {
                 $criterion = $this->criteria->firstWhere('id', $criteriaId);
+
 
                 // General validations that apply to both ranking and points
                 // Check for empty score
@@ -187,6 +220,7 @@ class ShowScoringDetails extends Component
                     $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId cannot be 0 or start with 0.";
                 }
 
+
                 // Points-based validation
                 if ($this->category->event->type_of_scoring === 'points') {
                     // Check for score exceeding the maximum allowed score
@@ -195,6 +229,7 @@ class ShowScoringDetails extends Component
                     }
                 }
 
+
                 // Ranking-based validation
                 elseif ($this->category->event->type_of_scoring === 'ranking(H-L)' || $this->category->event->type_of_scoring === 'ranking(L-H)') {
                     // Ensure ranking is within the valid range
@@ -202,6 +237,7 @@ class ShowScoringDetails extends Component
                     if ($score < 1 || $score > $maxRank) {
                         $validationErrors[] = "Ranking for Participant ID $participantId and Criteria ID $criteriaId must be between 1 and $maxRank.";
                     }
+
 
                     // Check for duplicate rankings for this criterion
                     if (isset($rankingScores[$criteriaId])) {
@@ -219,12 +255,14 @@ class ShowScoringDetails extends Component
             }
         }
 
+
         // If there are any validation errors, store them in the session
         if (!empty($validationErrors)) {
             session()->flash('validationErrors', $validationErrors);
             session()->put('isValidated', false);  // Store validation failure to session
             $this->isValidated = false;
         }
+
 
         // If there are ranking errors but we want to submit and record, proceed with saving the scores
         if ($hasRankingError) {
@@ -233,7 +271,10 @@ class ShowScoringDetails extends Component
         }
     }
 
-    
+
+   
+
+
 
 
     public function render()
@@ -245,3 +286,6 @@ class ShowScoringDetails extends Component
         ])->layout('layouts.portal');
     }
 }
+
+
+
