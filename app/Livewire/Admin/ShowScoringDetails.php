@@ -235,35 +235,28 @@ private function validateScores()
     $hasRankingError = false;
 
     foreach ($this->scores as $participantId => $criteriaScores) {
-        // Retrieve participant's name
-        $participant = $this->participants->firstWhere('id', $participantId);
-        $participantName = $participant ? $participant->name : 'Unknown Participant';
-
         foreach ($criteriaScores as $criteriaId => $score) {
-            // Retrieve criterion's name
             $criterion = $this->criteria->firstWhere('id', $criteriaId);
-            $criteriaName = $criterion ? $criterion->name : 'Unknown Criterion';
 
             // General validations that apply to both ranking and points
             // Check for empty score
             if (is_null($score) || $score === '') {
-                $validationErrors[] = "Score cannot be empty.";
+                $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId cannot be empty.";
             }
             // Check if the score starts with 0 or is 0
             elseif ((int)$score === 0 || preg_match('/^0\d/', (string)$score)) {
-                $validationErrors[] = "Score cannot be 0 or start with 0.";
-            }
-
-            // Ensure that the score is not negative for point-based scoring
-            if ($this->category->event->type_of_scoring === 'points' && $score < 0) {
-                $validationErrors[] = "Score cannot be negative.";
+                $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId cannot be 0 or start with 0.";
             }
 
             // Points-based validation
             if ($this->category->event->type_of_scoring === 'points') {
+                // Check for negative score
+                if ($score < 0) {
+                    $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId cannot be negative.";
+                }
                 // Check for score exceeding the maximum allowed score
-                if ($score > $criterion->criteria_score) {
-                    $validationErrors[] = "Score exceeds the maximum of {$criterion->criteria_score}.";
+                elseif ($score > $criterion->criteria_score) {
+                    $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId exceeds the maximum of {$criterion->criteria_score}.";
                 }
             }
 
@@ -272,18 +265,18 @@ private function validateScores()
                 // Ensure ranking is within the valid range
                 $maxRank = $this->participants->count();
                 if ($score < 1 || $score > $maxRank) {
-                    $validationErrors[] = "Ranking must be between 1 and $maxRank.";
+                    $validationErrors[] = "Ranking for Participant ID $participantId and Criteria ID $criteriaId must be between 1 and $maxRank.";
                 }
 
                 // Check for decimal scores (if it's ranking scoring)
                 if (is_float($score) || preg_match('/\.\d+/', (string)$score)) {
-                    $validationErrors[] = "Ranking cannot be a decimal.";
+                    $validationErrors[] = "Ranking score for Participant ID $participantId and Criteria ID $criteriaId cannot be a decimal.";
                 }
 
                 // Check for duplicate rankings for this criterion
                 if (isset($rankingScores[$criteriaId])) {
                     if (in_array((int)$score, $rankingScores[$criteriaId])) {
-                        $validationErrors[] = "Duplicate ranking score. Each ranking must be unique.";
+                        $validationErrors[] = "Duplicate ranking score for Participant ID $participantId and Criteria ID $criteriaId. Each ranking must be unique.";
                     } else {
                         // Add the ranking score to the list for this criterion
                         $rankingScores[$criteriaId][] = (int)$score;
@@ -309,7 +302,6 @@ private function validateScores()
         session()->flash('warning', 'Some ranking errors were found, but the scores have been submitted.');
     }
 }
-
 
     public function render()
     {

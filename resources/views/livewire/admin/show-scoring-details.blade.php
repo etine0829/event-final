@@ -72,71 +72,62 @@
 
                                     <div class="mt-4 space-y-4">
                                         @foreach ($criteria as $criterion)
-                                            <div>
-                
+                                            <div class="flex items-center justify-between">
+                                                <!-- Label for the Criterion -->
+                                                <label class="font-bold w-full">
+                                                    {{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)
+                                                </label>
+
+                                                <!-- Check for Scoring Type -->
                                                 @if ($category->event->type_of_scoring === 'points')
                                                     <!-- For Points Scoring -->
-                                                    <div class="flex items-center justify-between">
-                                                        <label class="font-bold w-full">
-                                                        {{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)
-                                                        </label>
-                                                        <input 
-                                                            type="number" 
-                                                            wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
-                                                            min="0" 
-                                                            max="{{ $criterion->criteria_score }}" 
-                                                            class="score-input p-2 ml-2 border rounded-md 
-                                                                @if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
-                                                                        return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
-                                                                })) 
-                                                                    border-red-500 
-                                                                @endif"
-                                                            data-max="{{ $criterion->criteria_score }}"
-                                                            id="score-{{ $participant->id }}-{{ $criterion->id }}" 
-                                                            pattern="^(?!0\d)\d+$"
-                                                            style="text-align: right;"
-                                                            title="@if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                    <input 
+                                                        type="number" 
+                                                        wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}" 
+                                                        min="0" 
+                                                        max="{{ $criterion->criteria_score }}" 
+                                                        class="score-input p-2 ml-2 border rounded-md 
+                                                            @if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
                                                                     return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
-                                                                }))
-                                                                {{ collect(session('validationErrors'))->first(function ($error) use ($participant, $criterion) {
-                                                                        return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
-                                                                }) }}
+                                                            })) 
+                                                                border-red-500 
                                                             @endif"
-                                                        />
-                                                    </div>
-                                                    
+                                                        data-max="{{ $criterion->criteria_score }}"
+                                                        id="score-{{ $participant->id }}-{{ $criterion->id }}" 
+                                                        pattern="^(?!0\d)\d+$"
+                                                        style="text-align: right;"
+                                                        title="@if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                                return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            }))
+                                                            {{ collect(session('validationErrors'))->first(function ($error) use ($participant, $criterion) {
+                                                                    return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            }) }}
+                                                        @endif"
+                                                    />
                                                 @elseif ($category->event->type_of_scoring === 'ranking(H-L)' || $category->event->type_of_scoring === 'ranking(L-H)')
                                                     <!-- For Ranking Scoring -->
-                                                    <div class="flex items-center justify-between">
-                                                        <label class="font-bold w-full">
-                                                            {{ $criterion->criteria_name }} 
-                                                        </label>
-                                                        <input
-                                                            type="number"
-                                                            wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}"
-                                                            min="1"
-                                                            max="{{ $participants->count() }}"
-                                                            required
-                                                            class="score-input p-2 ml-2 border rounded-md 
-                                                                @if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
-                                                                        return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
-                                                                })) 
-                                                                    border-red-500 
-                                
-                                                                @endif"
-                                                            data-max="{{ $participants->count() }}"
-                                                            id="ranking-{{ $participant->id }}-{{ $criterion->id }}"
-                                                            style="text-align: right;"
-                                                            title="@if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                    <input
+                                                        type="number"
+                                                        wire:model.defer="scores.{{ $participant->id }}.{{ $criterion->id }}"
+                                                        min="1"
+                                                        max="{{ $participants->count() }}"
+                                                        class="score-input p-2 ml-2 border rounded-md 
+                                                            @if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
                                                                     return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
-                                                                }))
-                                                                {{ collect(session('validationErrors'))->first(function ($error) use ($participant, $criterion) {
-                                                                        return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
-                                                                }) }}
+                                                            })) 
+                                                                border-red-500 
                                                             @endif"
-                                                        />
-                                                    </div>
-                                                    
+                                                        data-max="{{ $participants->count() }}"
+                                                        id="ranking-{{ $participant->id }}-{{ $criterion->id }}"
+                                                        style="text-align: right;"
+                                                        title="@if (session()->has('validationErrors') && collect(session('validationErrors'))->contains(function ($error) use ($participant, $criterion) {
+                                                                return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            }))
+                                                            {{ collect(session('validationErrors'))->first(function ($error) use ($participant, $criterion) {
+                                                                    return str_contains($error, "Participant ID $participant->id and Criteria ID $criterion->id");
+                                                            }) }}
+                                                        @endif"
+                                                    />
                                                 @endif
                                             </div>
                                         @endforeach
