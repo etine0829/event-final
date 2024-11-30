@@ -53,36 +53,33 @@ class ShowCategoryTable extends Component
         $this->sortField = $field;
     }
 
-public function render()
+    public function render()
     {
         $query = Category::with('event');
-
+    
         // Apply search filters
         $query = $this->applySearchFilters($query);
-
-        // Apply selected school filter
+    
         if ($this->selectedEvent) {
             $query->where('event_id', $this->selectedEvent);
             $this->eventToShow = Event::findOrFail($this->selectedEvent);
     
-            // Set the type_of_scoring based on the selected event
             $this->type_of_scoring = $this->eventToShow->type_of_scoring;
         } else {
             $this->eventToShow = null;
             $this->type_of_scoring = null; // Reset if no event is selected
         }
-
+    
         $categories = $query->orderBy($this->sortField, $this->sortDirection)
                              ->paginate(25);
-
+    
         $events = Event::all();
-
-
-         $categoryCounts = Category::select('event_id', \DB::raw('count(*) as category_count'))
+    
+        $categoryCounts = Category::select('event_id', \DB::raw('count(*) as category_count'))
                                   ->groupBy('event_id')
                                   ->get()
                                   ->keyBy('event_id');
-
+    
         return view('livewire.admin.show-category-table', [
             'categories' => $categories,
             'events' => $events,
@@ -90,7 +87,7 @@ public function render()
             'type_of_scoring' => $this->type_of_scoring,
         ]);
     }
-
+    
     public function updateCategory()
     {
         // Update categoryToShow based on selected school

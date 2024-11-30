@@ -51,7 +51,7 @@
 
                 <!-- Scores Form -->
                 <div class="space-y-6">
-                    @foreach ($participants as $index => $participant)
+                    @foreach ($participants as $participant)
                         @if ($genderFilter === 'all' || $participant->participant_gender === $genderFilter)
                             <div class="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 border-b-2 border-blue-500 pb-4">
                                 <!-- Participant Image -->
@@ -63,7 +63,11 @@
 
                                 <!-- Participant Info and Scores -->
                                 <div class="w-full md:w-3/4 pl-4">
-                                    <h4 class="text-lg font-semibold">Participant No. {{ $index + 1 }}: {{ $participant->participant_name }}</h4>
+                                    <h4 class="text-lg font-semibold">Participant No.: {{ $participant->participant_number }}</h4>
+                                    <h4 class="text-lg font-semibold">Name: {{ $participant->participant_name }}</h4>
+                                        @if (!empty(optional($participant->group)->group_name))
+                                            <h4 class="text-lg font-semibold">Group: {{ optional($participant->group)->group_name }}</h4>
+                                        @endif
                                     <p class="text-gray-600">Gender: {{ $participant->participant_gender }}</p>
 
                                     <div class="mt-4 space-y-4">
@@ -163,14 +167,15 @@
                                 class="btn mt-4 
                                     @if ($isValidated) bg-blue-500 hover:bg-blue-600 @else bg-green-500 hover:bg-green-600 @endif 
                                     text-white font-semibold py-2 px-4 rounded-md">
-                            <!-- Dynamically change button text based on validation status -->
-                            @if ($isValidated)
+                            <!-- Dynamically change button text based on whether scores exist or not -->
+                            @if ($scoresExist)
                                 Update Scores
                             @else
                                 Submit Scores
                             @endif
                         </button>
                     </div>
+
 
                 </div>
             </div>
@@ -237,9 +242,6 @@
             @endif
 
         </div>
--
-
-
         @endif
 
 </div>

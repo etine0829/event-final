@@ -12,13 +12,13 @@
             <x-sweetalert type="error" :message="session('error')" />
         @endif
         <div class="flex justify-between mb-4 sm:-mt-4 ">
-            <div class="font-bold text-md tracking-wide text-black  mt-2 uppercase">Admin / Manage Event</div>   
+            <div class="font-bold text-md tracking-wide text-black  mt-2 uppercase">Admin / Manage Event</div>
         </div>
         <hr class="border-gray-200 my-4">
             <div x-data="{ open: false }">
-                <div class="flex justify-end mb-3">
-                    <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
-                        <i class="fa-solid fa-plus fa-xs " style="color: #ffffff;"></i> Add Event</button>
+                <div class="flex justify-end">
+                <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700 mb-4 flex justify-end ">
+                    <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Event</button>
                 </div>
                 <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div @click.away="open = true" class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
@@ -66,12 +66,9 @@
             </div>
         <div class="flex items-center mb-4 justify-end">
             <div class="flex w-full sm:w-auto mt-2 sm:mt-0 sm:ml-2">
-
-                    
-                   
-                        <!-- <input wire:model.live="search" type="text" class="text-sm border text-black border-gray-300 rounded-md px-3 py-1.5 w-64" placeholder="Search..." autofocus> -->
-                        <input wire:model.live="search" type="text" class="border text-black border-gray-300 rounded-md p-2 w-full" placeholder="Search..." autofocus>
-                 
+         
+            <!-- <input wire:model.live="search" type="text" class="text-sm border text-black border-gray-300 rounded-md px-3 py-1.5 w-64" placeholder="Search..." autofocus> -->
+            <input wire:model.live="search" type="text" class="border text-black border-gray-300 rounded-md p-2 w-full" placeholder="Search..." autofocus>                   
                
             </div>
         </div>
