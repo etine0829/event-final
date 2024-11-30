@@ -12,7 +12,7 @@ class EventDashboard extends Component
     use WithPagination;
 
     public $search = '';
-    public $sortField = 'id';
+    public $sortField = 'event_name';
     public $sortDirection = 'desc';
 
     public function updatingSearch()
@@ -20,10 +20,6 @@ class EventDashboard extends Component
         $this->resetPage();
     }
 
-    public function updatingSelectedEvent()
-    {
-        $this->resetPage();      
-    }
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -34,18 +30,15 @@ class EventDashboard extends Component
 
         $this->sortField = $field;
     }
-    
+
     public function render()
     {
-        
-        $events = Event::where('event_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('venue', 'like', '%' . $this->search . '%')
-                    ->orWhere('type_of_scoring', 'like', '%' . $this->search . '%')
-                    ->orderBy($this->sortField, $this->sortDirection)
-                    ->paginate(10);
-
-     
-
+        $events = Event::where('id', 'like', '%' . $this->search . '%')
+            ->orWhere('event_name', 'like', '%' . $this->search . '%')
+            ->orWhere('venue', 'like', '%' . $this->search . '%')
+            ->orWhere('type_of_scoring', 'like', '%' . $this->search . '%')
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate(10);
         
         return view('livewire.admin.event-dashboard', [
             'events' => $events,

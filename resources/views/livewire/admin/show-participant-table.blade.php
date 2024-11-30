@@ -299,10 +299,6 @@
                                                     <form action="{{ route('admin.participant.update', $participant->id) }}" method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('PUT')
-
-
-
-
                                                         <!-- Event Selection -->
                                                         <div class="mb-2">
                                                             <label for="event_id" class="block text-left text-gray-700 text-md font-bold mb-2">Event</label>
@@ -314,10 +310,6 @@
                                                             </select>
                                                             <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                                         </div>
-
-
-
-
                                                         <!-- Group Selection -->
                                                         <div class="mb-2">
                                                             <label for="group_id" class="block text-left text-gray-700 text-md font-bold mb-2">Group</label>
@@ -329,20 +321,12 @@
                                                             </select>
                                                             <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
                                                         </div>
-
-
-
-
                                                         <!-- Participant Name -->
                                                         <div class="mb-2">
                                                             <label for="participant_name" class="block text-left text-gray-700 text-md font-bold mb-2">Name</label>
                                                             <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name', $participant->participant_name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
                                                             <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
                                                         </div>
-
-
-
-
                                                         <!-- Participant Gender -->
                                                         <div class="mb-2">
                                                             <label for="participant_gender" class="block text-left text-gray-700 text-md font-bold mb-2">Gender</label>
@@ -353,11 +337,7 @@
                                                             </select>
                                                             <x-input-error :messages="$errors->get('participant_gender')" class="mt-2" />
                                                         </div>
-
-
-
-
-                                                        <!-- Participant Photo -->
+                                                       <!-- Participant Photo -->
                                                         <div class="mb-2">
                                                             <div class="cursor-pointer flex flex-col items-center">
                                                            
@@ -371,49 +351,25 @@
                                                             <input type="file" name="participant_photo" id="participant_photo" accept="image/*">
                                                             <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                                         </div>
-
-
-
-
-
-
-
-
                                                         <!-- Submit Button -->
                                                         <div class="flex justify-center mt-4">
                                                             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
                                                         </div>
                                                     </form>
-
-
-
-
                                                 </div>
                                             </div>
                                         </div>
-
-
-
-
                                         <!-- Delete Button -->
                                        <!-- Delete Button -->
-                                        <form id="deleteSelected" action="{{ route('admin.participant.destroy', $participant->id) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_name }}');">
+                                        <form id="deleteSelected" action="{{ route('admin.participant.destroy', ':id') }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_name }}');">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
+                                            <button type="submit" class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
                                                 <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
                                             </button>
                                         </form>
-
-
-
-
                                         @endif
                                     </div>
-
-
-
-
                                     </td>
                                 </tr>
                             @endforeach
@@ -451,20 +407,10 @@
         @endif
     </div>
 
-
-
-
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 
-
-
-
 <script>
-
-
-
-
     document.addEventListener('DOMContentLoaded', function() {
         tippy('[data-tippy-content]', {
             allowHTML: true,
@@ -472,10 +418,6 @@
             placement: 'right-end', // Optional: Adjust tooltip placement
         });
     });
-
-
-
-
 </script>
 
 
@@ -508,21 +450,9 @@
         },
       });    
 </script>
-
-
-
-
-
-
-
-
 <script>
     function confirmDeleteAll(event) {
         event.preventDefault(); // Prevent form submission initially
-
-
-
-
         Swal.fire({
             title: 'Select Participant to Delete All Records',
             html: `
@@ -553,16 +483,8 @@
             }
         });
     }
-
-
-
-
     function ConfirmDeleteSelected(event, rowId, participantName) {
         event.preventDefault(); // Prevent form submission initially
-
-
-
-
         Swal.fire({
             title: `Are you sure you want to delete the participant ${participantName} ?`,
             text: "You won't be able to revert this!",

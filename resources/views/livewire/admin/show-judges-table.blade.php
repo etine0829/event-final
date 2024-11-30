@@ -183,7 +183,6 @@
                                         </div>
                                         <div class="justify-end">
                                             <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of judge: <text class="ml-2">{{ $judgeCounts[$eventToShow->id]->judge_count ?? 0 }}</text></p>
-                                            
                                         </div>
                                     </div> 
                                 </td>

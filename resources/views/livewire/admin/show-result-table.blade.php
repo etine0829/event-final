@@ -37,32 +37,32 @@
     <div class="mb-8">
         <h3 class="font-bold text-lg mb-4">{{ $category['name'] }}</h3>
         <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
-            <thead class="bg-orange-400 text-white">
+            <thead class="bg-slate-300 text-black">
                 <tr>
-                    <th class="border border-gray-400 px-3 py-2">Participant No.</th> <!-- New column for Participant Number -->
-                    <th class="border border-gray-400 px-3 py-2">Participant</th>
+                    <th class="border border-blue-400 px-3 py-2">Participant No.</th> <!-- New column for Participant Number -->
+                    <th class="border border-blue-400 px-3 py-2">Participant</th>
                     @foreach ($judges as $judge)
-                        <th class="border border-gray-400 px-3 py-2">Judge {{ $judge->name }}</th>
+                        <th class="border border-blue-400 px-3 py-2">Judge {{ $judge->name }}</th>
                     @endforeach
-                    <th class="border border-gray-400 px-3 py-2">Deduction</th>
-                    <th class="border border-gray-400 px-3 py-2">Total Score</th>
-                    <th class="border border-gray-400 px-3 py-2">Rank</th>
+                    <th class="border border-blue-400 px-3 py-2">Deduction</th>
+                    <th class="border border-blue-400 px-3 py-2">Total Score</th>
+                    <th class="border border-blue-400 px-3 py-2">Rank</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($category['participants'] as $participant)
                     <tr class="hover:bg-gray-100">
                         <!-- Display the Participant Number (ID) -->
-                        <td class="text-black border border-gray-400">{{ $participant['id'] }}</td>
-                        <td class="text-black border border-gray-400">{{ $participant['name'] }}</td>
+                        <td class="text-black border border-blue-400">{{ $participant['id'] }}</td>
+                        <td class="text-black border border-blue-400">{{ $participant['name'] }}</td>
                         @foreach ($judges as $judge)
-                            <td class="text-black border border-gray-400">
+                            <td class="text-black border border-blue-400">
                                 {{ $participant['rank'] }}
                             </td>
                         @endforeach
-                        <td class="text-black border border-gray-400">{{ $participant['deduction'] ?? 0 }}</td>
-                        <td class="text-black border border-gray-400">{{ $participant['total_score'] }}</td>
-                        <td class="text-black border border-gray-400">{{ $participant['rank'] }}</td>
+                        <td class="text-black border border-blue-400">{{ $participant['deduction'] ?? 0 }}</td>
+                        <td class="text-black border border-blue-400">{{ $participant['total_score'] }}</td>
+                        <td class="text-black border border-blue-400">{{ $participant['rank'] }}</td>
                     </tr>
                 @endforeach
             </tbody>

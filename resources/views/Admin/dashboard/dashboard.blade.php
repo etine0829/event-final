@@ -3,13 +3,15 @@
         <x-user-route-page-name :routeName="'admin.dashboard'" />
         <x-content-design>
             <!-- Content Area -->
-            <div x-data="{ isFullScreen: (window.innerHeight === screen.height) }" 
+            <div x-data="{ isFullScreen: (window.innerHeight === screen.height)}" 
                 x-init="window.addEventListener('resize', () => {
                     isFullScreen = (window.innerHeight === screen.height); });"
-                 class="rounded-md p-2 sm:p-2 md:p-2 lg:p-2 text-black font-medium">
-                <div class="relative -z-10">
+                 class="rounded-md p-2 sm:p-2 md:p-2 lg:p-2 text-black font-medium ">
+                <div class="relative">
                     <div class="container shadow-lg p-5 sm:p-6 md:p-7 lg:p-8 bg-white rounded-md text-black font-medium"
-                        :style="{ 'width': isFullScreen ? 'calc(100vw - 16px)' : 'auto', 'margin-left': isFullScreen ? '-192px' : '0' }">                       
+                        :style="{ 'width': isFullScreen ? 'calc(100vw - 16px)' : 'auto', 'margin-left': isFullScreen ? '-192px' : '0' }">
+                        <livewire:admin.show-dashboard />  
+                              
                     </div>
                 </div>
             </div>

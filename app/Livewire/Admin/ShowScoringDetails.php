@@ -207,9 +207,12 @@ class ShowScoringDetails extends Component
 
         foreach ($this->scores as $participantId => $criteriaScores) {
             foreach ($criteriaScores as $criteriaId => $score) {
-                $criterion = $this->criteria->firstWhere('id', $criteriaId);
+                // $criterion = $this->criteria->firstWhere('id', $criteriaId);
 
-
+                    $criterion = $this->criteria->where('id', $criteriaId)->get();
+                    
+                    $score2 =(int) $criterion->criteria_score;
+                   
                 // General validations that apply to both ranking and points
                 // Check for empty score
                 if (is_null($score) || $score === '') {
@@ -224,7 +227,7 @@ class ShowScoringDetails extends Component
                 // Points-based validation
                 if ($this->category->event->type_of_scoring === 'points') {
                     // Check for score exceeding the maximum allowed score
-                    if ($score > $criterion->criteria_score) {
+                    if ($score > $score2) {
                         $validationErrors[] = "Score for Participant ID $participantId and Criteria ID $criteriaId exceeds the maximum of {$criterion->criteria_score}.";
                     }
                 }

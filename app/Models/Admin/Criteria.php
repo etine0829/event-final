@@ -5,7 +5,7 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use \App\Models\Admin\Event; 
-use \App\Models\Admin\Category; 
+use \App\Models\Admin\Category;  
 
 
 class Criteria extends Model

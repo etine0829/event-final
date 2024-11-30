@@ -194,9 +194,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'indexJudge'])->name('dashboard');
     });
 
+    Route::get('/showscores/{categoryId}', ShowScoringDetails::class)->name('category.details');
+
+
 
     Route::post('/scorecard/store', [ScorecardController::class, 'store'])->name('score.store');
-   
+    Route::get('/scores/{eventId}', ShowScores::class)->name('scores.show');
 
     // Route for updating scores
     Route::post('/scorecard/update', [ScorecardController::class, 'update'])->name('score.update');

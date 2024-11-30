@@ -177,35 +177,35 @@ public function update(Request $request, Participant $participant)
 
 
 
-public function destroy(Participant $participant)
-{
-    if (Auth::user()->hasRole('admin')) {
-        // Check for associated records (e.g., scores, events, etc.)
-        if ($participant->scorecards()->exists()) { // Example: Replace 'scores' with the actual relationship
+    public function destroy(Participant $participant)
+    {
+        if (Auth::user()->hasRole('admin')) {
+            // Check for associated records (e.g., scores, events, etc.)
+            if ($participant->scorecards()->exists()) { // Example: Replace 'scores' with the actual relationship
+                return redirect()->route('admin.participant.index')
+                    ->with('error', 'Participant cannot be deleted because they have associated records.');
+            }
+
+
+
+
+            // Proceed with deletion if no associated records
+            $participant->delete();
+
+
+
+
             return redirect()->route('admin.participant.index')
-                ->with('error', 'Participant cannot be deleted because they have associated records.');
+                ->with('success', 'Participant deleted successfully.');
         }
 
 
 
 
-        // Proceed with deletion if no associated records
-        $participant->delete();
-
-
-
-
+        // Optional: Handle unauthorized access
         return redirect()->route('admin.participant.index')
-            ->with('success', 'Participant deleted successfully.');
+            ->with('error', 'You do not have permission to perform this action.');
     }
-
-
-
-
-    // Optional: Handle unauthorized access
-    return redirect()->route('admin.participant.index')
-        ->with('error', 'You do not have permission to perform this action.');
-}
 
 
 
