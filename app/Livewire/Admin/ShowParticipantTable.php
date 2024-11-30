@@ -145,6 +145,7 @@ public function updateEmployeesByDepartment()
     {
         return $query->where(function (Builder $query) {
             $query->where('id', 'like', '%' . $this->search . '%')
+            ->orWhere('participant_number', 'like', '%' . $this->search . '%')
             ->orWhere('participant_photo', 'like', '%' . $this->search . '%')        
             ->orWhere('participant_name', 'like', '%' . $this->search . '%')
             ->orWhere('participant_gender', 'like', '%' . $this->search . '%')

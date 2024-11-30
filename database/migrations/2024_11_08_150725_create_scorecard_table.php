@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('score');
             $table->string('avg_score')->nullable();
             $table->string('deduction')->nullable();
-            $table->string('rank')->nullable();
             $table->timestamps();
             
             $table->foreign('event_id')->references('id')->on('events')->onDelete('restrict');

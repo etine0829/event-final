@@ -21,7 +21,6 @@ class Scorecard extends Model
             'participant_id',
             'user_id',
             'score',
-            'total_score',
             'avg_score', 
     ];
 

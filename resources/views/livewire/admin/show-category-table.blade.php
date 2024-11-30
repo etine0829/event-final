@@ -144,16 +144,18 @@
                                 </th>
                               
                                 <th class="border border-gray-400 px-3 py-2">
-                                    <button wire:click="sortBy('category_name')" class="w-full h-full flex items-center justify-center">
-                                        Score
-                                        @if ($sortField == 'score')
-                                            @if ($sortDirection == 'asc')
-                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
-                                            @else
-                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                    @if ($event->type_of_scoring !== 'ranking(H-L)' && $event->type_of_scoring !== 'ranking(L-H)')
+                                        <button wire:click="sortBy('score')" class="w-full h-full flex items-center justify-center">
+                                            Score
+                                            @if ($sortField == 'score')
+                                                @if ($sortDirection == 'asc')
+                                                    &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                                @else
+                                                    &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                                @endif
                                             @endif
-                                        @endif
-                                    </button>
+                                        </button>
+                                    @endif
                                 </th>
                                 <th class="border border-gray-400 px-3 py-2">Action</th>
                             </tr>

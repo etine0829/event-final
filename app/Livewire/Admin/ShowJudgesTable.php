@@ -16,138 +16,98 @@ class ShowJudgesTable extends Component
     public $sortDirection = 'asc';
     public $selectedEvent = 0;
     public $sortField = 'id';
-    public $judgeToShow = [];
+    public $judgeToShow = [];  // Initialize as an array for simplicity
     public $eventToShow;
     public $selectedJudge;
 
     protected $listeners = ['updateCategory'];
 
-    public function updatedSelectedEvent()
-{
-    $this->updateCategory();
-}
-
     public function mount()
     {
         $this->selectedEvent = session('selectedEvent', null);
-        $this->judgeToShow = [];    
+        $this->judgeToShow = []; // Initialize as an empty array for simplicity
         $this->eventToShow = null;
     }
 
     public function assignJudgeToEvent()
-    {
-        if (!$this->selectedEvent || !$this->selectedJudge) {
-            session()->flash('error', 'Please select both an event and a judge.');
-            return;
-        }
-
-        $event = Event::find($this->selectedEvent);
-        $judge = User::find($this->selectedJudge);
-
-        if (!$event || !$judge) {
-            session()->flash('error', 'Invalid event or judge.');
-            return;
-        }
-
-        if ($judge->event_id == $this->selectedEvent) {
-            return redirect()->route('admin.judge.index')->with('error', 'Judge is already assigned to this event.');
-        }
-
-        $isJudgeChairman = $judge->roles->contains('name', 'judge_chairman');
-
-        if ($isJudgeChairman) {
-            $existingChairman = User::where('event_id', $this->selectedEvent)
-                                    ->whereHas('roles', function ($query) {
-                                        $query->where('name', 'judge_chairman');
-                                    })
-                                    ->exists();
-
-            if ($existingChairman) {
-                return redirect()->route('admin.judge.index')->with('error', 'Only one Chairman Judge');
-            }
-        }
-
-        $judge->event_id = $this->selectedEvent;
-        $judge->save();
-
-        return redirect()->route('admin.judge.index')->with('success', 'Judge updated successfully.');
-    }
-
-    public function updateCategory()
 {
-    if ($this->selectedEvent) {
-        // Show judges assigned to the selected event
-        $this->judgeToShow = User::where('event_id', $this->selectedEvent)
-            ->whereHas('roles', function ($query) {
-                $query->whereIn('name', ['judge', 'judge_chairman']);
-            })
-            ->get();
-    } else {
-        // Show judges without an event assigned (event_id is null)
-        $this->judgeToShow = User::whereNull('event_id')
-            ->whereHas('roles', function ($query) {
-                $query->whereIn('name', ['judge', 'judge_chairman']);
-            })
-            ->get();
+    // Ensure we have a valid event and judge selected
+    if (!$this->selectedEvent || !$this->selectedJudge) {
+        session()->flash('error', 'Please select both an event and a judge.');
+        return;
     }
+
+    // Find the event and judge by their IDs
+    $event = Event::find($this->selectedEvent);
+    $judge = User::find($this->selectedJudge);  // Assuming judge is a User model
+
+    // Check if event and judge exist
+    if (!$event || !$judge) {
+        session()->flash('error', 'Invalid event or judge.');
+        return;
+    }
+
+    // Update the judge's event_id field with the selected event ID
+    $judge->event_id = $this->selectedEvent;
+    $judge->save();
+
+    // Flash success message
+    session()->flash('success', 'Judge successfully assigned to the event.');
+
+    // Optionally reset the selected judge after assignment
+    $this->reset(['selectedJudge']);
 }
+
 
 public function render()
 {
-    // If an event is selected, show judges assigned to that event
-    if ($this->selectedEvent) {
-        $this->eventToShow = Event::find($this->selectedEvent);
-
-        // Show judges assigned to the selected event
-        $this->judgeToShow = User::where('event_id', $this->selectedEvent)
-            ->whereHas('roles', function ($query) {
-                $query->whereIn('name', ['judge', 'judge_chairman']);
-            })
-            ->get();
-    } else {
-        // If no event is selected, show judges without event assignment
-        $this->eventToShow = null;
-        $this->judgeToShow = User::whereNull('event_id')
-            ->whereHas('roles', function ($query) {
-                $query->whereIn('name', ['judge', 'judge_chairman']);
-            })
-            ->get();
-    }
-
-    // Query for judges with no event assignment (event_id is null)
-    $query = User::with('event')
-        ->whereNull('event_id')
-        ->whereHas('roles', function ($query) {
-            $query->whereIn('name', ['judge', 'judge_chairman']);
-        });
+    // Query to fetch judges
+    $query = User::with('event')->whereHas('roles', function ($query) {
+        $query->where('name', 'judge'); // Filter by 'judge' role
+    });
 
     // Apply search filters
     $query = $this->applySearchFilters($query);
 
-    // Pagination for the query
+    // Apply event filter if selected
+    if ($this->selectedEvent) {
+        $this->eventToShow = Event::find($this->selectedEvent);
+        $this->judgeToShow = User::where('event_id', $this->selectedEvent)
+                                 ->whereHas('roles', function ($query) {
+                                     $query->where('name', 'judge'); // Filter by 'judge' role
+                                 })
+                                 ->get();
+    } else {
+        $this->eventToShow = null;
+        $this->judgeToShow = [];
+    }
+
+    // Fetch sorted judges with pagination
     $judges = $query->orderBy($this->sortField, $this->sortDirection)->paginate(25);
 
-    // Fetch all events for the dropdown selection
+    // Fetch all events
     $events = Event::all();
-
-    // Count judges per event for display
-    $judgeCounts = User::select('event_id', \DB::raw('count(*) as judge_count'))
-        ->groupBy('event_id')
-        ->get()
-        ->keyBy('event_id');
 
     return view('livewire.admin.show-judges-table', [
         'judges' => $judges,
         'events' => $events,
-        'judgeCounts' => $judgeCounts,
-        'judgeToShow' => $this->judgeToShow,
+        'judgeToShow' => $this->judgeToShow, // Pass the updated judges list
     ]);
 }
+
+    public function updateCategory()
+    {
+        if ($this->selectedEvent) {
+            $this->judgeToShow = User::where('event_id', $this->selectedEvent)->get();
+        } else {
+            $this->judgeToShow = []; // Reset to empty collection if no event is selected
+        }
+    }
 
     protected function applySearchFilters($query)
     {
         return $query->where(function (Builder $query) {
-            $query->where('id', 'like', '%' . $this->search . '%')
+            $query->where('id', 'like', '%' . $this->search . '%')        
                   ->orWhere('name', 'like', '%' . $this->search . '%')
                   ->orWhere('email', 'like', '%' . $this->search . '%')
                   ->orWhereHas('event', function (Builder $query) {
@@ -157,5 +117,4 @@ public function render()
                   });
         });
     }
-
 }

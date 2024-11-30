@@ -17,10 +17,10 @@ class Participant extends Model
     protected $fillable = [
         'event_id',
         'group_id',
+        'participant_number',
         'participant_photo',
         'participant_name',
         'participant_gender',
-        'participant_comment',
     ];
 
     public function event()

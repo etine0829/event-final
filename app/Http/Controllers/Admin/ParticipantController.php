@@ -48,36 +48,25 @@ class ParticipantController extends Controller
             return redirect()->back()->withErrors(['participant_name' => 'The participant name must only contain letters and spaces, and cannot have any numbers or special characters.']);
         }
 
-
-
-
         // Check if the participant already exists for this event
         $existingParticipant = Participant::where('event_id', $request->input('event_id'))
             ->where('group_id', $request->input('group_id'))
             ->where('participant_name', $request->input('participant_name'))
             ->first();
 
-
-
-
         if ($existingParticipant) {
             return redirect()->back()->with('error', 'This participant is already registered in the selected group and event.');
         }
 
-
-
-
         $validatedData = $request->validate([
             'event_id' => 'required|exists:events,id',
             'group_id' => 'nullable|string|max:255',
+            'participant_number' => 'required|integer|max:255',
             'participant_photo' => 'nullable|image|max:2048',
             'participant_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
             'participant_gender' => 'required|string|max:255',
             'participant_comment' => 'nullable|string|max:255',
         ]);
-
-
-
 
         // Handle the file upload
         if ($request->hasFile('participant_photo')) {
@@ -85,9 +74,6 @@ class ParticipantController extends Controller
             $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('participant_photo')->getClientOriginalExtension();
             $fileNameToStore = $filename . '_' . time() . '.' . $extension;
-
-
-
 
             // Save the file to 'public/participant_photo' and store the path in $fileNameToStore
             $path = $request->file('participant_photo')->storeAs('public/participant_photo', $fileNameToStore);
@@ -120,6 +106,7 @@ public function update(Request $request, Participant $participant)
     $validatedData = $request->validate([
         'group_id' => 'nullable|exists:group,id',
         'participant_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+        'participant_number' => 'required|integer|max:255',
         'participant_gender' => 'required|in:male,female',
         'participant_comment' => 'nullable|string|max:255',
         'participant_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',

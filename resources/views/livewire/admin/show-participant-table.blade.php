@@ -109,8 +109,11 @@
                                         <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                     </div>
 
-
-
+                                    <div class="mb-2">
+                                        <label for="participant_number" class="block text-gray-700 text-md font-bold mb-2">Participant Number</label>
+                                        <input type="number" name="participant_number" id="participant_number" value="{{ old('participant_number') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_number') is-invalid @enderror" required>
+                                        <x-input-error :messages="$errors->get('participant_number')" class="mt-2" />
+                                    </div>
 
                                     <div class="mb-2">
                                         <label for="group_id" class="block text-gray-700 text-md font-bold mb-2">Group</label>
@@ -129,13 +132,6 @@
                                         </select>
                                         <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
                                     </div>
-
-
-
-
-
-
-
 
                                     <div class="mb-2">
                                         <label for="participant_name" class="block text-gray-700 text-md font-bold mb-2">Name</label>
@@ -213,6 +209,18 @@
                         <thead class="bg-gray-200 text-black">
                             <tr>
                                 <th class="border border-gray-400 px-3 py-2">
+                                    <button wire:click="sortBy('participant_number')" class="w-full h-full flex items-center justify-center">
+                                        Participant No.
+                                        @if ($sortField == 'participant_number')
+                                            @if ($sortDirection == 'asc')
+                                                &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                            @else
+                                                &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                            @endif
+                                        @endif
+                                    </button>
+                                </th>
+                                <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('group_name')" class="w-full h-full flex items-center justify-center">
                                         Group Name
                                         @if ($sortField == 'group_name')
@@ -224,6 +232,7 @@
                                         @endif
                                     </button>
                                 </th>
+
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('participant_name')" class="w-full h-full flex items-center justify-center">
                                         Name
@@ -236,10 +245,6 @@
                                         @endif
                                     </button>
                                 </th>
-
-
-
-
                                 <th class="border border-gray-400 px-3 py-2">
                                     <button wire:click="sortBy('participant_gender')" class="w-full h-full flex items-center justify-center">
                                         Gender
@@ -269,7 +274,8 @@
                         </thead>
                         <tbody >
                             @foreach ($participants as $participant)
-                                <tr class="hover:bg-gray-100" wire:key="participant-{{ $participant->id }}">        
+                                <tr class="hover:bg-gray-100" wire:key="participant-{{ $participant->id }}">
+                                    <td class="text-black border border-gray-400">{{ $participant->participant_number}}</td>        
                                     <td class="text-black border border-gray-400">{{ $participant->group?->group_name ?? 'N/A' }}</td>          
                                     <td class="text-black border border-gray-400">{{ $participant->participant_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>
@@ -280,6 +286,7 @@
                                         <div x-data="{ open: false,
                                                 id: {{ json_encode($participant->id) }},
                                                 event: {{ json_encode($participant->event_id) }},
+                                                participant_number: {{ json_encode($participant->participant_number) }},
                                                 group: {{ json_encode($participant->group_id) }},
                                                 participant_name: {{ json_encode($participant->participant_name) }},
                                                 participant_gender: {{ json_encode($participant->participant_gender) }},
@@ -300,9 +307,6 @@
                                                         @csrf
                                                         @method('PUT')
 
-
-
-
                                                         <!-- Event Selection -->
                                                         <div class="mb-2">
                                                             <label for="event_id" class="block text-left text-gray-700 text-md font-bold mb-2">Event</label>
@@ -315,8 +319,12 @@
                                                             <x-input-error :messages="$errors->get('event_id')" class="mt-2" />
                                                         </div>
 
-
-
+                                                        <!-- Participant Name -->
+                                                        <div class="mb-2">
+                                                            <label for="participant_number" class="block text-left text-gray-700 text-md font-bold mb-2">Participant Number</label>
+                                                            <input type="number" name="participant_number" id="participant_number" value="{{ old('participant_number', $participant->participant_number) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_number') is-invalid @enderror" required>
+                                                            <x-input-error :messages="$errors->get('participant_number')" class="mt-2" />
+                                                        </div>
 
                                                         <!-- Group Selection -->
                                                         <div class="mb-2">
@@ -330,18 +338,12 @@
                                                             <x-input-error :messages="$errors->get('group_id')" class="mt-2" />
                                                         </div>
 
-
-
-
                                                         <!-- Participant Name -->
                                                         <div class="mb-2">
                                                             <label for="participant_name" class="block text-left text-gray-700 text-md font-bold mb-2">Name</label>
                                                             <input type="text" name="participant_name" id="participant_name" value="{{ old('participant_name', $participant->participant_name) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('participant_name') is-invalid @enderror" required>
                                                             <x-input-error :messages="$errors->get('participant_name')" class="mt-2" />
                                                         </div>
-
-
-
 
                                                         <!-- Participant Gender -->
                                                         <div class="mb-2">
@@ -372,28 +374,15 @@
                                                             <x-input-error :messages="$errors->get('participant_photo')" class="mt-2" />
                                                         </div>
 
-
-
-
-
-
-
-
                                                         <!-- Submit Button -->
                                                         <div class="flex justify-center mt-4">
                                                             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
                                                         </div>
                                                     </form>
 
-
-
-
                                                 </div>
                                             </div>
                                         </div>
-
-
-
 
                                         <!-- Delete Button -->
                                        <!-- Delete Button -->
@@ -405,14 +394,8 @@
                                             </button>
                                         </form>
 
-
-
-
                                         @endif
                                     </div>
-
-
-
 
                                     </td>
                                 </tr>

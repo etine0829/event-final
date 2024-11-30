@@ -16,9 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('event_id');
             $table->unsignedBigInteger('group_id')->nullable();
             $table->string('participant_photo')->nullable();
+            $table->integer('participant_number');
             $table->string('participant_name');
             $table->string('participant_gender');
-            $table->string('participant_comment')->nullable();
 
             $table->timestamps();
 
