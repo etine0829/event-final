@@ -228,7 +228,7 @@
                     @endforeach
                 </tbody>
             </table>
-            {{ $events->links() }}
+            <!-- {{ $events->links() }} -->
         @endif
     </div>
 

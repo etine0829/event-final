@@ -73,15 +73,15 @@
                                     <div class="mt-4 space-y-4">
                                         @foreach ($criteria as $criterion)
                                             <div class="flex items-center justify-between">
-                                                <!-- Label for the Criterion -->
+                                                
                                                      <label class="font-bold w-full">
+                                                        {{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)
+                                                    </label> 
+                                                @if ($category->event->type_of_scoring === 'points')
+                                                    <div class="flex items-center justify-between">
+                                                        <label class="font-bold w-full">
                                                             {{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)
                                                         </label>
-
-                                                <!-- Check for Scoring Type -->
-                                               
-                                                @if ($category->event->type_of_scoring === 'points')
-                                                    <div>
                                                        
                                                         <!-- For Points Scoring -->
                                                         <input 
@@ -112,9 +112,9 @@
                                                 
                                                 @elseif ($category->event->type_of_scoring === 'ranking(H-L)' || $category->event->type_of_scoring === 'ranking(L-H)')
                                                     <!-- For Ranking Scoring -->
-                                                    <div>
+                                                    <div class="flex items-center justify-between">
                                                         <label class="font-bold w-full">
-                                                                {{ $criterion->criteria_name }} 
+                                                            {{ $criterion->criteria_name }} ({{ $criterion->criteria_score }}%)
                                                         </label>
                                                         <input
                                                             type="number"
