@@ -11,59 +11,85 @@
     foreach ($categories as $category) {
         $participantsWithScores = [];
 
-        // Collect participants with their total scores
-        foreach ($category['participants'] as $key => $participant) {
-            $totalScore = 0;
-            $judgeCount = count($judges);  // Number of judges
+        // Check if 'participants' key exists in the category
+        if (isset($category['participants']) && is_array($category['participants'])) {
+            // Collect participants with their total scores
+            foreach ($category['participants'] as $key => $participant) {
+                $totalScore = 0;
+                $judgeCount = count($judges);  // Number of judges
+                $sumOfAverageScores = 0; // Variable to accumulate the sum of average scores from all judges
 
-            // Loop through each judge and calculate the total score for each participant
-            foreach ($judges as $judge) {
-                // Loop through each criterion in the category and fetch the score for this judge and participant
-                foreach ($category['criteria'] as $criteria) {
-                    // Fetch the scorecard for each participant and judge
-                    $scorecard = App\Models\Admin\Scorecard::where('user_id', $judge->id)
-                        ->where('event_id', $selectedEvent)
-                        ->where('participant_id', is_array($participant) ? $participant['id'] : $participant->id)
-                        ->where('criteria_id', $criteria['id'])
-                        ->first();
+                // Loop through each judge and calculate the total score for each participant
+                foreach ($judges as $judge) {
+                    $averageScore = 0;
 
-                    if ($scorecard) {
-                        $totalScore += $scorecard->score;
+                    // Loop through each criterion in the category and fetch the score for this judge and participant
+                    foreach ($category['criteria'] as $criteria) {
+                        // Fetch the scorecard for each participant and judge
+                        $scorecard = App\Models\Admin\Scorecard::where('user_id', $judge->id)
+                            ->where('event_id', $selectedEvent)
+                            ->where('participant_id', is_array($participant) ? $participant['id'] : $participant->id)
+                            ->where('criteria_id', $criteria['id'])
+                            ->first();
+
+                        if ($scorecard) {
+                            // Calculate the score for the judge and criterion
+                            $score = $scorecard->score;
+
+                            // If type_of_scoring is 'points', adjust by category score
+                            if ($eventToShow->type_of_scoring == 'points') {
+                                $averageScore += $score * $category['category_score'] / 100;
+                            } else {
+                                // Ranking-based scoring (H-L or L-H)
+                                $averageScore += $score;
+                            }
+                        }
                     }
+
+                    // Add the average score for this judge to the sum of average scores
+                    $sumOfAverageScores += $averageScore;
                 }
-            }
 
-            // Calculate average score (by dividing the total score by the number of judges)
-            $averageScore = $judgeCount > 0 ? $totalScore / $judgeCount : 0;
+                // Calculate the total average score by dividing the sum of average scores by the number of judges
+                if ($judgeCount > 0) {
+                    $totalAverageScore = $sumOfAverageScores / $judgeCount;
+                } else {
+                    $totalAverageScore = 0;
+                }
 
-            // Store the participant and their total score, along with their original position
-            $participantsWithScores[] = [
-                'participant' => $participant,
-                'totalScore' => $totalScore,
-                'averageScore' => $averageScore,
-                'judgeCount' => $judgeCount
+                // Round the total average score to 2 decimal places
+                $totalAverageScore = round($totalAverageScore, 2);
+
+
+
+                // Store the participant and their total score, along with their total average score
+                $participantsWithScores[] = [
+                    'participant' => $participant,
+                    'totalScore' => $totalScore,
+                    'totalAverageScore' => $totalAverageScore,
+                    'judgeCount' => $judgeCount
+                ];
+            }        	
+
+            // Sort participants by total score in descending order and assign ranks
+                usort($participantsWithScores, function($a, $b) {
+                    return $b['totalAverageScore'] - $a['totalAverageScore'];  // Sort in descending order by score
+                });
+
+                // Assign ranks based on sorted order
+                $rank = 1;
+                foreach ($participantsWithScores as &$participantData) {
+                    $participantData['participant']['rank'] = $rank++;
+                }
+                
+            // Add the category with the participants and their calculated scores
+            $categoriesWithScores[] = [
+                'category' => $category,
+                'participants' => $participantsWithScores
             ];
         }
-
-        // Sort participants by average score in descending order (highest score first)
-        usort($participantsWithScores, function($a, $b) {
-            return $b['averageScore'] - $a['averageScore'];
-        });
-
-        // Assign ranks based on the sorted average scores
-        $rank = 1;
-        foreach ($participantsWithScores as $index => $data) {
-            $participantsWithScores[$index]['participant']['rank'] = $rank++; // Rank starts from 1
-        }
-
-        // Store the category and its participants with their scores and ranks
-        $categoriesWithScores[] = [
-            'category' => $category,
-            'participants' => $participantsWithScores
-        ];
     }
 @endphp
-
 
 @if (Auth::user()->hasRole('admin')) 
     <div>
@@ -135,7 +161,7 @@
                                     @foreach ($judges as $judge)
                                         <th class="border border-blue-400 px-3 py-2">Judge: {{ $judge->name }}</th>
                                     @endforeach
-                                    <th class="border border-blue-400 px-3 py-2">Average Score</th>
+                                    <th class="border border-blue-400 px-3 py-2">Total Average Score</th>
                                     <th class="border border-blue-400 px-3 py-2">Rank</th>
                                 </tr>
                             </thead>
@@ -182,7 +208,7 @@
                                                     // Check if event has a type_of_scoring == 'points'
                                                     if ($eventToShow->type_of_scoring == 'points') {
                                                         // Calculate average score based on points
-                                                        $averageScore = $criteriaCount > 0 ? $totalScore / $criteriaCount : 0;
+                                                        $averageScore = $totalScore * $categoryData['category']['category_score'] / 100;
                                                     } elseif ($eventToShow->type_of_scoring == 'ranking(H-L)' || $eventToShow->type_of_scoring == 'ranking(L-H)') {
                                                         // For ranking types (H-L or L-H), average score is just the total score
                                                         $averageScore = $totalScore > 0 ? $totalScore : 0;
@@ -195,7 +221,7 @@
                                         @endforeach
 
                                         <!-- Display Deduction and Rank -->
-                                        <td class="text-black border border-blue-400">{{ $participantData['averageScore']    }}</td>
+                                        <td class="text-black border border-blue-400">{{ $participantData['totalAverageScore']}}</td>
                                         <td class="text-black border border-blue-400">{{ $participantData['participant']['rank'] }}</td>
                                     </tr>
                                 @endforeach

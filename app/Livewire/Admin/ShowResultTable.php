@@ -128,13 +128,6 @@ class ShowResultTable extends Component
                 ->sortBy('total_score') // Sort participants based on total_score (ascending order)
                 ->values(); // Reindex the collection
 
-            // Assign ranks based on sorted order but preserve original order
-            foreach ($categoryData['participants'] as $key => &$participant) {
-                $participant['rank'] = $ranks->search(function ($rank) use ($participant) {
-                    return $rank['id'] === $participant['id'];
-                }) + 1; // Rank starts from 1
-            }
-
             // Add the category data to the overall categories array
             $this->categories[] = $categoryData;
         }

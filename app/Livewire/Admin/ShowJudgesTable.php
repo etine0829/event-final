@@ -88,7 +88,7 @@ public function render()
     }
 
     // Fetch sorted judges with pagination
-    $judges = $query->orderBy($this->sortField, $this->sortDirection)->paginate(25);
+    $judges = $query->orderBy($this->sortField, $this->sortDirection)->paginate(100);
 
     // Fetch all events
     $events = Event::all();
