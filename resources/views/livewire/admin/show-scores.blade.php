@@ -16,7 +16,7 @@
                 <div class="overflow-x-auto"> <!-- Add this div to make the table scrollable on small screens -->
                     <table class="table-auto border-collapse border border-gray-400 w-full mt-2">
                         <thead>
-                            <tr>
+                            <tr class="bg-blue-300">
                                 <th class="border border-gray-400 px-4 py-2">Participant Name</th>
                                 @foreach ($category['criteria'] as $criteria)
                                     <th class="border border-gray-400 px-4 py-2">{{ $criteria['name'] }}</th>

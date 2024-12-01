@@ -154,7 +154,7 @@
                     <div class="mb-8">
                         <h3 class="font-bold text-lg mb-4">{{ $categoryData['category']['name'] }} ({{ $categoryData['category']['category_score'] }}%)</h3>
                         <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
-                            <thead class="bg-slate-300 text-black">
+                            <thead class="bg-blue-300 text-black">
                                 <tr>
                                     <th class="border border-blue-400 px-3 py-2">Participant No.</th>
                                     <th class="border border-blue-400 px-3 py-2">Participant</th>
