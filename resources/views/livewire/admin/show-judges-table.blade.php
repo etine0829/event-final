@@ -2,7 +2,6 @@
     session(['selectedEvent' => $selectedEvent]);
 @endphp
 
-@if (Auth::user()->hasRole('admin')) 
     <div>
         @if (session('success'))
             <x-sweetalert type="success" :message="session('success')" />
@@ -16,9 +15,15 @@
             <x-sweetalert type="error" :message="session('error')" />
         @endif
 
-        <div class="flex justify-between mb-4 sm:-mt-4">
-            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Judges</div>
-        </div>
+        @if (Auth::user()->hasRole('admin')) 
+            <div class="flex justify-between mb-4 sm:-mt-4">
+                <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Judges</div>
+            </div>
+        @else
+            <div class="flex justify-between mb-4 sm:-mt-4">
+                <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Event Manager / Manage Judges</div>
+            </div>
+        @endif
         
         <div class="flex flex-col md:flex-row items-start md:items-center md:justify-start">
             <div class="flex items-center w-full md:w-auto">
@@ -264,7 +269,3 @@
         }
 
     </script>
-
-
-
-@endif

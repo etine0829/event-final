@@ -21,6 +21,7 @@
         <x-sweetalert type="error" :message="session('error')" />
     @endif
     <div class="flex justify-between mb-4 sm:-mt-4">
+        
     @if (Auth::user()->hasRole('admin'))
         <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Participant</div>
     @else

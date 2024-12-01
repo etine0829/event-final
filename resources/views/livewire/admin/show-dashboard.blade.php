@@ -1,7 +1,13 @@
 <div >
-    <div class="flex justify-between mb-4 sm:-mt-4">
-        <div class="font-bold text-md tracking-wide text-black mt-2 uppercase">Admin / Manage Event</div>   
-    </div>
+    @if (Auth::user()->hasRole('admin'))
+        <div class="flex justify-between mb-4 sm:-mt-4">
+            <div class="font-bold text-md tracking-wide text-black mt-2 uppercase">Admin Dashboard</div>   
+        </div>
+    @else
+        <div class="flex justify-between mb-4 sm:-mt-4">
+            <div class="font-bold text-md tracking-wide text-black mt-2 uppercase">Event Manager Dashboard</div>   
+        </div>
+    @endif
 
     <hr class="border-gray-200 my-4">
 

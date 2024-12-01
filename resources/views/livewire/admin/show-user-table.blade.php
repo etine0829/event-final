@@ -1,4 +1,3 @@
-@if (Auth::user()->hasRole('admin'))
     <div>
         @if (session('success'))
             <x-sweetalert type="success" :message="session('success')" />
@@ -12,7 +11,12 @@
             <x-sweetalert type="error" :message="session('error')" />
         @endif
         <div class="flex justify-between mb-4 sm:-mt-4">
+        
+        @if (Auth::user()->hasRole('admin'))
             <div class="font-bold text-md tracking-wide text-black  mt-2 uppercase">Admin / Add User</div>
+        @else
+            <div class="font-bold text-md tracking-wide text-black  mt-2 uppercase">Event Manager / Add User</div>
+        @endif
             <div x-data="{ open: false }">
                 <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                     <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add User
@@ -288,4 +292,3 @@
 
     </script>
 
-@endif

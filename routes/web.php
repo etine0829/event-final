@@ -121,6 +121,11 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:event_manager'])->prefix('event_manager')->name('event_manager.')->group(function () {
+        
+        Route::get('assign-judge', [JudgesController::class, 'showAssignJudgeForm'])->name('assign-judge.form');
+        Route::post('assign-judge', [JudgesController::class, 'assignJudgeToEvent'])->name('assign-judge');
+
+
         Route::get('/dashboard', [DashboardController::class, 'indexManager'])->name('dashboard');
         // Route::get('/manage-event', [EventController::class, 'index'])->name('event.dashboard');
 
@@ -152,7 +157,6 @@ Route::middleware(['auth'])->group(function () {
         ]);
         Route::delete('criteria', [CriteriaController::class, 'deleteAll'])->name('criteria.deleteAll');
 
-       
         Route::resource('group', GroupController::class)->names([
             'index' => 'group.index',
             'create' => 'group.create',
@@ -180,7 +184,28 @@ Route::middleware(['auth'])->group(function () {
         ]);
         Route::delete('judge', [JudgesController::class, 'deleteAll'])->name('judge.deleteAll');
 
-      
+        Route::resource('user', UserController::class)->names([
+            'index' => 'user.index',
+            'create' => 'user.create',
+            'store' => 'user.store',
+            'edit' => 'user.edit',
+            'update' => 'user.update'   
+        ]);
+        Route::delete('user', [UserController::class, 'deleteAll'])->name('user.deleteAll');
+
+        // Route to show the form for assigning a judge
+        Route::get('assign-judge', [JudgesController::class, 'showAssignJudgeForm'])->name('assign-judge.form');
+
+        // Route to handle the judge assignment
+        Route::post('assign-judge', [JudgesController::class, 'assignJudgeToEvent'])->name('assign-judge');
+        
+        Route::resource('result', ResultController::class)->names([
+            'index' => 'result.index',
+            'create' => 'result.create',
+            'store' => 'result.store',
+            'edit' => 'result.edit',
+            'update' => 'result.update'   
+        ]);
     });
 
 });

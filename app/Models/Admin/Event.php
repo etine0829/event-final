@@ -5,6 +5,7 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model; 
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Admin\Event;
 use App\Models\User;
 use App\Models\Admin\Category;
 use App\Models\Admin\Participant;

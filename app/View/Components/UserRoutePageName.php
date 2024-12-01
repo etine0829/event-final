@@ -39,19 +39,7 @@ class UserRoutePageName extends Component
                 'admin.judge.index' => __('Admin - Add Judges'),
                 'admin.user.index' => __('Admin - Add User'),
                 'admin.result.index' => __('Admin - Result'),
-                
-                'admin.student.index' => __('Admin - Manage Student'),
-                'admin.course.index' => __('Admin - Manage Courses'),
-                'admin.attendance.employee_attendance' => __('Admin - Employee Attendance'),
-                'admin.attendance.employeeSearch' => __('Admin - Employee Attendance Search'),
-                'admin.attendance.student_attendance' => __('Admin - Student Attendance'),
-                'admin.attendance.employee_attendance.payroll' =>  __('Admin - Manage Attendance Reports by Department'),
-                'admin.attendance.employee_attendance.payroll.all' =>  __('Admin - Manage All Employees Attendance Reports'),
-                'admin.attendance.employee_attendance.portal' => __('Employee Attendance Portal'),
-                'admin.attendance.gracePeriodSet' => __('Admin - Attendance Grace Period'),
-                'admin.attendance.holiday' => __('Admin - Add Holiday'),
-
-                
+    
             ];
 
             $this->title = $titles[$routeName] ?? __('Event Tabulation Management System');
@@ -67,8 +55,11 @@ class UserRoutePageName extends Component
                 'event_manager.event.index' => __('Event Manager | Manage Event'),
                 'event_manager.category.index' => __('Event Manager | Manage Category'),
                 'event_manager.criteria.index' => __('Event Manager | Manage Criteria'),
+                'event_manager.group.index' => __('Event Manager - Manage Participant Group'),
                 'event_manager.participant.index' => __('Event Manager | Manage Participant'),
                 'event_manager.judge.index' => __('Event Manager | Add Judges'),
+                'event_manager.user.index' => __('Event Manager | Add User'),
+                'event_manager.result.index' => __('Event Manager | Result'),
 
             ];
 
