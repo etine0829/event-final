@@ -2,6 +2,7 @@
     session(['selectedEvent' => $selectedEvent]);
 @endphp
 
+@if (Auth::user()->hasRole('admin')) 
     <div>
         @if (session('success'))
             <x-sweetalert type="success" :message="session('success')" />
@@ -15,15 +16,9 @@
             <x-sweetalert type="error" :message="session('error')" />
         @endif
 
-        @if (Auth::user()->hasRole('admin')) 
-            <div class="flex justify-between mb-4 sm:-mt-4">
-                <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Judges</div>
-            </div>
-        @else
-            <div class="flex justify-between mb-4 sm:-mt-4">
-                <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Event Manager / Manage Judges</div>
-            </div>
-        @endif
+        <div class="flex justify-between mb-4 sm:-mt-4">
+            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Judges</div>
+        </div>
         
         <div class="flex flex-col md:flex-row items-start md:items-center md:justify-start">
             <div class="flex items-center w-full md:w-auto">
@@ -45,14 +40,12 @@
             </div>
         </div>
         
-        <hr class="border-gray-200 my-4">
-        
         @if($eventToShow)
             <div class="flex justify-between">
                 <p class="text-black mt-2 text-sm mb-4">Selected Event: <text class="uppercase text-red-500">{{ $eventToShow->event_name }}</text></p>
                 
                 <div x-data="{ open: false }">
-                    <button @click="open = true" class="bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
+                    <button @click="open = true" class="mt-2 bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700">
                         <i class="fa-solid fa-plus fa-xs" style="color: #ffffff;"></i> Add Judges
                     </button>
 
@@ -159,7 +152,6 @@
                                                         password: {{ json_encode($judge->password) }},
                                                     }">
                                                         <!-- You can add the edit or action buttons here -->
-
                                                         
                                                     </div>
                                                     <form id="deleteSelected" action="{{ route('admin.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">
@@ -190,6 +182,7 @@
                                         </div>
                                         <div class="justify-end">
                                             <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of judge: <text class="ml-2">{{ $judgeCounts[$eventToShow->id]->judge_count ?? 0 }}</text></p>
+                                            
                                         </div>
                                     </div> 
                                 </td>
@@ -269,3 +262,7 @@
         }
 
     </script>
+
+
+
+@endif

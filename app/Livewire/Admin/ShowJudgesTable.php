@@ -22,15 +22,10 @@ class ShowJudgesTable extends Component
 
     protected $listeners = ['updateCategory'];
 
-    public function updatedSelectedEvent()
-    {
-        $this->updateCategory();
-    }
-
     public function mount()
     {
         $this->selectedEvent = session('selectedEvent', null);
-        $this->judgeToShow = []; // Initialize as an empty array for simplicity
+        $this->judgeToShow = [];    
         $this->eventToShow = null;
     }
 
@@ -52,15 +47,18 @@ class ShowJudgesTable extends Component
         return;
     }
 
+    // Check if the judge is already assigned to the selected event
+    if ($judge->event_id == $this->selectedEvent) {
+        return redirect()->route('admin.judge.index')->with('error', 'Judge is already assign to this event   .');
+        return;
+    }
+
     // Update the judge's event_id field with the selected event ID
     $judge->event_id = $this->selectedEvent;
     $judge->save();
 
     // Flash success message
-    session()->flash('success', 'Judge successfully assigned to the event.');
-
-    // Optionally reset the selected judge after assignment
-    $this->reset(['selectedJudge']);
+    return redirect()->route('admin.judge.index')->with('success', 'Judge updated successfully.');
 }
 
 
@@ -88,20 +86,14 @@ public function render()
     }
 
     // Fetch sorted judges with pagination
-    $judges = $query->orderBy($this->sortField, $this->sortDirection)->paginate(100);
+    $judges = $query->orderBy($this->sortField, $this->sortDirection)->paginate(25);
 
     // Fetch all events
     $events = Event::all();
 
-    $judgeCounts = User::select('event_id', \DB::raw('count(*) as judge_count'))
-        ->groupBy('event_id')
-        ->get()
-        ->keyBy('event_id');
-
     return view('livewire.admin.show-judges-table', [
         'judges' => $judges,
         'events' => $events,
-        'judgeCounts' => $judgeCounts,
         'judgeToShow' => $this->judgeToShow, // Pass the updated judges list
     ]);
 }
