@@ -60,6 +60,10 @@ class ShowResultTable extends Component
                             ->where('role', 'judge')
                             ->get();
 
+
+        $this->category = Category::where('event_id', $this->selectedEvent)
+                            ->get();
+
         
         // Fetch categories for the selected event
         $categories = Category::where('event_id', $this->selectedEvent)
@@ -131,6 +135,8 @@ class ShowResultTable extends Component
             // Add the category data to the overall categories array
             $this->categories[] = $categoryData;
         }
+
+        
     }
 
     public function render()
