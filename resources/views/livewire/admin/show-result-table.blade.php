@@ -81,7 +81,7 @@
 @endphp
 
 <div>
-    @if (Auth::user()->hasRole('admin')) 
+    @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('event_manager')) 
         <div>
             <!-- Success, Info, Error Messages -->
             @if (session('success'))
@@ -642,7 +642,7 @@
 
             <!-- Header -->
             <div class="flex justify-between mb-4 sm:-mt-4">
-                <div class="font-bold text-md tracking-tight text-md text-black mt-2 uppercase">Event Manager / Result</div>
+                <div class="font-bold text-md tracking-tight text-md text-black mt-2 uppercase">Result</div>
             </div>
 
             <!-- Event Selection -->
@@ -686,216 +686,101 @@
                     <hr class="border-gray-200 my-4">   
 
                     <!-- Loop through categories and display results -->
-                    @foreach($categoriesWithScores as $categoryData)
+                    @foreach($categoriesWithScores as $categoryData) 
                         <div class="mb-8">
                             <h3 class="font-bold text-lg mb-4">{{ $categoryData['category']['name'] }} ({{ $categoryData['category']['category_score'] }}%)</h3>
-                            <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
-                                <thead class="bg-blue-300 text-black">
-                                    <tr>
-                                        <th class="border border-blue-400 px-3 py-2">Participant No.</th>
-                                        <th class="border border-blue-400 px-3 py-2">Participant</th>
-                                        @foreach ($judges as $judge)
-                                            <th class="border border-blue-400 px-3 py-2">Judge: {{ $judge->name }}</th>
+
+                            <!-- Wrap the table in a responsive container -->
+                            <div class="overflow-x-auto">
+                                <table class="table-auto border-collapse border border-gray-400 w-full mt-2">
+                                    <thead class="bg-blue-300 text-black">
+                                        <tr>
+                                            <th class="border border-blue-400 px-3 py-2">Participant No.</th>
+                                            <th class="border border-blue-400 px-3 py-2">Participant</th>
+                                            @foreach ($judges as $judge)
+                                                <th class="border border-blue-400 px-3 py-2">Judge: {{ $judge->name }}</th>
+                                            @endforeach
+                                           
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Sort participants based on totalAverageScore -->
+                                        @php
+                                        if ($eventToShow->type_of_scoring == 'ranking(L-H)') {
+                                            usort($categoryData['participants'], function($a, $b) {
+                                                return $a['totalAverageScore'] <=> $b['totalAverageScore']; // Ascending order for ranking(L-H)
+                                            });
+                                        } else {
+                                            usort($categoryData['participants'], function($a, $b) {
+                                                return $b['totalAverageScore'] <=> $a['totalAverageScore']; // Descending order for other types
+                                            });
+                                        }
+                                        @endphp
+
+                                        <!-- Loop through participants and their scores for the current category -->
+                                        @foreach($categoryData['participants'] as $index => $participantData)
+                                            <tr class="hover:bg-gray-100">
+                                                <td class="text-black border border-blue-400">
+                                                    @php
+                                                        $participantNumber = is_array($participantData['participant']) ? $participantData['participant']['participant_no'] : $participantData['participant']->participant_number;
+                                                    @endphp
+                                                    {{ $participantNumber ?? 'N/A' }}
+                                                </td>
+
+                                                <td class="text-black border border-blue-400">
+                                                    @php
+                                                        $participantName = is_array($participantData['participant']) ? $participantData['participant']['name'] : $participantData['participant']->participant_name;
+                                                    @endphp
+                                                    {{ $participantName ?? 'N/A' }}
+                                                </td>
+
+                                                @foreach ($judges as $judge)
+                                                    <td class="text-black border border-blue-400">
+                                                        @php
+                                                            $totalScore = 0;
+                                                            $criteriaCount = 0;
+                                                            $scoreSubmitted = false;  // Flag to check if score was submitted
+
+                                                            // Loop through criteria and fetch scorecards
+                                                            foreach ($categoryData['category']['criteria'] as $criteria) {
+                                                                $scorecard = App\Models\Admin\Scorecard::where('user_id', $judge->id)
+                                                                    ->where('event_id', $selectedEvent)
+                                                                    ->where('participant_id', is_array($participantData['participant']) ? $participantData['participant']['id'] : $participantData['participant']->id)
+                                                                    ->where('criteria_id', $criteria['id'])
+                                                                    ->first();
+
+                                                                if ($scorecard) {
+                                                                    $totalScore += $scorecard->score;
+                                                                    $criteriaCount++;
+                                                                    // Mark as submitted if there's a score
+                                                                    $scoreSubmitted = true;
+                                                                }
+                                                            }
+
+                                                            // Calculate average score based on the scoring type
+                                                            if ($eventToShow->type_of_scoring == 'points') {
+                                                                $averageScore = $totalScore * $categoryData['category']['category_score'] / 100;
+                                                            } elseif ($eventToShow->type_of_scoring == 'ranking(H-L)' || $eventToShow->type_of_scoring == 'ranking(L-H)') {
+                                                                $averageScore = $totalScore > 0 ? $totalScore : 0;
+                                                            } else {
+                                                                $averageScore = 0;
+                                                            }
+                                                        @endphp
+                                                        <!-- If score was submitted, show 'Submitted', otherwise show the calculated average score -->
+                                                        {{ $scoreSubmitted ? 'Submitted' : ($averageScore ?? 'N/A') }}
+                                                    </td>
+                                                @endforeach
+
+                                            </tr>
                                         @endforeach
-                                        <th class="border border-blue-400 px-3 py-2">Total Average Score</th>
-                                        <th class="border border-blue-400 px-3 py-2">Rank</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Sort participants based on totalAverageScore -->
-                                    @php
-                                    // Sort participants based on scoring type
-                                    if ($eventToShow->type_of_scoring == 'ranking(L-H)') {
-                                        usort($categoryData['participants'], function($a, $b) {
-                                            return $a['totalAverageScore'] <=> $b['totalAverageScore']; // Ascending order for ranking(L-H)
-                                        });
-                                    } else {
-                                        usort($categoryData['participants'], function($a, $b) {
-                                            return $b['totalAverageScore'] <=> $a['totalAverageScore']; // Descending order for other types
-                                        });
-                                    }
-                                @endphp
 
-                                <!-- Loop through participants and their scores for the current category -->
-                                @foreach($categoryData['participants'] as $index => $participantData)
-                                    <tr class="hover:bg-gray-100">
-                                        <!-- Display Participant Number -->
-                                        <td class="text-black border border-blue-400">
-                                            @php
-                                                $participantNumber = is_array($participantData['participant']) ? $participantData['participant']['participant_no'] : $participantData['participant']->participant_number;
-                                            @endphp
-                                            {{ $participantNumber ?? 'N/A' }}
-                                        </td>
-
-                                        <!-- Display Participant Name -->
-                                        <td class="text-black border border-blue-400">
-                                            @php
-                                                $participantName = is_array($participantData['participant']) ? $participantData['participant']['name'] : $participantData['participant']->participant_name;
-                                            @endphp
-                                            {{ $participantName ?? 'N/A' }}
-                                        </td>
-
-                                        <!-- Loop through judges and display their scores -->
-                                        @foreach ($judges as $judge)
-                                            <td class="text-black border border-blue-400">
-                                                @php
-                                                    $totalScore = 0;
-                                                    $criteriaCount = 0;
-
-                                                    foreach ($categoryData['category']['criteria'] as $criteria) {
-                                                        $scorecard = App\Models\Admin\Scorecard::where('user_id', $judge->id)
-                                                            ->where('event_id', $selectedEvent)
-                                                            ->where('participant_id', is_array($participantData['participant']) ? $participantData['participant']['id'] : $participantData['participant']->id)
-                                                            ->where('criteria_id', $criteria['id'])
-                                                            ->first();
-
-                                                        if ($scorecard) {
-                                                            $totalScore += $scorecard->score;
-                                                            $criteriaCount++;
-                                                        }
-                                                    }
-
-                                                    // Calculate average score based on the scoring type
-                                                    if ($eventToShow->type_of_scoring == 'points') {
-                                                        $averageScore = $totalScore * $categoryData['category']['category_score'] / 100;
-                                                    } elseif ($eventToShow->type_of_scoring == 'ranking(H-L)' || $eventToShow->type_of_scoring == 'ranking(L-H)') {
-                                                        $averageScore = $totalScore > 0 ? $totalScore : 0;
-                                                    } else {
-                                                        $averageScore = 0; // Fallback for any undefined scoring types
-                                                    }
-                                                @endphp
-                                                {{ $averageScore }}
-                                            </td>
-                                        @endforeach
-
-                                        <!-- Display Deduction and Total Average Score -->
-                                        <td class="text-black border border-blue-400">{{ $participantData['totalAverageScore']}}</td>
-
-                                        <!-- Dynamically assign Rank based on Total Average Score -->
-                                        <td class="text-black border border-blue-400">{{ $index + 1 }}</td>  <!-- Rank is based on the sorted list -->
-                                    </tr>
-                                @endforeach
-
-                                </tbody>
-                            </table>
-
-
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     @endforeach
 
-
-
-                    <div class="mb-8">
-                        <h3 class="font-bold text-lg mb-4">Overall Rank</h3>
-                        <table class="table-auto min-w-full text-center text-sm mb-4 divide-y divide-gray-200">
-                            <thead class="bg-blue-300 text-black">
-                                <tr>
-                                    <th class="border border-blue-400 px-3 py-2">Participant No.</th>
-                                    <th class="border border-blue-400 px-3 py-2">Participant</th>
-
-                                    <!-- Add a column for each category -->
-                                    @foreach ($categoriesWithScores as $categoryData)
-                                        <th class="border border-blue-400 px-3 py-2">{{ $categoryData['category']['name'] }}</th>
-                                    @endforeach
-
-                                    <th class="border border-blue-400 px-3 py-2">Total Score</th>
-                                    <th class="border border-blue-400 px-3 py-2">Rank</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            @php
-                                // Step 1: Calculate the total score for each participant
-                                $participantsWithScores = [];
-
-                                foreach($categoriesWithScores[0]['participants'] as $participantData) {
-                                    $totalScore = 0;
-                                    $participantId = is_array($participantData['participant']) 
-                                        ? $participantData['participant']['id'] 
-                                        : $participantData['participant']->id;
-
-                                    // Calculate total score for each participant
-                                    foreach($categoriesWithScores as $categoryData) {
-                                        foreach($categoryData['participants'] as $categoryParticipantData) {
-                                            if ($categoryParticipantData['participant']['id'] === $participantId) {
-                                                $categoryScore = $categoryParticipantData['totalAverageScore'];
-                                                $totalScore += $categoryScore ?? 0;  // Accumulate the total score
-                                            }
-                                        }
-                                    }
-
-                                    // Add participant data and their total score to the array
-                                    $participantsWithScores[] = [
-                                        'participant' => $participantData['participant'],
-                                        'totalScore' => $totalScore
-                                    ];
-                                }
-
-                                // Step 2: Sort participants by total score based on scoring type
-                                if ($eventToShow->type_of_scoring == 'ranking(L-H)') {
-                                    // Ascending order for 'ranking(L-H)'
-                                    usort($participantsWithScores, function($a, $b) {
-                                        return $a['totalScore'] - $b['totalScore']; // Sorting in ascending order
-                                    });
-                                } else {
-                                    // Default descending order for other scoring types
-                                    usort($participantsWithScores, function($a, $b) {
-                                        return $b['totalScore'] - $a['totalScore']; // Sorting in descending order
-                                    });
-                                }
-                            @endphp
-
-                            <!-- Loop through all participants and display their data -->
-                            @foreach($participantsWithScores as $index => $participantWithScore)
-                                <tr class="hover:bg-gray-100">
-                                    <td class="text-black border border-blue-400">
-                                        @php
-                                            $participantNumber = is_array($participantWithScore['participant']) ? $participantWithScore['participant']['participant_no'] : $participantWithScore['participant']->participant_number;
-                                        @endphp
-                                        {{ $participantNumber ?? 'N/A' }}
-                                    </td>
-
-                                    <td class="text-black border border-blue-400">
-                                        @php
-                                            $participantName = is_array($participantWithScore['participant']) ? $participantWithScore['participant']['name'] : $participantWithScore['participant']->participant_name;
-                                        @endphp
-                                        {{ $participantName ?? 'N/A' }}
-                                    </td>
-
-                                    <!-- Loop through all categories and display the participant's score for each one -->
-                                    @php
-                                        $totalScore = $participantWithScore['totalScore'];
-                                    @endphp
-
-                                    @foreach($categoriesWithScores as $categoryData)
-                                        @php
-                                            $categoryScore = null;
-                                        @endphp
-                                        @foreach($categoryData['participants'] as $categoryParticipantData)
-                                            @if($categoryParticipantData['participant']['id'] === $participantWithScore['participant']['id'])
-                                                @php
-                                                    $categoryScore = $categoryParticipantData['totalAverageScore']; // Get the total average score for this participant
-                                                @endphp
-                                            @endif
-                                        @endforeach
-
-                                        <!-- Display the total average score for each participant in the current category -->
-                                        <td class="text-black border border-blue-400">
-                                            {{ $categoryScore ?? 'N/A' }}
-                                        </td>
-                                    @endforeach
-
-                                    <!-- Display total score and rank -->
-                                    <td class="text-black border border-blue-400">{{ $totalScore }}</td>
-                                    <td class="text-black border border-blue-400">{{ $index + 1 }}</td> <!-- Display rank based on sorted order -->
-                                </tr>
-                            @endforeach
-
-                            </tbody>
-                        </table>
-
-
-                    </div>
-
+                </div>     
                 @endif
             </div>
         </div>

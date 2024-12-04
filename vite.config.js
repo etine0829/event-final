@@ -15,7 +15,7 @@ export default defineConfig({
         host: "0.0.0.0", // Allow Vite to be accessed from any IP
         port: 5173, // Ensure the port matches your Vite server configuration
         hmr: {
-            host: "192.168.137.185",
+            host: "192.168.100.101",
             // host: "192.168.100.194", // Adjust HMR host if necessary //
         },
         // cors: {

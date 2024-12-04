@@ -17,135 +17,139 @@ class ShowJudgesTable extends Component
     public $sortDirection = 'asc';
     public $selectedEvent = 0;
     public $sortField = 'id';
-    public $judgeToShow = [];  // Initialize as an array for simplicity
+    public $userToShow = [];  // Changed from $judgeToShow to $userToShow to include both judges and staff
     public $eventToShow;
-    public $selectedJudge;
+    public $selectedUser;  // Changed from selectedJudge to selectedUser for flexibility
+    public $role = 'judge';  // Added a role selector to filter between judge or staff
 
     protected $listeners = ['updateCategory'];
 
     public function mount()
     {
         $this->selectedEvent = session('selectedEvent', null);
-        $this->judgeToShow = [];    
+        $this->userToShow = [];    
         $this->eventToShow = null;
     }
 
-    public function assignJudgeToEvent()
-{
-    if(Auth::user()->hasRole('admin')){
-        // Ensure we have a valid event and judge selected
-        if (!$this->selectedEvent || !$this->selectedJudge) {
-            session()->flash('error', 'Please select both an event and a judge.');
-            return;
+    public function assignUserToEvent()
+    {
+        // Ensure admin privileges
+        if (Auth::user()->hasRole('admin')) {
+            // Ensure we have a valid event and user selected
+            if (!$this->selectedEvent || !$this->selectedUser) {
+                session()->flash('error', 'Please select both an event and a user.');
+                return;
+            }
+
+            // Find the event and user by their IDs
+            $event = Event::find($this->selectedEvent);
+            $user = User::find($this->selectedUser);  // User can be either a judge or staff
+
+            // Check if event and user exist
+            if (!$event || !$user) {
+                session()->flash('error', 'Invalid event or user.');
+                return;
+            }
+
+            // Check if the user is already assigned to the selected event
+            if ($user->event_id == $this->selectedEvent) {
+                return redirect()->route('admin.judge.index')->with('error', 'User is already assigned to this event.');
+            }
+
+            // Update the user's event_id field with the selected event ID
+            $user->event_id = $this->selectedEvent;
+            $user->save();
+
+            // Flash success message
+            return redirect()->route('admin.judge.index')->with('success', 'User added successfully.');
+        }else{
+            // Ensure we have a valid event and user selected
+            if (!$this->selectedEvent || !$this->selectedUser) {
+                session()->flash('error', 'Please select both an event and a user.');
+                return;
+            }
+
+            // Find the event and user by their IDs
+            $event = Event::find($this->selectedEvent);
+            $user = User::find($this->selectedUser);  // User can be either a judge or staff
+
+            // Check if event and user exist
+            if (!$event || !$user) {
+                session()->flash('error', 'Invalid event or user.');
+                return;
+            }
+
+            // Check if the user is already assigned to the selected event
+            if ($user->event_id == $this->selectedEvent) {
+                return redirect()->route('event_manager.judge.index')->with('error', 'User is already assigned to this event.');
+            }
+
+            // Update the user's event_id field with the selected event ID
+            $user->event_id = $this->selectedEvent;
+            $user->save();
+
+            // Flash success message
+            return redirect()->route('event_manager.judge.index')->with('success', 'User added successfully.');
         }
-
-        // Find the event and judge by their IDs
-        $event = Event::find($this->selectedEvent);
-        $judge = User::find($this->selectedJudge);  // Assuming judge is a User model
-
-        // Check if event and judge exist
-        if (!$event || !$judge) {
-            session()->flash('error', 'Invalid event or judge.');
-            return;
-        }
-
-        // Check if the judge is already assigned to the selected event
-        if ($judge->event_id == $this->selectedEvent) {
-            return redirect()->route('admin.judge.index')->with('error', 'Judge is already assign to this event   .');
-            return;
-        }
-
-        if ($judge->event_id == $this->selectedEvent) {
-            return redirect()->route('admin.judge.index')->with('error', 'Judge is already assign to this event   .');
-            return;
-        }
-
-        // Update the judge's event_id field with the selected event ID
-        $judge->event_id = $this->selectedEvent;
-        $judge->save();
-
-        // Flash success message
-        return redirect()->route('admin.judge.index')->with('success', 'Judge added successfully.');
-    }else{
-        // Ensure we have a valid event and judge selected
-        if (!$this->selectedEvent || !$this->selectedJudge) {
-            session()->flash('error', 'Please select both an event and a judge.');
-            return;
-        }
-
-        // Find the event and judge by their IDs
-        $event = Event::find($this->selectedEvent);
-        $judge = User::find($this->selectedJudge);  // Assuming judge is a User model
-
-        // Check if event and judge exist
-        if (!$event || !$judge) {
-            session()->flash('error', 'Invalid event or judge.');
-            return;
-        }
-
-        // Check if the judge is already assigned to the selected event
-        if ($judge->event_id == $this->selectedEvent) {
-            return redirect()->route('event_manager.judge.index')->with('error', 'Judge is already assign to this event   .');
-            return;
-        }
-
-        if ($judge->event_id == $this->selectedEvent) {
-            return redirect()->route('event_manager.judge.index')->with('error', 'Judge is already assign to this event   .');
-            return;
-        }
-
-        // Update the judge's event_id field with the selected event ID
-        $judge->event_id = $this->selectedEvent;
-        $judge->save();
-
-        // Flash success message
-        return redirect()->route('event_manager.judge.index')->with('success', 'Judge added successfully.');
-    }
-}
-
-
-public function render()
-{
-    // Query to fetch judges
-    $query = User::with('event')->whereHas('roles', function ($query) {
-        $query->where('name', 'judge'); // Filter by 'judge' role
-    });
-
-    // Apply search filters
-    $query = $this->applySearchFilters($query);
-
-    // Apply event filter if selected
-    if ($this->selectedEvent) {
-        $this->eventToShow = Event::find($this->selectedEvent);
-        $this->judgeToShow = User::where('event_id', $this->selectedEvent)
-                                 ->whereHas('roles', function ($query) {
-                                     $query->where('name', 'judge'); // Filter by 'judge' role
-                                 })
-                                 ->get();
-    } else {
-        $this->eventToShow = null;
-        $this->judgeToShow = [];
     }
 
-    // Fetch sorted judges with pagination
-    $judges = $query->orderBy($this->sortField, $this->sortDirection)->paginate(25);
+    public function deleteJudge($judgeId)
+    {
+        // Remove the judge from the $userToShow array
+        $this->userToShow = $this->userToShow->filter(function ($judge) use ($judgeId) {
+            return $judge->id !== $judgeId;
+        });
 
-    // Fetch all events
-    $events = Event::all();
+        // Flash success message to the session
+        session()->flash('success', 'User removed from the table.');
+    }
 
-    return view('livewire.admin.show-judges-table', [
-        'judges' => $judges,
-        'events' => $events,
-        'judgeToShow' => $this->judgeToShow, // Pass the updated judges list
-    ]);
-}
+
+    public function render()
+    {
+        // Query to fetch users (both judges and staff)
+        $query = User::with('event')->whereHas('roles', function ($query) {
+            $query->whereIn('name', ['judge', 'staff']);  // Fetch both judge and staff roles
+        });
+
+        // Apply search filters
+        $query = $this->applySearchFilters($query);
+
+        // Apply event filter if selected
+        if ($this->selectedEvent) {
+            $this->eventToShow = Event::find($this->selectedEvent);
+            $this->userToShow = User::where('event_id', $this->selectedEvent)
+                                    ->whereHas('roles', function ($query) {
+                                        $query->whereIn('name', ['judge', 'staff']);  // Filter by both judge and staff roles
+                                    })
+                                    ->get();
+        } else {
+            $this->eventToShow = null;
+            $this->userToShow = [];
+        }
+
+        // Fetch sorted users with pagination
+        $users = $query->orderBy($this->sortField, $this->sortDirection)->paginate(25);
+
+        // Fetch all events
+        $events = Event::all();
+
+        return view('livewire.admin.show-judges-table', [
+            'users' => $users,
+            'events' => $events,
+            'userToShow' => $this->userToShow, // Pass the updated users list
+        ]);
+    }
 
     public function updateCategory()
     {
         if ($this->selectedEvent) {
-            $this->judgeToShow = User::where('event_id', $this->selectedEvent)->get();
+            $this->userToShow = User::where('event_id', $this->selectedEvent)
+                ->whereIn('name', ['judge', 'staff'])  // Include both roles
+                ->get();
+
         } else {
-            $this->judgeToShow = []; // Reset to empty collection if no event is selected
+            $this->userToShow = []; // Reset to empty collection if no event is selected
         }
     }
 

@@ -64,15 +64,15 @@
                             </div>
 
                             @if (Auth::user()->hasRole('admin'))
-                                <form wire:submit.prevent="assignJudgeToEvent" class="mb-4">
+                                <form wire:submit.prevent="assignUserToEvent" class="mb-4">
                             @else
-                                <form wire:submit.prevent="assignJudgeToEvent" class="mb-4">
+                                <form wire:submit.prevent="assignUserToEvent" class="mb-4">
                             @endif    
                                     <div class="mb-2">
                                         <label for="judge_id">Judge:</label>
-                                        <select wire:model="selectedJudge" id="judge_id" class="form-control" required>
+                                        <select wire:model="selectedUser" id="judge_id" class="form-control" required>
                                             <option value="">Select Judge</option>
-                                            @foreach($judges as $judge)
+                                            @foreach($users as $judge)
                                                 <option value="{{ $judge->id }}">{{ $judge->name }}</option>
                                             @endforeach
                                         </select>
@@ -91,14 +91,14 @@
 
         <hr class="border-gray-200 my-4">
         
-        @if($search && $judges->isEmpty())
+        @if($search && $users->isEmpty())
             <p class="text-black mt-8 text-center">No judge found in <text class="text-red-500">{{ $eventToShow->event_name }}</text> for matching "{{ $search }}"</p>  
             <div class="flex justify-center mt-2">
                 @if($search)
                     <p><button class="ml-2 border border-gray-600 px-3 py-2 text-black hover:border-red-500 hover:text-red-500" wire:click="$set('search', '')"><i class="fa-solid fa-remove"></i> Clear Search</button></p>
                 @endif
             </div>
-        @elseif(!$search && $judges->isEmpty())
+        @elseif(!$search && $users->isEmpty())
             <p class="text-black mt-8 text-center uppercase">No data available in judge<text class="text-red-500">
                 @if($eventToShow)
                     {{ $eventToShow->event_name}}
@@ -108,10 +108,10 @@
 
             @if($eventToShow)
 
-                @if($judgeToShow->isEmpty())
+                @if($userToShow->isEmpty())
                     <!-- Display message if no judges are associated with the selected event -->
                     <tr>
-                        <td colspan="3" class="text-center text-red-500 font-bold">No judges assigned to this event.</td>
+                        <td colspan="3" class="text-center text-red-500 font-bold">No judges and staff assigned to this event.</td>
                     </tr>
                 @else
                     <div class="overflow-x-auto">
@@ -144,16 +144,29 @@
                                         </button>
                                     </th>
 
+                                    <th class="border border-gray-400 px-3 py-2">
+                                        <button wire:click="sortBy('role')" class="w-full h-full flex items-center justify-center">
+                                            Role
+                                            @if ($sortField == 'role')
+                                                @if ($sortDirection == 'asc')
+                                                    &nbsp;<i class="fa-solid fa-down-long fa-xs"></i>
+                                                @else
+                                                    &nbsp;<i class="fa-solid fa-up-long fa-xs"></i>
+                                                @endif
+                                            @endif
+                                        </button>
+                                    </th>
+
                                     <th class="border border-gray-400 px-3 py-2">Action</th>
                                 </tr>
                             </thead>
                             <tbody >
                             
-                                @foreach ($judgeToShow as $judge)
+                                @foreach ($userToShow as $judge)
                                     <tr class="hover:bg-gray-100" wire:model="selectedCategory">
                                         <td class="text-black border border-gray-400">{{ $judge->name }}</td>
                                         <td class="text-black border border-gray-400">{{ $judge->email }}</td>
-
+                                        <td class="text-black border border-gray-400">{{ $judge->role }}</td>
                                         <td class="text-black border border-gray-400 px-1 py-1">
                                             <div class="flex justify-center items-center space-x-2">
                                                 @if($eventToShow && $judge)
@@ -178,7 +191,7 @@
                                                             </button>
                                                         </form>
                                                 @else
-                                                    <p>No judges assigned to this event.</p>
+                                                    <p>No judges and staff assigned to this event.</p>
                                                 @endif
                                             </div>
                                         </td>
@@ -193,7 +206,7 @@
                                     <div class="flex justify-between">
                                         <div class="uppercase text-black mt-2 text-sm mb-4">
                                             @if($search)
-                                                {{ $judges->total() }} Search results 
+                                                {{ $users->total() }} Search results 
                                             @endif                                    
                                         </div>
                                         <!-- <div class="justify-end">
@@ -203,7 +216,7 @@
                                     </div> 
                                 </td>
                                 <td>
-                                    {{ $judges->links() }}
+                                    {{ $users->links() }}
                                 </td>
                                 <div class="flex justify-center mt-2">
                                     @if($search)

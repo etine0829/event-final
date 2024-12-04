@@ -55,7 +55,7 @@
         toggleIconId="toggleIcon"
     />
 
-    @elseif (Auth::user()->hasAnyRole(['judge', 'judge_chairman']))
+@elseif (Auth::user()->hasAnyRole(['judge', 'judge_chairman']))
     <x-portal>
         <x-user-route-page-name :routeName="'judge.dashboard'" />
             <x-content-design-judge>
@@ -112,7 +112,7 @@
         toggleIconId="toggleIcon"
     />
 
-    @else
+@else
     <x-app-layout>
         <x-user-route-page-name :routeName="'staff.dashboard'" />
         <x-content-design>

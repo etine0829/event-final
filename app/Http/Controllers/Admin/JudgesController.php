@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Admin;
-
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -12,9 +10,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Models\Admin\Scorecard;
-
-
-
 
 class JudgesController extends Controller
 {

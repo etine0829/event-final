@@ -66,7 +66,7 @@
                                                 <option value="event_manager">Event Manager</option>
                                                 <option value="staff">Staff</option>
                                                 <option value="judge">Judge</option>
-                                                <option value="judge_chairman">Chairman of the Judge</option>
+                                                
                                         </select>
                                         <x-input-error :messages="$errors->get('role')" class="mt-2" />
                                 </div>
@@ -218,7 +218,7 @@
                                                                 <option value="event_manager">Event Manager</option>
                                                                 <option value="staff">Staff</option>
                                                                 <option value="judge">Judge</option>
-                                                                <option value="judge_chairman">Chairman of the Judge</option>
+                                                                
                                                             </select>
                                                             <x-input-error :messages="$errors->get('role')" class="mt-2" />
                                                         </div>
