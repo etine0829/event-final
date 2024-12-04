@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use App\Models\Admin\Scorecard;
 
 
 
@@ -120,31 +121,45 @@ public function update(Request $request, User $judge)
     }
 }
 
+public function destroy(User $judge)
+{
+    // Get the current authenticated user
+    $user = Auth::user();
 
+    // Define allowed roles and their corresponding routes
+    $roles = [
+        'admin' => route('admin.judge.index'),
+        'event_manager' => route('event_manager.judge.index')
+    ];
 
-    public function destroy(User $judge)
-    {
-        // Ensure the authenticated user has the admin role
-        if (Auth::user()->hasRole('admin')) {
+    // Check if the user has one of the allowed roles
+    foreach ($roles as $role => $route) {
+        if ($user->hasRole($role)) {
+            // Check if the judge has any associated scorecards
+            if ($judge->scorecards()->exists()) {
+                // If there are associated scorecards, prevent deletion and return an error
+                return redirect($route)
+                    ->with('error', 'Judge cannot be deleted because there are associated scorecards.');
+            }
+
             try {
                 // Delete the judge record
                 $judge->delete();
 
-
-                return redirect()->route('admin.judge.index')
+                return redirect($route)
                     ->with('success', 'Judge deleted successfully.');
             } catch (\Exception $e) {
-                return redirect()->route('admin.judge.index')
+                // In case of failure, show an error message
+                return redirect($route)
                     ->with('error', 'Failed to delete judge: ' . $e->getMessage());
             }
         }
-
-
-        // Return an error if the user is not authorized
-        return redirect()->route('admin.judge.index')
-            ->with('error', 'You do not have permission to perform this action.');
     }
 
+    // Return an error if the user does not have permission
+    return redirect()->route('admin.judge.index')
+        ->with('error', 'You do not have permission to perform this action.');
+}
 
 }
 

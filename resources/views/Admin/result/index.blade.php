@@ -11,7 +11,10 @@
                 <div class="relative">
                     <div class="container shadow-lg p-5 sm:p-6 md:p-7 lg:p-8 bg-white rounded-md text-black font-medium"
                         :style="{ 'width': isFullScreen ? 'calc(100vw - 16px)' : 'auto', 'margin-left': isFullScreen ? '-192px' : '0' }">
-                        <livewire:admin.show-result-table />
+                        <!-- Wrap Livewire component with a root div -->
+                        <div>
+                            <livewire:admin.show-result-table />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -25,7 +28,7 @@
         toggleIconId="toggleIcon"
     />
 
-    @elseif (Auth::user()->hasRole('event_manager'))
+@elseif (Auth::user()->hasRole('event_manager'))
     <x-app-layout>
         <x-user-route-page-name :routeName="'event_manager.result.index'" />
         <x-content-design>
@@ -38,7 +41,10 @@
                 <div class="relative">
                     <div class="container shadow-lg p-5 sm:p-6 md:p-7 lg:p-8 bg-white rounded-md text-black font-medium"
                         :style="{ 'width': isFullScreen ? 'calc(100vw - 16px)' : 'auto', 'margin-left': isFullScreen ? '-192px' : '0' }">
-                        <livewire:admin.show-user-table />
+                        <!-- Wrap Livewire component with a root div -->
+                        <div>
+                            <livewire:admin.show-result-table />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -52,4 +58,34 @@
         toggleIconId="toggleIcon"
     />
 
-    @endif
+@elseif (Auth::user()->hasRole('staff'))
+    <x-app-layout>
+        <x-user-route-page-name :routeName="'staff.result.index'" />
+        <x-content-design>
+            <!-- Content Area -->
+            <div x-data="{ isFullScreen: (window.innerHeight === screen.height) }" x-init="
+                window.addEventListener('resize', () => {
+                    isFullScreen = (window.innerHeight === screen.height);
+                });
+                " class="rounded-md p-2 sm:p-2 md:p-2 lg:p-2 text-black font-medium">
+                <div class="relative">
+                    <div class="container shadow-lg p-5 sm:p-6 md:p-7 lg:p-8 bg-white rounded-md text-black font-medium"
+                        :style="{ 'width': isFullScreen ? 'calc(100vw - 16px)' : 'auto', 'margin-left': isFullScreen ? '-192px' : '0' }">
+                        <!-- Wrap Livewire component with a root div -->
+                        <div>
+                            <livewire:admin.show-result-table />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </x-content-design>
+    </x-app-layout>
+
+    <x-show-hide-sidebar
+        toggleButtonId="toggleButton"
+        sidebarContainerId="sidebarContainer"
+        dashboardContentId="dashboardContent"
+        toggleIconId="toggleIcon"
+    />
+@else
+@endif

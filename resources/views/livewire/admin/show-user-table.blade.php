@@ -28,7 +28,11 @@
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4">
-                            <form action="{{ route('admin.user.store') }}" method="POST" class="">
+                            @if (Auth::user()->hasRole('admin'))
+                                <form action="{{ route('admin.user.store') }}" method="POST" class="">
+                            @else
+                                <form action="{{ route('event_manager.user.store') }}" method="POST" class="">
+                            @endif
                                 @csrf
                                 
                                 <div class="mb-4">
@@ -178,7 +182,11 @@
                                                 <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                             </div>
                                             <div class="mb-4">
-                                                <form id="updateUserForm" action="{{ route('admin.user.update', $user->id )}}" method="POST">
+                                                @if(Auth::user()->hasrole('admin'))
+                                                    <form id="updateUserForm" action="{{ route('admin.user.update', $user->id )}}" method="POST">
+                                                @else
+                                                    <form id="updateUserForm" action="{{ route('event_manager.user.update', $user->id )}}" method="POST">
+                                                @endif  
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="mb-2">
@@ -226,8 +234,12 @@
                                     </div>
                                 </div>
 
-                                <!-- Delete Button -->
-                                <form id="deleteSelected" action="{{ route('admin.user.destroy', $user->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $user->id }}', '{{ $user->name }}');">
+                                @if(Auth::user()->hasRole('admin'))
+                                    <form id="deleteSelected" action="{{ route('admin.user.destroy', $user->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $user->id }}', '{{ $user->name }}');">
+                                @else
+                                    <form id="deleteSelected" action="{{ route('event_manager.user.destroy', $user->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $user->id }}', '{{ $user->name }}');">
+                                @endif
+
                                     @csrf
                                     @method('DELETE')
                                     <button class="bg-red-500 text-white text-sm px-3 py-1.5 rounded hover:bg-red-700">
@@ -282,7 +294,12 @@
             if (result.isConfirmed) {
                 const form = document.getElementById('deleteSelected');
                 // Replace the placeholder with the actual event ID
-                form.action = `{{ route('admin.user.destroy', ':Id') }}`.replace(':Id', userID);
+                @if(Auth::user()->hasRole('admin'))
+                    form.action = `{{ route('admin.user.destroy', ':Id') }}`.replace(':Id', userID);
+                @else{
+                    form.action = `{{ route('event_manager.user.destroy', ':Id') }}`.replace(':Id', userID);
+                }
+                @endif
                 form.submit();
             }
         });

@@ -1,5 +1,5 @@
 @php
-session(['selectedEvent' => $selectedEvent]);
+    session(['selectedEvent' => $selectedEvent]);
 @endphp
 
 <div>
@@ -17,7 +17,7 @@ session(['selectedEvent' => $selectedEvent]);
     
     @if (Auth::user()->hasRole('admin'))
         <div class="flex justify-between mb-4  sm:-mt-4">
-            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Category</div>
+            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">admin / Manage Category</div>
         </div>
     @else
         <div class="flex justify-between mb-4  sm:-mt-4">
@@ -77,7 +77,11 @@ session(['selectedEvent' => $selectedEvent]);
                         <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                     </div>
                     <div class="mb-4">
-                        <form action="{{ route('admin.category.store') }}" method="POST" class="">
+                        @if(Auth::user()->hasRole('admin'))
+                            <form action="{{ route('admin.category.store') }}" method="POST" class="">
+                        @else
+                            <form action="{{ route('event_manager.category.store') }}" method="POST" class="">
+                        @endif
                         <x-caps-lock-detector />
                             @csrf
                                 <div class="mb-2">
@@ -193,7 +197,11 @@ session(['selectedEvent' => $selectedEvent]);
                                                         <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                     </div>
                                                     <div class="mb-4">
-                                                        <form id="updateCategoryForm" action="{{ route('admin.category.update', $category->id )}}" method="POST" class="">
+                                                        @if(Auth::user()->hasRole('admin'))
+                                                            <form id="updateCategoryForm" action="{{ route('admin.category.update', $category->id )}}" method="POST" class="">
+                                                        @else
+                                                            <form id="updateCategoryForm" action="{{ route('event_manager.category.update', $category->id )}}" method="POST" class="">
+                                                        @endif
                                                             <x-caps-lock-detector />
                                                             @csrf
                                                             @method('PUT')
@@ -230,7 +238,12 @@ session(['selectedEvent' => $selectedEvent]);
                                                 </div>
                                             </div>
                                         </div>
-                                        <form id="deleteSelected" action="{{ route('admin.category.destroy', $category->id) }}" method="POST" onsubmit="return confirmDeletion(event)">
+
+                                        @if(Auth::user()->hasRole('admin'))
+                                            <form id="deleteSelected" action="{{ route('admin.category.destroy', $category->id) }}" method="POST" onsubmit="return confirmDeletion(event)">
+                                        @else
+                                            <form id="deleteSelected" action="{{ route('event_manager.category.destroy', $category->id) }}" method="POST" onsubmit="return confirmDeletion(event)">
+                                        @endif    
                                             @csrf
                                             @method('DELETE')
                                             <button class="bg-red-500 text-white text-sm px-3 py-1.5 rounded hover:bg-red-700">

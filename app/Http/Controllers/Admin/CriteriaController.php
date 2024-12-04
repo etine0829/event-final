@@ -21,17 +21,6 @@ class CriteriaController extends Controller
         return view('Admin.criteria.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
 {
     // Validate input data
@@ -46,16 +35,22 @@ class CriteriaController extends Controller
     $totalScore = Criteria::where('category_id', $request->input('category_id'))->sum('criteria_score');
     $newScore = $request->input('criteria_score') ?? 0;
 
+    // If the total score exceeds 100, redirect based on the user's role
     if (($totalScore + $newScore) > 100) {
-        return redirect()->route('admin.criteria.index')
+        $redirectRoute = Auth::user()->hasRole('admin') 
+            ? 'admin.criteria.index' 
+            : 'event_manager.criteria.index';
+        
+        return redirect()->route($redirectRoute)
             ->with('error', 'The total criteria scores for this category cannot exceed 100.');
     }
 
-    // Check if a criteria with the same name already exists
+    // Check if a criteria with the same name already exists for the category
     $existingCriteriaByNameAndCategory = Criteria::where('criteria_name', $request->input('criteria_name'))
         ->where('category_id', $request->input('category_id'))
         ->first();
 
+    // If the criteria name is not taken, create new criteria
     if (!$existingCriteriaByNameAndCategory) {
         $criteria = new Criteria();
         $criteria->event_id = $request->input('event_id');
@@ -64,27 +59,28 @@ class CriteriaController extends Controller
         $criteria->criteria_score = $newScore;
         $criteria->save();
 
-        return redirect()->route('admin.criteria.index')
+        // Redirect after successful creation
+        $redirectRoute = Auth::user()->hasRole('admin') 
+            ? 'admin.criteria.index' 
+            : 'event_manager.criteria.index';
+
+        return redirect()->route($redirectRoute)
             ->with('success', 'Criteria created successfully.');
     } else {
-        return redirect()->route('admin.criteria.index')
+        // If the criteria name already exists, redirect with an error
+        $redirectRoute = Auth::user()->hasRole('admin') 
+            ? 'admin.criteria.index' 
+            : 'event_manager.criteria.index';
+
+        return redirect()->route($redirectRoute)
             ->with('error', 'Criteria name is already taken for this category. Try again.');
     }
 }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
+public function update(Request $request, $id)
 {
+    $userRole = Auth::user()->hasRole('admin') ? 'admin' : 'event_manager';
+
     // Validate input data
     $validatedData = $request->validate([
         'event_id' => 'required|exists:events,id',
@@ -99,12 +95,14 @@ class CriteriaController extends Controller
     // Calculate the total score for the category, excluding the current criteria
     $currentScore = $criteria->criteria_score ?? 0; // The current score of the criteria
     $newScore = $request->input('criteria_score') ?? 0;
+
+    // Get the total score for the category, excluding the current criteria
     $totalScore = Criteria::where('category_id', $request->input('category_id'))
         ->where('id', '!=', $id) // Exclude the current criteria being updated
         ->sum('criteria_score');
 
     if (($totalScore + $newScore) > 100) {
-        return redirect()->route('admin.criteria.index')
+        return redirect()->route($userRole . '.criteria.index')
             ->with('error', 'The total criteria scores for this category cannot exceed 100.');
     }
 
@@ -120,21 +118,18 @@ class CriteriaController extends Controller
         $criteria->criteria_score = $newScore;
         $criteria->save();
 
-        return redirect()->route('admin.criteria.index')
+        return redirect()->route($userRole . '.criteria.index')
             ->with('success', 'Criteria updated successfully.');
     } else {
-        return redirect()->route('admin.criteria.index')
+        return redirect()->route($userRole . '.criteria.index')
             ->with('error', 'Criteria name is already taken. Try again.');
     }
 }
 
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Criteria $criteria)
-{
-    if (Auth::user()->hasAnyRole(['admin', 'event_manager'])) {
+public function destroy(Criteria $criteria)
+    {
+    if (Auth::user()->hasRole('admin')) {
         // Check if there are any associated records
         if ($criteria->exists()) {
             return redirect()->route('admin.criteria.index')->with('error', 'Cannot delete criteria because it has associated data.');
@@ -144,10 +139,23 @@ class CriteriaController extends Controller
         $criteria->delete();
 
         return redirect()->route('admin.criteria.index')->with('success', 'criteria deleted successfully.');
+    }else{
+        // Check if there are any associated records
+        if ($criteria->exists()) {
+            return redirect()->route('event_manager.criteria.index')->with('error', 'Cannot delete criteria because it has associated data.');
+        }
+        // If no associated records, proceed with deletion
+        $criteria->delete();
+        return redirect()->route('event_manager.criteria.index')->with('success', 'criteria deleted successfully.');
     }
 
-    return redirect()->route('admin.criteria.index')->with('error', 'Unauthorized access.');
+    if (Auth::user()->hasRole('admin')) {
+        return redirect()->route('admin.criteria.index')->with('error', 'Unauthorized access.');
+    }else{
+        return redirect()->route('event_manager.criteria.index')->with('error', 'Unauthorized access.');    
+    }
 }
+
 
     public function deleteAll(Request $request)
     {       

@@ -7,15 +7,9 @@
         <x-sweetalert type="success" :message="session('success')" />
     @endif
 
-
-
-
     @if (session('info'))
         <x-sweetalert type="info" :message="session('info')" />
     @endif
-
-
-
 
     @if (session('error'))
         <x-sweetalert type="error" :message="session('error')" />
@@ -28,10 +22,6 @@
         <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Event Manager / Manage Participant</div>
     @endif
     </div>
-
-
-
-
    
     <div class="flex justify-between mb-4 sm:-mt-4">
             <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase"></div>
@@ -73,16 +63,9 @@
         </div>
         <hr class="border-gray-200 my-4">
 
-
-
-
         @if(!$eventToShow)
             <p class="text-black text-sm mt-11 mb-4 uppercase text-center">No selected Event</p>
         @endif
-       
-
-
-
 
     @if($eventToShow)
     <div class="flex justify-between">
@@ -98,7 +81,11 @@
                             <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                         </div>
                         <div class="mb-4">
-                            <form action="{{ route('admin.participant.store') }}" method="POST" class=""  enctype="multipart/form-data">
+                            @if(Auth::user()->hasrole('admin'))
+                                <form action="{{ route('admin.participant.store') }}" method="POST" class=""  enctype="multipart/form-data">
+                            @else
+                                <form action="{{ route('event_manager.participant.store') }}" method="POST" class=""  enctype="multipart/form-data">
+                            @endif
                             <x-caps-lock-detector />
                                     @csrf
                                      
@@ -304,7 +291,11 @@
                                                         <p class="text-xl font-bold">Edit Participant</p>
                                                         <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                     </div>
-                                                    <form action="{{ route('admin.participant.update', $participant->id) }}" method="POST" enctype="multipart/form-data">
+                                                    @if(Auth::user()->hasrole('admin'))
+                                                        <form action="{{ route('admin.participant.update', $participant->id) }}" method="POST" enctype="multipart/form-data">
+                                                    @else
+                                                        <form action="{{ route('event_manager.participant.update', $participant->id) }}" method="POST" enctype="multipart/form-data">
+                                                    @endif
                                                         @csrf
                                                         @method('PUT')
                                                         <!-- Event Selection -->
@@ -378,10 +369,11 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <!-- Delete Button -->
-                                       <!-- Delete Button -->
-                                        <form id="deleteSelected" action="{{ route('admin.participant.destroy', ':id') }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_name }}');">
+                                        @if(Auth::user()->hasrole('admin'))
+                                            <form id="deleteSelected" action="{{ route('admin.participant.destroy', ':id') }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_name }}');">
+                                        @else
+                                            <form id="deleteSelected" action="{{ route('event_manager.participant.destroy', ':id') }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $participant->id }}', '{{ $participant->participant_name }}');">
+                                        @endif
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">

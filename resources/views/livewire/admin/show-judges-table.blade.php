@@ -1,8 +1,9 @@
+<div>
 @php
     session(['selectedEvent' => $selectedEvent]);
 @endphp
 
-@if (Auth::user()->hasRole('admin')) 
+@if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('event_manager'))
     <div>
         @if (session('success'))
             <x-sweetalert type="success" :message="session('success')" />
@@ -16,22 +17,28 @@
             <x-sweetalert type="error" :message="session('error')" />
         @endif
 
-        <div class="flex justify-between mb-4 sm:-mt-4">
-            <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Judges</div>
-        </div>
+        @if (Auth::user()->hasRole('admin'))
+            <div class="flex justify-between mb-4 sm:-mt-4">
+                <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Admin / Manage Judges</div>
+            </div>
+        @else
+            <div class="flex justify-between mb-4 sm:-mt-4">
+                <div class="font-bold text-md tracking-tight text-md text-black  mt-2 uppercase">Event Manager / Manage Judges</div>
+            </div>
+        @endif
         
         <div class="flex flex-col md:flex-row items-start md:items-center md:justify-start">
-            <div class="flex items-center w-full md:w-auto">
-                <label for="event_id" class="block text-sm text-gray-700 font-bold md:mr-4 truncate uppercase">Event:</label>
-                <select wire:model="selectedEvent" id="event_id" name="event_id" wire:change="updateCategory"
-                        class="cursor-pointer text-sm shadow appearance-none border pr-16 rounded py-2 px-2 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror md:w-auto"
-                        required>
-                    <option value="0">Select Event</option>
-                    @foreach($events as $event)
-                        <option value="{{ $event->id }}">{{ $event->event_name }}</option>
-                    @endforeach
-                </select>
-            </div>
+        <div class="flex items-center w-full md:w-auto">
+            <label for="event_id" class="block text-sm text-gray-700 font-bold md:mr-4 truncate uppercase">Event:</label>
+            <select wire:model="selectedEvent" id="event_id" name="event_id" wire:change="updateCategory"
+                    class="cursor-pointer text-sm shadow appearance-none border pr-16 rounded py-2 px-2 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror md:w-auto"
+                    required>
+                <option value="0">Select Event</option>
+                @foreach($events as $event)
+                    <option value="{{ $event->id }}">{{ $event->event_name }}</option>
+                @endforeach
+            </select>
+        </div>
 
             <div class="w-full flex justify-end mt-4 md:mt-0 md:ml-4">
                 @if($selectedEvent)
@@ -55,21 +62,26 @@
                                 <p class="text-xl font-bold">Add Judges</p>
                                 <button @click="open = false" class="text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                             </div>
-                            <form wire:submit.prevent="assignJudgeToEvent" class="mb-4">
-                                <div class="mb-2">
-                                    <label for="judge_id">Judge:</label>
-                                    <select wire:model="selectedJudge" id="judge_id" class="form-control" required>
-                                        <option value="">Select Judge</option>
-                                        @foreach($judges as $judge)
-                                            <option value="{{ $judge->id }}">{{ $judge->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
 
-                                <div class="flex mb-4 mt-5 justify-center">
-                                    <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
-                                </div>
-                            </form>
+                            @if (Auth::user()->hasRole('admin'))
+                                <form wire:submit.prevent="assignJudgeToEvent" class="mb-4">
+                            @else
+                                <form wire:submit.prevent="assignJudgeToEvent" class="mb-4">
+                            @endif    
+                                    <div class="mb-2">
+                                        <label for="judge_id">Judge:</label>
+                                        <select wire:model="selectedJudge" id="judge_id" class="form-control" required>
+                                            <option value="">Select Judge</option>
+                                            @foreach($judges as $judge)
+                                                <option value="{{ $judge->id }}">{{ $judge->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="flex mb-4 mt-5 justify-center">
+                                        <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
+                                    </div>
+                                </form>
 
                         </div>
                     </div>
@@ -154,13 +166,17 @@
                                                         <!-- You can add the edit or action buttons here -->
                                                         
                                                     </div>
-                                                    <form id="deleteSelected" action="{{ route('admin.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
-                                                            <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
-                                                        </button>
-                                                    </form>
+                                                    @if(Auth::user()->hasRole('admin'))
+                                                        <form id="deleteSelected" action="{{ route('admin.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">
+                                                    @else
+                                                        <form id="deleteSelected" action="{{ route('event_manager.judge.destroy', [':id', ':judge_id']) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $judge->id }}', '{{ $judge->judge_id }}', '{{ $judge->judge_name }}', '{{ $judge->score }}');">
+                                                    @endif
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="bg-red-500 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
+                                                                <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
+                                                            </button>
+                                                        </form>
                                                 @else
                                                     <p>No judges assigned to this event.</p>
                                                 @endif
@@ -180,10 +196,10 @@
                                                 {{ $judges->total() }} Search results 
                                             @endif                                    
                                         </div>
-                                        <div class="justify-end">
+                                        <!-- <div class="justify-end">
                                             <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of judge: <text class="ml-2">{{ $judgeCounts[$eventToShow->id]->judge_count ?? 0 }}</text></p>
                                             
-                                        </div>
+                                        </div> -->
                                     </div> 
                                 </td>
                                 <td>
@@ -202,7 +218,8 @@
                 @endif
         @endif
     </div>
-
+@endif
+</div>
     <script>
         function confirmDeleteAll(event) {
             event.preventDefault(); // Prevent form submission initially
@@ -241,7 +258,7 @@
             event.preventDefault(); // Prevent form submission initially
 
             Swal.fire({
-                title: `Are you sure you want to delete the judge ${judgeId} - ${judgename} ${score} ?`,
+                title: `Are you sure you want to delete the judge?`,
                 text: "You won't be able to revert this!",
                 icon: 'warning',
                 showCancelButton: true,
@@ -262,7 +279,3 @@
         }
 
     </script>
-
-
-
-@endif

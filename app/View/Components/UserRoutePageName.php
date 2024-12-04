@@ -77,6 +77,18 @@ class UserRoutePageName extends Component
             $this->title = $titles[$routeName] ?? __('Event Tabulation Management System');
 
         }
+
+        else if (Auth::user()->hasRole('staff')) {
+
+            $titles = [
+
+                'staff.dashboard' => __('Staff | Dashboard'),
+                'staff.result.index' => __('Staff | Result'),
+            ];
+
+            $this->title = $titles[$routeName] ?? __('Event Tabulation Management System');
+
+        }
          else {
             $this->title = __('Event Tabulation Management System');
         }

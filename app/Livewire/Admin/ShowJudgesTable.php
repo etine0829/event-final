@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Admin\Event; 
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class ShowJudgesTable extends Component
 {
@@ -31,34 +32,75 @@ class ShowJudgesTable extends Component
 
     public function assignJudgeToEvent()
 {
-    // Ensure we have a valid event and judge selected
-    if (!$this->selectedEvent || !$this->selectedJudge) {
-        session()->flash('error', 'Please select both an event and a judge.');
-        return;
+    if(Auth::user()->hasRole('admin')){
+        // Ensure we have a valid event and judge selected
+        if (!$this->selectedEvent || !$this->selectedJudge) {
+            session()->flash('error', 'Please select both an event and a judge.');
+            return;
+        }
+
+        // Find the event and judge by their IDs
+        $event = Event::find($this->selectedEvent);
+        $judge = User::find($this->selectedJudge);  // Assuming judge is a User model
+
+        // Check if event and judge exist
+        if (!$event || !$judge) {
+            session()->flash('error', 'Invalid event or judge.');
+            return;
+        }
+
+        // Check if the judge is already assigned to the selected event
+        if ($judge->event_id == $this->selectedEvent) {
+            return redirect()->route('admin.judge.index')->with('error', 'Judge is already assign to this event   .');
+            return;
+        }
+
+        if ($judge->event_id == $this->selectedEvent) {
+            return redirect()->route('admin.judge.index')->with('error', 'Judge is already assign to this event   .');
+            return;
+        }
+
+        // Update the judge's event_id field with the selected event ID
+        $judge->event_id = $this->selectedEvent;
+        $judge->save();
+
+        // Flash success message
+        return redirect()->route('admin.judge.index')->with('success', 'Judge added successfully.');
+    }else{
+        // Ensure we have a valid event and judge selected
+        if (!$this->selectedEvent || !$this->selectedJudge) {
+            session()->flash('error', 'Please select both an event and a judge.');
+            return;
+        }
+
+        // Find the event and judge by their IDs
+        $event = Event::find($this->selectedEvent);
+        $judge = User::find($this->selectedJudge);  // Assuming judge is a User model
+
+        // Check if event and judge exist
+        if (!$event || !$judge) {
+            session()->flash('error', 'Invalid event or judge.');
+            return;
+        }
+
+        // Check if the judge is already assigned to the selected event
+        if ($judge->event_id == $this->selectedEvent) {
+            return redirect()->route('event_manager.judge.index')->with('error', 'Judge is already assign to this event   .');
+            return;
+        }
+
+        if ($judge->event_id == $this->selectedEvent) {
+            return redirect()->route('event_manager.judge.index')->with('error', 'Judge is already assign to this event   .');
+            return;
+        }
+
+        // Update the judge's event_id field with the selected event ID
+        $judge->event_id = $this->selectedEvent;
+        $judge->save();
+
+        // Flash success message
+        return redirect()->route('event_manager.judge.index')->with('success', 'Judge added successfully.');
     }
-
-    // Find the event and judge by their IDs
-    $event = Event::find($this->selectedEvent);
-    $judge = User::find($this->selectedJudge);  // Assuming judge is a User model
-
-    // Check if event and judge exist
-    if (!$event || !$judge) {
-        session()->flash('error', 'Invalid event or judge.');
-        return;
-    }
-
-    // Check if the judge is already assigned to the selected event
-    if ($judge->event_id == $this->selectedEvent) {
-        return redirect()->route('admin.judge.index')->with('error', 'Judge is already assign to this event   .');
-        return;
-    }
-
-    // Update the judge's event_id field with the selected event ID
-    $judge->event_id = $this->selectedEvent;
-    $judge->save();
-
-    // Flash success message
-    return redirect()->route('admin.judge.index')->with('success', 'Judge updated successfully.');
 }
 
 

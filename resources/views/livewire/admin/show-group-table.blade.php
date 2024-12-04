@@ -77,7 +77,11 @@
                         <button @click="open = false" class=" text-black text-sm px-3 py-2 rounded hover:text-red-500">X</button>
                     </div>
                     <div class="mb-4">
-                        <form action="{{ route('admin.group.store') }}" method="POST" class="">
+                        @if (Auth::user()->hasRole('admin')) 
+                            <form action="{{ route('admin.group.store') }}" method="POST" class="">
+                        @else
+                            <form action="{{ route('event_manager.group.store') }}" method="POST" class="">
+                        @endif
                         <x-caps-lock-detector />
                             @csrf
                                 <div class="mb-2">
@@ -169,7 +173,11 @@
                                                         <a @click="open = false" class="cursor-pointer text-black text-sm px-3 py-2 rounded hover:text-red-500">X</a>
                                                     </div>
                                                     <div class="mb-4">
-                                                        <form id="updateCategoryForm" action="{{ route('admin.group.update', $group->id )}}" method="POST" class="">
+                                                        @if (Auth::user()->hasRole('admin')) 
+                                                            <form id="updateCategoryForm" action="{{ route('admin.group.update', $group->id )}}" method="POST" class="">
+                                                        @else
+                                                            <form id="updateCategoryForm" action="{{ route('event_manager.group.update', $group->id )}}" method="POST" class="">
+                                                        @endif
                                                             <x-caps-lock-detector />
                                                             @csrf
                                                             @method('PUT')
@@ -199,7 +207,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <form id="deleteSelected" action="{{ route('admin.group.destroy', $group->id) }}" method="POST">
+                                        @if (Auth::user()->hasRole('admin'))
+                                            <form id="deleteSelected" action="{{ route('admin.group.destroy', $group->id) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $group->id }}', '{{ $group->group_name}}');">
+                                        @else
+                                            <form id="deleteSelected" action="{{ route('event_manager.group.destroy', $group->id) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $group->id }}', '{{ $group->group_name}}');">
+                                        @endif
                                             @csrf
                                             @method('DELETE')
                                             <button class="bg-red-500 text-white text-sm px-3 py-1.5 rounded hover:bg-red-700">
@@ -244,31 +256,6 @@
         @endif
     @endif
 </div>
-
-<!-- <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    const eventSelect = document.getElementById('event_id');
-    const scoreContainer = document.getElementById('scoreContainer');
-
-    // Hide or show the score input based on scoring type
-    function toggleScoreVisibility() {
-        const selectedEvent = eventSelect.options[eventSelect.selectedIndex];
-        const scoringType = selectedEvent.getAttribute('data-scoring');
-
-        if (scoringType === 'ranking') {
-            scoreContainer.style.display = 'none'; // Hide score input
-        } else {
-            scoreContainer.style.display = 'block'; // Show score input
-        }
-    }
-
-    // Initial check
-    toggleScoreVisibility();
-
-    // Add event listener if the event selection changes
-    eventSelect.addEventListener('change', toggleScoreVisibility);
-});
-</script>  -->
 
 <script>
 
@@ -322,7 +309,7 @@ function searchGroup(event) {
         event.preventDefault(); // Prevent form submission initially
 
         Swal.fire({
-            title: `Are you sure you want to delete the group ${groupId} - ${groupname} ?`,
+            title: `Are you sure you want to delete the group ${groupId}?`,
             text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,

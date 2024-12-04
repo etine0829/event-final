@@ -27,8 +27,8 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
-        Route::get('assign-judge', [JudgesController::class, 'showAssignJudgeForm'])->name('assign-judge.form');
-        Route::post('assign-judge', [JudgesController::class, 'assignJudgeToEvent'])->name('assign-judge');
+        // Route::get('assign-judge', [JudgesController::class, 'showAssignJudgeForm'])->name('assign-judge.form');
+        // Route::post('assign-judge', [JudgesController::class, 'assignJudgeToEvent'])->name('assign-judge');
 
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -122,9 +122,8 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:event_manager'])->prefix('event_manager')->name('event_manager.')->group(function () {
         
-        Route::get('assign-judge', [JudgesController::class, 'showAssignJudgeForm'])->name('assign-judge.form');
-        Route::post('assign-judge', [JudgesController::class, 'assignJudgeToEvent'])->name('assign-judge');
-
+        // Route::get('assign-judge', [JudgesController::class, 'showAssignJudgeForm'])->name('assign-judge.form');
+        // Route::post('assign-judge', [JudgesController::class, 'assignJudgeToEvent'])->name('assign-judge');
 
         Route::get('/dashboard', [DashboardController::class, 'indexManager'])->name('dashboard');
         // Route::get('/manage-event', [EventController::class, 'index'])->name('event.dashboard');
@@ -210,8 +209,6 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-
-
 // judge route
 
 Route::middleware(['auth'])->group(function () {
@@ -247,6 +244,19 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::middleware(['role:staff'])->prefix('staff')->name('staff.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'indexStaff'])->name('dashboard');
+    });
+
+    Route::resource('result', ResultController::class)->names([
+        'index' => 'result.index',  
+        'create' => 'result.create',
+        'store' => 'result.store',
+        'edit' => 'result.edit',
+        'update' => 'result.update' 
+    ]);
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

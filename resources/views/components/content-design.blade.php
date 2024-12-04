@@ -38,7 +38,7 @@
         </div>
     </div>
 
-@elseif (Auth::user()->hasRole('admin_staff'))
+@elseif (Auth::user()->hasRole('staff'))
     <div class="transition-all duration-300 min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-gradient-to-r from-yellow-400 to-red-500 text-black dark:text-white">
         <div id="dashboardContent" class="h-full ml-14  md:ml-48 transition-all duration-300">
             <div class="max-w-full mx-auto">
@@ -117,6 +117,7 @@
         </div>
     </div>
 </div>
+
 @elseif (Auth::user()->hasRole('event_manager'))
 <div class="transition-all duration-300 min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased text-black dark:text-white">
         <div id="dashboardContent" class="h-full ml-14  md:ml-48 transition-all duration-300">

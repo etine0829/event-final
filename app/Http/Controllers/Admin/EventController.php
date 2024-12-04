@@ -25,108 +25,54 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
+        // Define common validation rules
+        $validatedData = $request->validate([
+            'event_name' => 'required|string',
+            'venue' => 'required|string',
+            'type_of_scoring' => 'required|string',
+        ]);
+
+        $event = Event::create($validatedData);
+
         if (Auth::user()->hasRole('admin')) {
-
-
-            $validatedData = $request->validate([
-                'event_name' => 'required|string',
-                // 'event_date' => 'required|date_format:Y-m-d\TH:i',
-                'venue' => 'required|string',
-                'type_of_scoring' => 'required|string',
-            ]);
-
-            // Event::create($validatedData);
-            $event = Event::create($validatedData);
-
             return redirect()->route('admin.event.index')->with('success', 'Event created successfully.');
-
         } else if (Auth::user()->hasRole('event_manager')) {
-
-            $validatedData = $request->validate([
-                'event_name' => 'required|string',
-                // 'event_date' => 'required|date_format:Y-m-d\TH:i',
-                'venue' => 'required|string',
-                'type_of_scoring' => 'required|string',
-            ]);
-
-            $event = Event::create($validatedData);
-
-
             return redirect()->route('event_manager.event.index')
                 ->with('success', 'Event created successfully.');
-        
         }
-
-    }
-    public function show(Event $event)
-    {
-        // return view('events.show', compact('event'));
     }
 
-    public function edit(Event $event)
-    {
-        // return view('events.edit', compact('event'));
-    }
 
     public function update(Request $request, Event $event)
     {
+
+        $validatedData = $request->validate([
+            'event_name' => 'required|string|max:255',
+            'venue' => 'required|string|max:255',
+            'type_of_scoring' => 'required|in:points,ranking(H-L),ranking(L-H)',
+        ]);
+
+        $changes = false;
+        foreach ($validatedData as $key => $value) {
+            if ($event->$key !== $value) {
+                $changes = true;
+                break;
+            }
+        }
+
+        if (!$changes) {
+            return redirect()->route('admin.event.index')->with('info', 'No changes were made.');
+        }
+
+        $event->update($validatedData);
+
         if (Auth::user()->hasRole('admin')) {
-
-            $validatedData = $request->validate([
-                'event_name' => 'required|string|max:255',
-                // 'event_date' => 'required|date_format:Y-m-d\TH:i',
-                'venue' => 'required|string|max:255',
-                'type_of_scoring' => 'required|in:points,ranking(H-L),ranking(L-H)',
-            ]);
-
-            // $event->update($validated);
-
-            // Check for changes
-            $changes = false;
-            foreach ($validatedData as $key => $value) {
-                if ($event->$key !== $value) {
-                    $changes = true;
-                    break;
-                }
-            }
-
-            if (!$changes) {
-                return redirect()->route('admin.event.index')->with('info', 'No changes were made.');
-            }
-
-            $event->update($validatedData);
-
             return redirect()->route('admin.event.index')->with('success', 'Event updated successfully.');
-
         } else if (Auth::user()->hasRole('event_manager')) {
-            
-            $validatedData = $request->validate([
-                'event_name' => 'required|string|max:255',
-                // 'event_date' => 'required|date_format:Y-m-d\TH:i',
-                'venue' => 'required|string|max:255',
-                'type_of_scoring' => 'required|in:points,ranking(H-L),ranking(L-H)',
-            ]);
-
-            // $event->update($validated);
-
-            // Check for changes
-            $changes = false;
-            foreach ($validatedData as $key => $value) {
-                if ($event->$key !== $value) {
-                    $changes = true;
-                    break;
-                }
-            }
-
-            if (!$changes) {
-                return redirect()->route('admin.event.index')->with('info', 'No changes were made.');
-            }
-
-            $event->update($validatedData);
-
-            return redirect()->route('admin.event.index')->with('success', 'Event updated successfully.');
+            return redirect()->route('event_manager.event.index')->with('success', 'Event updated successfully.');
         }
     }
+
 
     public function destroy(Event $event)
     {
@@ -159,12 +105,16 @@ class EventController extends Controller
 
     public function deleteAll(Request $request)
     {
-        
-        
-         $count = Event::count();
+        // Get the count of events
+        $count = Event::count();
 
+        // Check the user's role and handle the event count logic
         if ($count === 0) {
-            return redirect()->route('admin.event.index')->with('info', 'There are no events to delete.');
+            if (Auth::user()->hasRole('admin')) {
+                return redirect()->route('admin.event.index')->with('info', 'There are no events to delete.');
+            } elseif (Auth::user()->hasRole('event_manager')) {
+                return redirect()->route('event_manager.event.index')->with('info', 'There are no events to delete.');
+            }
         }
 
         try {
@@ -179,16 +129,22 @@ class EventController extends Controller
 
             \DB::commit();
 
-            return redirect()->route('admin.event.index')->with('success', 'All events deleted successfully.');
+            // Redirect based on the user's role after successful deletion
+            if (Auth::user()->hasRole('admin')) {
+                return redirect()->route('admin.event.index')->with('success', 'All events deleted successfully.');
+            } elseif (Auth::user()->hasRole('event_manager')) {
+                return redirect()->route('event_manager.event.index')->with('success', 'All events deleted successfully.');
+            }
+
         } catch (\Exception $e) {
             \DB::rollback();
 
             // Log the error or handle it appropriately
-            return redirect()->route('admin.event.index')->with('error', 'Cannot delete events because they have associated categories.');
+            if (Auth::user()->hasRole('admin')) {
+                return redirect()->route('admin.event.index')->with('error', 'Cannot delete events because they have associated categories.');
+            } elseif (Auth::user()->hasRole('event_manager')) {
+                return redirect()->route('event_manager.event.index')->with('error', 'Cannot delete events because they have associated categories.');
+            }
         }
-
-        
     }
-
-
 }

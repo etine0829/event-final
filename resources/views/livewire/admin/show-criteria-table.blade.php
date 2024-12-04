@@ -174,12 +174,9 @@
                                     <form action="{{ route('admin.criteria.store') }}" method="POST" class="" enctype="multipart/form-data">
                                 @else
                                     <form action="{{ route('event_manager.criteria.store') }}" method="POST" class="" enctype="multipart/form-data">
-                                @endif
-                                       
+                                @endif                                  
                                         <x-caps-lock-detector />
                                         @csrf
-
-
                                         <div class="mb-2">
                                             <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
                                             <select id="event_id" name="event_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('event_id') is-invalid @enderror" required>
@@ -307,12 +304,10 @@
                                                         <form action="{{ route('admin.criteria.update', $criteria->id) }}" method="POST" class="" enctype="multipart/form-data">
                                                     @else
                                                         <form action="{{ route('event_manager.criteria.update', $criteria->id) }}" method="POST" class="" enctype="multipart/form-data">
-                                                    @endif
-                                                       
+                                                    @endif       
                                                             <x-caps-lock-detector />
                                                             @csrf
                                                             @method('PUT')
-
 
                                                             <div class="mb-2">
                                                                 <label for="event_id" class="block text-gray-700 text-md font-bold mb-2">Event</label>
@@ -340,14 +335,13 @@
                                                                 <x-input-error :messages="$errors->get('criteria_name')" class="mt-2" />
                                                             </div>
 
-
-                                                            @if($type_of_scoring === 'points')
-                                                                <div class="mb-2">
-                                                                    <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
-                                                                    <input type="number" name="criteria_score" id="criteria_score" value="{{ $criteria->criteria_score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
-                                                                </div>
-                                                            @endif
-                                                           
+                                                                @if($type_of_scoring === 'points')
+                                                                    <div class="mb-2">
+                                                                        <label for="criteria_score" class="block text-gray-700 text-md font-bold mb-2">Score</label>
+                                                                        <input type="number" name="criteria_score" id="criteria_score" value="{{ $criteria->criteria_score }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('criteria_score') is-invalid @enderror" required>
+                                                                    </div>
+                                                                @endif
+                                                            
                                                             <div class="flex mb-4 mt-10 justify-center">
                                                                 <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                                                     Save
@@ -358,19 +352,15 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @if (Auth::user()->hasRole('admin'))
-                                            @if (Auth::user()->hasRole('admin'))
-                                                <form id="deleteSelected" action="" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $criteria->id }}', '{{ $criteria->criteria_name}}', '{{ $criteria->criteria_score}}');">
-                                            @else
-                                                <form id="deleteSelected" action="" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $criteria->id }}', '{{ $criteria->criteria_name}}', '{{ $criteria->criteria_score}}');">
-                                            @endif
+                                        @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('event_manager'))
+                                            <form id="deleteSelected" action="{{ route('event_manager.criteria.destroy', $criteria->id) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $criteria->id }}', '{{ $criteria->criteria_name}}', '{{ $criteria->criteria_score}}');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="bg-red-500 text-white text-sm px-3 py-1.5 rounded hover:bg-red-700" id="hehe">
                                                     <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
                                                 </button>
                                             </form>
-                                        @endif
+                                        @endif                               
                                     </div>
                                 </td>
                             </tr>

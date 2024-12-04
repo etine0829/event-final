@@ -29,8 +29,8 @@ class GroupController extends Controller
      /**
       * Store a newly created resource in storage.
       */
-     public function store(Request $request)
- {   
+public function store(Request $request)
+    {   
      if (Auth::user()->hasRole('admin')) {
  
          $validatedData = $request->validate([
@@ -69,57 +69,88 @@ class GroupController extends Controller
         // Attempt to create the Group record
         try {
             Group::create($validatedData);
-            return redirect()->route('admin.group.index')
+            return redirect()->route('event_manager.group.index')
                 ->with('success', 'Group created successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.group.index')->with('error', 'Failed to create group: ' . $e->getMessage());
+            return redirect()->route('event_manager.group.index')->with('error', 'Failed to create group: ' . $e->getMessage());
         }
      }
  }
  
-     public function update(Request $request, Group $group)
-     {
-         
-         if (Auth::user()->hasRole('admin')) {
- 
-             try {
-                 $validatedData = $request->validate([
-                     'event_id' => 'required|exists:events,id',
-                     'group_name' => [
-                         'required',
-                         'string',
-                         'max:255',
-                         Rule::unique('group')->where(function ($query) use ($request, $group) {
-                             return $query->where('event_id', $request->event_id)
-                                         ->where('id', '<>', $group->id);
-                         }),
-                     ]  
-                 ]);
-                 
-                  // Check if any changes were made
-             $hasChanges = $request->event_id !== $group->event_id ||
-             $request->group_name !== $group->group_name;
- 
-                 if (!$hasChanges) {
-                 return redirect()->route('admin.group.index')->with('info', 'No changes were made.');
-                 }
- 
-                 // Update the group record
-                 $group->update($validatedData);
- 
-                 return redirect()->route('admin.group.index')->with('success', 'Group updated successfully.');
-                 } catch (ValidationException $e) {
-                 // Return all validation errors to the user
-                 return redirect()->back()->withErrors($e->errors())->with('error', 'Validation error occurred.');
-                 } catch (\Exception $e) {
-                 // Catch any other errors
-                 return redirect()->route('admin.group.index')->with('error', 'An error occurred: ' . $e->getMessage());
-                 }
-                 }
- 
-                 // Handle unauthorized access
-                 return redirect()->route('admin.group.index')->with('error', 'Unauthorized action.');
-     }
+    public function update(Request $request, Group $group)
+    {        
+        if (Auth::user()->hasRole('admin')) {
+
+            try {
+                $validatedData = $request->validate([
+                    'event_id' => 'required|exists:events,id',
+                    'group_name' => [
+                        'required',
+                        'string',
+                        'max:255',
+                        Rule::unique('group')->where(function ($query) use ($request, $group) {
+                            return $query->where('event_id', $request->event_id)
+                                        ->where('id', '<>', $group->id);
+                        }),
+                    ]  
+                ]);
+                
+                // Check if any changes were made
+            $hasChanges = $request->event_id !== $group->event_id ||
+            $request->group_name !== $group->group_name;
+
+                if (!$hasChanges) {
+                return redirect()->route('admin.group.index')->with('info', 'No changes were made.');
+                }
+
+                // Update the group record
+                $group->update($validatedData);
+
+                return redirect()->route('admin.group.index')->with('success', 'Group updated successfully.');
+                } catch (ValidationException $e) {
+                // Return all validation errors to the user
+                return redirect()->back()->withErrors($e->errors())->with('error', 'Validation error occurred.');
+                } catch (\Exception $e) {
+                // Catch any other errors
+                return redirect()->route('admin.group.index')->with('error', 'An error occurred: ' . $e->getMessage());
+                }
+
+            }else{
+                try {
+                    $validatedData = $request->validate([
+                        'event_id' => 'required|exists:events,id',
+                        'group_name' => [
+                            'required',
+                            'string',
+                            'max:255',
+                            Rule::unique('group')->where(function ($query) use ($request, $group) {
+                                return $query->where('event_id', $request->event_id)
+                                            ->where('id', '<>', $group->id);
+                            }),
+                        ]  
+                    ]);
+                    
+                    // Check if any changes were made
+                $hasChanges = $request->event_id !== $group->event_id ||
+                $request->group_name !== $group->group_name;
+    
+                    if (!$hasChanges) {
+                    return redirect()->route('event_manager.group.index')->with('info', 'No changes were made.');
+                    }
+    
+                    // Update the group record
+                    $group->update($validatedData);
+    
+                    return redirect()->route('event_manager.group.index')->with('success', 'Group updated successfully.');
+                    } catch (ValidationException $e) {
+                    // Return all validation errors to the user
+                    return redirect()->back()->withErrors($e->errors())->with('error', 'Validation error occurred.');
+                    } catch (\Exception $e) {
+                    // Catch any other errors
+                    return redirect()->route('event_manager.group.index')->with('error', 'An error occurred: ' . $e->getMessage());
+                    }
+                }   
+    }
  
      public function destroy(Group $group)
      {
@@ -139,13 +170,13 @@ class GroupController extends Controller
              
              // Check if there are any associated records
              if ($group->participant()->exists()) {
-                return redirect()->route('admin.group.index')->with('error', 'Cannot delete group because it has associated data.');
+                return redirect()->route('event_manager.group.index')->with('error', 'Cannot delete group because it has associated data.');
             }
 
             // If no associated records, proceed with deletion
             $group->delete();
 
-            return redirect()->route('admin.group.index')->with('success', 'Group deleted successfully.');
+            return redirect()->route('event_manager.group.index')->with('success', 'Group deleted successfully.');
          }
      }
  

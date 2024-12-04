@@ -6,6 +6,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Admin\Event;
+use App\Models\Admin\Scorecard;
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
@@ -52,7 +54,7 @@ class User extends Authenticatable
     }
 
     public function scorecards()
-{
-    return $this->hasMany(Scorecard::class);
-}
+    {
+        return $this->hasMany(Scorecard::class);
+    }
 }
