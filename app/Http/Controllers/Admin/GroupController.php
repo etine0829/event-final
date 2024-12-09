@@ -152,33 +152,33 @@ public function store(Request $request)
                 }   
     }
  
-     public function destroy(Group $group)
-     {
-         if (Auth::user()->hasRole('admin')) {
- 
-             // Check if there are any associated records
-             if ($group->participant()->exists()) {
-                 return redirect()->route('admin.group.index')->with('error', 'Cannot delete group because it has associated data.');
-             }
- 
-             // If no associated records, proceed with deletion
-             $group->delete();
- 
-             return redirect()->route('admin.group.index')->with('success', 'group deleted successfully.');
- 
-         } else if (Auth::user()->hasRole('event_manager')) {
-             
-             // Check if there are any associated records
-             if ($group->participant()->exists()) {
-                return redirect()->route('event_manager.group.index')->with('error', 'Cannot delete group because it has associated data.');
+    public function destroy(Group $group)
+    {
+        if (Auth::user()->hasRole('admin')) {
+
+            // Check if there are any associated records
+            if ($group->participant()->exists()) {
+                return redirect()->route('admin.group.index')->with('error', 'Cannot delete group because it has associated data.');
             }
 
             // If no associated records, proceed with deletion
             $group->delete();
 
-            return redirect()->route('event_manager.group.index')->with('success', 'Group deleted successfully.');
-         }
-     }
+            return redirect()->route('admin.group.index')->with('success', 'group deleted successfully.');
+
+        } else if (Auth::user()->hasRole('event_manager')) {
+            
+            // Check if there are any associated records
+            if ($group->participant()->exists()) {
+            return redirect()->route('event_manager.group.index')->with('error', 'Cannot delete group because it has associated data.');
+        }
+
+        // If no associated records, proceed with deletion
+        $group->delete();
+
+        return redirect()->route('event_manager.group.index')->with('success', 'Group deleted successfully.');
+        }
+    }
  
      public function deleteAll(Request $request)
      {

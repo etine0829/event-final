@@ -60,15 +60,23 @@
                                 </div> 
 
                                 <div class="mb-2">
+                                    @if(Auth::user()->hasRole('admin'))
                                         <label for="role" class="block text-gray-700 text-md font-bold mb-2">User Type: </label>
                                         <select id="role" name="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('role') is-invalid @enderror" required>
                                                 <option value="">Select Option</option>
                                                 <option value="event_manager">Event Manager</option>
                                                 <option value="staff">Staff</option>
-                                                <option value="judge">Judge</option>
-                                                
+                                                <option value="judge">Judge</optio>       
                                         </select>
                                         <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                                    @else
+                                        <label for="role" class="block text-gray-700 text-md font-bold mb-2">User Type: </label>
+                                        <select id="role" name="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('role') is-invalid @enderror" required>
+                                                <option value="">Select Option</option>
+                                                <option value="judge">Judge</option>
+                                        </select>
+                                        <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                                    @endif
                                 </div>
 
 
@@ -201,27 +209,7 @@
                                                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                                                         </div>
                                                         
-                                                        <div class="mb-2">
-                                                            <label for="role" class="block text-gray-700 text-md font-bold mb-2 text-left">Roles: </label>
-                                                            <select id="role" name="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline @error('role') is-invalid @enderror" required>
-                                                                <option value="{{ $user->role }}">
-                                                                    @if ($user->role == 'event_manager')
-                                                                        Event Manager
-                                                                    @elseif ($user->role == 'staff')
-                                                                        Staff
-                                                                    @elseif ($user->role == 'judge')
-                                                                        Judge
-                                                                    @else
-                                                                        Chairman of the Judge
-                                                                    @endif
-                                                                </option>
-                                                                <option value="event_manager">Event Manager</option>
-                                                                <option value="staff">Staff</option>
-                                                                <option value="judge">Judge</option>
-                                                                
-                                                            </select>
-                                                            <x-input-error :messages="$errors->get('role')" class="mt-2" />
-                                                        </div>
+                                                    
                                                         <div class="flex mb-4 mt-5 justify-center">
                                                             <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                                                 Save

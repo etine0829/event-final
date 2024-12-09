@@ -5,7 +5,7 @@
 
     <div x-data="{ open: false }">
          <!-- login click -->
-         <a @click="open = true" class="font-bold tracking-wider cursor-pointer bg-blue-500 text-white text-sm px-4 py-3 rounded hover:bg-blue-700">
+         <a @click="open = true" class="flex justify-end font-bold tracking-wider cursor-pointer bg-blue-500 text-white text-sm px-4 py-3 rounded hover:bg-blue-700">
             LOGIN
          </a>
 

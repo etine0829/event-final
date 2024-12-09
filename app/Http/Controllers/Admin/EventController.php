@@ -27,7 +27,7 @@ class EventController extends Controller
     {
         // Define common validation rules
         $validatedData = $request->validate([
-            'event_name' => 'required|string',
+            'event_name' => 'required|string|unique:events,event_name',
             'venue' => 'required|string',
             'type_of_scoring' => 'required|string',
         ]);
@@ -47,7 +47,7 @@ class EventController extends Controller
     {
 
         $validatedData = $request->validate([
-            'event_name' => 'required|string|max:255',
+            'event_name' => 'required|string|unique:events,event_name|max:255',
             'venue' => 'required|string|max:255',
             'type_of_scoring' => 'required|in:points,ranking(H-L),ranking(L-H)',
         ]);

@@ -225,7 +225,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @if(Auth::user()->hasrole('admin'))
+                                    @if(Auth::user()->hasRole('admin'))
                                         <form id="deleteSelected" action="{{ route('admin.event.destroy', $event->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $event->id }}', '{{ $event->event_name }}');">
                                     @else
                                         <form id="deleteSelected" action="{{ route('event_manager.event.destroy', $event->id ) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $event->id }}', '{{ $event->event_name }}');">
@@ -271,7 +271,11 @@
             if (result.isConfirmed) {
                 const form = document.getElementById('deleteSelected');
                 // Dynamically set form action with the event ID
-                form.action = `{{ route('admin.event.destroy', ':Id') }}`.replace(':Id', eventID);
+                @if (Auth::user()->hasRole('admin'))
+                    form.action = `{{ route('admin.event.destroy', ':Id') }}`.replace(':Id', eventID);
+                @elseif (Auth::user()->hasRole('event_manager'))
+                    form.action = `{{ route('event_manager.event.destroy', ':Id') }}`.replace(':Id', eventID);
+                @endif
                 form.submit(); // Submit the form if confirmed
             }
         });

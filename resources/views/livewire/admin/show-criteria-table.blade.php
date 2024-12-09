@@ -352,15 +352,18 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('event_manager'))
+                                        @if(Auth::user()->hasRole('admin'))
+                                            <form id="deleteSelected" action="{{ route('admin.criteria.destroy', $criteria->id) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $criteria->id }}', '{{ $criteria->criteria_name}}', '{{ $criteria->criteria_score}}');">
+                                        @else
                                             <form id="deleteSelected" action="{{ route('event_manager.criteria.destroy', $criteria->id) }}" method="POST" onsubmit="return ConfirmDeleteSelected(event, '{{ $criteria->id }}', '{{ $criteria->criteria_name}}', '{{ $criteria->criteria_score}}');">
+                                        @endif
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="bg-red-500 text-white text-sm px-3 py-1.5 rounded hover:bg-red-700" id="hehe">
                                                     <i class="fa-solid fa-trash fa-xs" style="color: #ffffff;"></i>
                                                 </button>
                                             </form>
-                                        @endif                               
+                                                                     
                                     </div>
                                 </td>
                             </tr>

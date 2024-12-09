@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Events\Registered;
+use App\Http\Controllers\Admin\log;
 
 class UserController extends Controller
 {
@@ -59,53 +60,74 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        // if (Auth::user()->hasRole('admin')) {
 
-        $roleRedirect = Auth::user()->hasRole('admin') ? 'admin.user.index' : 'event_manager.user.index';
-    
-        try {
+        //     try {
+        //         $validatedData = $request->validate([
+        //             'event_id' => 'required|exists:events,id',
+        //             'name' => 'required|string|max:255',
+        //             'picture' => 'string|max:255',
+        //             'email' => 'required|string|lowercase|email|max:255|unique:users,email,' . $judge->id, // Allow updating the email but keep uniqueness
+        //             'password' => ['nullable', 'confirmed', Rules\Password::defaults()], // Password can be nullable if not changing
+        //         ]);
 
-            $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|max:255|email|unique:users,email,' . $user->id, // Unique email, excluding the current user
-                'role' => 'required|string|in:event_manager,judge,judge_chairman,staff',
-            ]);
+        //         if ($request->filled('password')) {
+        //             // Hash the password if it is updated
+        //             $validatedData['password'] = Hash::make($validatedData['password']);
+        //         } else {
+        //             unset($validatedData['password']); // Remove password from the update if not provided
+        //         }
 
-            $hasChanges = false;
-            
+        //         // Check if any data has changed
+        //         if (!$judge->isDirty()) {
+        //             return redirect()->route('admin.judge.index')->with('info', 'No changes were made.');
+        //         }
 
-            if ($request->name !== $user->name || 
-                $request->email !== $user->email || 
-                $request->role !== $user->role) {
-                $hasChanges = true;
-            }
-    
-            if ($request->has('password') && !empty($request->password)) {
-                if ($request->password !== $user->password) {
+        //         // Update the judge's data
+        //         $judge->update($validatedData);
+
+        //         return redirect()->route('admin.judge.index')->with('success', 'Judge updated successfully.');
+        //     } catch (ValidationException $e) {
+        //         return redirect()->back()->withErrors($e->errors())->with('error', 'Validation error');
+        //     }
+        // }
+
+        if (Auth::user()->hasRole('admin')) {
+
+            try {
+                $validatedData = $request->validate([
+                    'name' => [
+                        'required',
+                        'string',
+                        'max:255',
+                    ],
+                    'email' => 'required|string|max:255',
+                    'role' => 'required|string|in:event_manager,judge,judge_chairman,staff',
+ 
+                ]);
+                
+                $hasChanges = false;
+                if ($request->name !== $user->name ||
+                    $request->email !== $user->email ||
+                    $request->password !== $user->password ||
+                    $request->role !== $user->role
+                     ) 
+                {
                     $hasChanges = true;
                 }
+
+                if (!$hasChanges) {
+                    return redirect()->route('admin.user.index')->with('info', 'No changes were made.');
+                }
+
+                // Update the category record
+                $user->update($validatedData);
+
+                return redirect()->route('admin.user.index')->with('success', 'User updated successfully.');
+            } catch (ValidationException $e) {
+                $errors = $e->errors();
+                return redirect()->back()->withErrors($errors)->with('error', $errors['id'][0] ?? 'Validation error');
             }
-
-            if (!$hasChanges) {
-                return redirect()->route($roleRedirect)->with('info', 'No changes were made.');
-            }
-    
-
-            if ($request->has('password') && !empty($request->password)) {
-                $validatedData['password'] = Hash::make($request->password);
-            }
-
-            $user->update($validatedData);
-
-            return redirect()->route($roleRedirect)->with('success', 'User updated successfully.');
-    
-        } catch (ValidationException $e) {
-
-            $errors = $e->errors();
-            return redirect()->back()->withErrors($errors)->with('error', $errors['email'][0] ?? 'Validation error');
-        } catch (\Exception $e) {
-
-            Log::error('Failed to update user: ' . $e->getMessage());
-            return redirect()->route($roleRedirect)->with('error', 'Failed to update user.');
         }
     }
     
