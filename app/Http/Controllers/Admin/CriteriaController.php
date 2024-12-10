@@ -45,13 +45,12 @@ class CriteriaController extends Controller
             ->with('error', 'The total criteria scores for this category cannot exceed 100.');
     }
 
-    // Check if a criteria with the same name already exists for the category
     $existingCriteriaByNameAndCategory = Criteria::where('criteria_name', $request->input('criteria_name'))
-        ->where('category_id', $request->input('category_id'))
-        ->first();
+    ->where('category_id', $request->input('category_id'))
+    ->exists();
 
-    // If the criteria name is not taken, create new criteria
     if (!$existingCriteriaByNameAndCategory) {
+        // Create a new criteria
         $criteria = new Criteria();
         $criteria->event_id = $request->input('event_id');
         $criteria->category_id = $request->input('category_id');
@@ -67,7 +66,7 @@ class CriteriaController extends Controller
         return redirect()->route($redirectRoute)
             ->with('success', 'Criteria created successfully.');
     } else {
-        // If the criteria name already exists, redirect with an error
+        // Redirect with an error if the criteria name already exists in the same category
         $redirectRoute = Auth::user()->hasRole('admin') 
             ? 'admin.criteria.index' 
             : 'event_manager.criteria.index';
@@ -106,24 +105,28 @@ public function update(Request $request, $id)
             ->with('error', 'The total criteria scores for this category cannot exceed 100.');
     }
 
-    // Check if a criteria with the same name already exists
-    $existingCriteriaByName = Criteria::where('criteria_name', $request->input('criteria_name'))
-        ->where('id', '!=', $id)
-        ->first();
+    // Check if a criteria with the same name already exists in the same category
+    $existingCriteriaByNameInCategory = Criteria::where('criteria_name', $request->input('criteria_name'))
+    ->where('category_id', $request->input('category_id')) // Ensure it's the same category
+    ->where('id', '!=', $id) // Exclude the current criteria being updated
+    ->exists();
 
-    if (!$existingCriteriaByName) {
-        $criteria->event_id = $request->input('event_id');
-        $criteria->category_id = $request->input('category_id');
-        $criteria->criteria_name = $request->input('criteria_name');
-        $criteria->criteria_score = $newScore;
-        $criteria->save();
+    if (!$existingCriteriaByNameInCategory) {
+    // Update the criteria
+    $criteria->event_id = $request->input('event_id');
+    $criteria->category_id = $request->input('category_id');
+    $criteria->criteria_name = $request->input('criteria_name');
+    $criteria->criteria_score = $newScore;
+    $criteria->save();
 
-        return redirect()->route($userRole . '.criteria.index')
-            ->with('success', 'Criteria updated successfully.');
+    return redirect()->route($userRole . '.criteria.index')
+        ->with('success', 'Criteria updated successfully.');
     } else {
-        return redirect()->route($userRole . '.criteria.index')
-            ->with('error', 'Criteria name is already taken. Try again.');
+    // Redirect with an error if the criteria name already exists in the same category
+    return redirect()->route($userRole . '.criteria.index')
+        ->with('error', 'Criteria name is already taken for this category. Try again.');
     }
+
 }
 
 
