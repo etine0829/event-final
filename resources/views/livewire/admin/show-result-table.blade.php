@@ -171,10 +171,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php
-                                    // Sort by Total Average Score to determine ranks
-                                    usort($categoryData['participants'], function ($a, $b) {
-                                        return $b['totalAverageScore'] <=> $a['totalAverageScore']; // Descending order by score
+                                @php
+                                    // Determine the scoring type (default is 'H-L')
+                                    $scoringType = $eventToShow->type_of_scoring ?? 'ranking(H-L)'; // Adjust as per your data source
+
+                                    // Sort by Total Average Score based on scoring type
+                                    usort($categoryData['participants'], function ($a, $b) use ($scoringType) {
+                                        if ($scoringType === 'ranking(L-H)') {
+                                            return $a['totalAverageScore'] <=> $b['totalAverageScore']; // Ascending order for 'L-H'
+                                        }
+                                        return $b['totalAverageScore'] <=> $a['totalAverageScore']; // Descending order for 'H-L'
                                     });
 
                                     // Assign ranks based on Total Average Score
@@ -188,7 +194,8 @@
                                         $participantNoB = is_array($b['participant']) ? $b['participant']['participant_no'] : $b['participant']->participant_number;
                                         return $participantNoA <=> $participantNoB;
                                     });
-                                    @endphp
+                                @endphp
+
 
                                     <!-- Loop through participants and display their data -->
                                     @foreach($categoryData['participants'] as $participantData)
@@ -411,11 +418,12 @@
                             @endforeach
                             </tbody>
                         </table>
+
                     </div>
-
-
-
+                    <button onclick="window.print()" class=" bg-blue-500 text-white px-2 py-2 rounded-md justify-end">PRINT</button>
                 @endif
+
+           
            
         </div>
        
@@ -738,14 +746,15 @@
                             @endforeach
                             </tbody>
                         </table>
+                        
                     </div>
 
 
 
                 @endif
-           
-        </div>
-       
+               
+
+
     @elseif(Auth::user()->hasRole('staff'))
         <div>
             <!-- Success, Info, Error Messages -->
