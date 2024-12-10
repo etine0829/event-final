@@ -68,20 +68,20 @@
                             @else
                                 <form wire:submit.prevent="assignUserToEvent" class="mb-4">
                             @endif    
-                                    <div class="mb-2">
-                                        <label for="judge_id">Judge:</label>
-                                        <select wire:model="selectedUser" id="judge_id" class="form-control" required>
-                                            <option value="">Select Judge</option>
-                                            @foreach($users as $judge)
-                                                <option value="{{ $judge->id }}">{{ $judge->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                                <div class="mb-2">
+                                    <label for="judge_id">Judge:</label>
+                                    <select wire:model="selectedUser" id="judge_id" class="form-control" required>
+                                        <option value="">Select Judge</option>
+                                        @foreach($users as $judge)
+                                            <option value="{{ $judge->id }}">{{ $judge->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                                    <div class="flex mb-4 mt-5 justify-center">
-                                        <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
-                                    </div>
-                                </form>
+                                <div class="flex mb-4 mt-5 justify-center">
+                                    <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
+                                </div>
+                            </form>
 
                         </div>
                     </div>
@@ -209,10 +209,6 @@
                                                 {{ $users->total() }} Search results 
                                             @endif                                    
                                         </div>
-                                        <!-- <div class="justify-end">
-                                            <p class="text-black mt-2 text-sm mb-4 uppercase">Total # of judge: <text class="ml-2">{{ $judgeCounts[$eventToShow->id]->judge_count ?? 0 }}</text></p>
-                                            
-                                        </div> -->
                                     </div> 
                                 </td>
                                 <td>

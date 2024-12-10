@@ -182,7 +182,7 @@
                                     <a @click="open = true" class="cursor-pointer bg-blue-500 text-white text-sm px-3 py-2 rounded hover:bg-blue-700 ">
                                         <i class="fa-solid fa-pen fa-xs" style="color: #ffffff;"></i>
                                     </a>
-                                    <!-- Edit Modal -->
+                                    
                                     <div x-cloak x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 space-x-3">
                                         <div @click.away="open = false" class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
                                             <div class="flex justify-between items-start pb-3">
@@ -194,13 +194,15 @@
                                                     <form id="updateUserForm" action="{{ route('admin.user.update', $user->id )}}" method="POST">
                                                 @else
                                                     <form id="updateUserForm" action="{{ route('event_manager.user.update', $user->id )}}" method="POST">
-                                                @endif  
+                                                @endif
+                                                    <x-caps-lock-detector />
                                                     @csrf
                                                     @method('PUT')
+
                                                     <div class="mb-2">
                                                         <div class="mb-4">
                                                             <label for="name" class="block text-gray-700 text-md font-bold mb-2 text-left">Name</label>
-                                                            <input type="text" name="name" id="name" x-model="name" value="{{ $user->name }}"  class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required autofocus>
+                                                            <input type="text" name="name" id="name" x-model="name" value="{{ $user->name }}" class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('name') is-invalid @enderror" required autofocus>
                                                             <x-input-error :messages="$errors->get('name')" class="mt-2" />
                                                         </div>
                                                         <div class="mb-4">
@@ -208,8 +210,19 @@
                                                             <input type="text" name="email" id="email" x-model="email" value="{{ $user->email }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') is-invalid @enderror" required>
                                                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                                                         </div>
-                                                        
                                                     
+                                                        @if(Auth::user()->hasrole('admin'))
+                                                        <div class="mb-4">
+                                                            <label for="role" class="block text-gray-700 text-md font-bold mb-2 text-left">Role</label>
+                                                            <select name="role" id="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('role') is-invalid @enderror">
+                                                                <option value="event_manager" {{ $user->role == 'event_manager' ? 'selected' : '' }}>Event Manager</option>
+                                                                <option value="judge" {{ $user->role == 'judge' ? 'selected' : '' }}>Judge</option>
+                                                                <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff</option>
+                                                            </select>
+                                                            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                                                        </div>
+                                                        @endif
+
                                                         <div class="flex mb-4 mt-5 justify-center">
                                                             <button type="submit" class="w-80 bg-blue-500 text-white px-4 py-2 rounded-md">
                                                                 Save
@@ -220,6 +233,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
 
                                 @if(Auth::user()->hasRole('admin'))

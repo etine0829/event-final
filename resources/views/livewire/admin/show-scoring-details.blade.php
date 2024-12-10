@@ -114,14 +114,6 @@
                             </tbody>
                         </table>
 
-                        <!-- Submit Scores Button -->
-                        <div class="mt-6 text-center">
-                            <button 
-                                wire:click="saveScores" 
-                                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
-                                Submit Scores
-                            </button>
-                        </div>
                     </div>
                 @elseif ($category->event->type_of_scoring === 'points')
                     @foreach ($participants as $participant)

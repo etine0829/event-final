@@ -41,22 +41,19 @@ class ShowJudgesTable extends Component
                 return;
             }
 
-            // Find the event and user by their IDs
             $event = Event::find($this->selectedEvent);
-            $user = User::find($this->selectedUser);  // User can be either a judge or staff
+            $user = User::find($this->selectedUser); 
 
-            // Check if event and user exist
             if (!$event || !$user) {
                 session()->flash('error', 'Invalid event or user.');
                 return;
             }
-
-            // Check if the user is already assigned to the selected event
+          
             if ($user->event_id == $this->selectedEvent) {
                 return redirect()->route('admin.judge.index')->with('error', 'User is already assigned to this event.');
             }
 
-            // Update the user's event_id field with the selected event ID
+
             $user->event_id = $this->selectedEvent;
             $user->save();
 
@@ -95,12 +92,10 @@ class ShowJudgesTable extends Component
 
     public function deleteJudge($judgeId)
     {
-        // Remove the judge from the $userToShow array
         $this->userToShow = $this->userToShow->filter(function ($judge) use ($judgeId) {
             return $judge->id !== $judgeId;
         });
 
-        // Flash success message to the session
         session()->flash('success', 'User removed from the table.');
     }
 
