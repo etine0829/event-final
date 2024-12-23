@@ -147,7 +147,7 @@
                                         <input type="file" name="participant_photo" id="participant_photo" class="hidden" accept="image/*" onchange="previewImage(event)">
                                         <label for="participant_photo" class="cursor-pointer flex flex-col items-center">
                                             <div id="imagePreviewContainer" class="mb-2 text-center">
-                                                <img id="imagePreview" src="{{ asset('storage/default/user.png') }}" class="rounded-lg w-32 h-auto">
+                                                <img id="imagePreview" src="{{ asset('assets/img/user.png') }}" class="rounded-lg w-32 h-auto">
                                             </div>
                                             <span class="text-sm text-gray-500">Select Photo</span>
                                         </label>
@@ -267,7 +267,15 @@
                                     <td class="text-black border border-gray-400">{{ $participant->group?->group_name ?? 'N/A' }}</td>          
                                     <td class="text-black border border-gray-400">{{ $participant->participant_name}}</td>
                                     <td class="text-black border border-gray-400">{{ $participant->participant_gender}}</td>
-                                    <td class="text-black border border-gray-400">{{ $participant->participant_photo}}</td>
+                                    <td class="text-black flex justify-center border-b-2 border-gray-200">
+                                        @if ($participant->participant_photo && Storage::exists('public/participant_photo/' . $participant->participant_photo))
+                                            <a href="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" class="hover:border border-red-500 rounded-full" title="Click to view Picture">
+                                                <img src="{{ asset('storage/participant_photo/' . $participant->participant_photo) }}" class="rounded-full" style="border-radius:9999px;width:40px;height:42px" data-fancybox data-caption="{{ $participant->participant_name}}">
+                                            </a>
+                                        @else
+                                            <img data-fancybox data-caption="{{ $participant->participant_name}}" src="{{ asset('assets/img/user.png') }}" class="cursor-pointer hover:border hover:border-red-500 rounded-full" style="border-radius:9999px;width:40px;height:42px"  title="Click to view Picture">
+                                        @endif
+                                    </td>
                                     <td class="text-black border border-gray-400 px-1 py-1">
                                     <div class="flex justify-center items-center space-x-2 flex-nowrap">
                                         @if($eventToShow && $participant)

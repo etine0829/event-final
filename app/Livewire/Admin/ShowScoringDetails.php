@@ -208,18 +208,30 @@ class ShowScoringDetails extends Component
             // Increment rank for the next participant
            
         }
-
+        // if ($this->scoresExist) {
+        //     session()->flash('success', 'Scores updated successfully!');
+        // } else {
+        //     session()->flash('success', 'Scores submitted successfully!');
+        // }
         // If no validation errors occurred, flash success message
-        session()->flash('success', 'Scores saved, average scores, and rankings updated successfully!');
+        // session()->flash('success', 'Scores saved, average scores, and rankings updated successfully!');
         session()->put('isValidated', true);  // Save validation success to session
+
         $this->isValidated = true;  // Update local variable
 
-        // Flash message based on whether it's a new submission or an update
-        if ($this->scoresExist) {
-            session()->flash('success', 'Scores updated successfully!');
-        } else {
-            session()->flash('success', 'Scores submitted successfully!');
-        }
+        session()->flash('success', 'Scores updated successfully!');
+
+
+
+
+
+
+
+
+        
+
+        // // Flash message based on whether it's a new submission or an update
+        
     }
 
     private function validateScores()

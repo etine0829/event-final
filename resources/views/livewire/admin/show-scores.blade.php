@@ -16,7 +16,7 @@
                 <div class="overflow-x-auto"> <!-- Add this div to make the table scrollable on small screens -->
                     <table class="table-auto border-collapse border border-gray-400 w-full mt-2">
                         <thead>
-                            <tr class="bg-blue-300">
+                            <tr class="bg-blue-300 text-xs sm:text-lg lg:text-lg">
                                 <th class="border border-gray-400 px-4 py-2">Participant Name</th>
                                 @foreach ($category['criteria'] as $criteria)
                                     <th class="border border-gray-400 px-4 py-2">{{ $criteria['name'] }}</th>
@@ -25,17 +25,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($category['participants'] as $participant)
-                                <tr>
-                                    <td class="border border-gray-400 px-4 py-2">{{ $participant['name'] }}</td>
-                                    @foreach ($category['criteria'] as $criteria)
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <span>{{ $participant['scores'][$criteria['id']] ?? 'N/A' }}</span>
-                                        </td>
-                                    @endforeach
-                                    <td class="border border-gray-400 px-4 py-2">{{ $participant['avg_score'] }}</td>                              
+                            @empty($category['participants'])
+                                <tr class="text-center">
+                                    <td colspan="4" class="">
+                                       <span class="flex justify-center items-center text-center h-9 text-red-500">
+                                            No data available
+                                       </span> 
+                                    </td>
                                 </tr>
-                            @endforeach
+                            @else
+                                @foreach ($category['participants'] as $participant)
+                                    <tr>
+                                        <td class="border border-gray-400 px-4 py-2">{{ $participant['name'] }}</td>
+                                        @foreach ($category['criteria'] as $criteria)
+                                            <td class="border border-gray-400 px-4 py-2">
+                                                <span>{{ $participant['scores'][$criteria['id']] ?? 'N/A' }}</span>
+                                            </td>
+                                        @endforeach
+                                        <td class="border border-gray-400 px-4 py-2">{{ $participant['avg_score'] }}</td>                              
+                                    </tr>
+                                @endforeach
+                            @endempty
                         </tbody>
                     </table>
                 </div>
